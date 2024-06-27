@@ -32,7 +32,7 @@ const Menuitems = [
   {
     title: "가맹점 관리",
     icon: AlbumOutlinedIcon,
-    href: "/form-elements/radio",
+    href: "/franchisee",
   },
   {
     title: "인사 관리",
