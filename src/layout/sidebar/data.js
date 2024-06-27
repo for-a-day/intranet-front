@@ -37,7 +37,7 @@ const Menuitems = [
   {
     title: "인사 관리",
     icon: SwitchCameraOutlinedIcon,
-    href: "/form-elements/slider",
+    href: "/api/employees",
   },
   {
     title: "결재 관리",
