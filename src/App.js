@@ -15,7 +15,7 @@ function App() {
           <Routes>
             <Route path='/' element={<FullLayout />} >
                 <Route path='/' element={<Main />} />
-                <Route path='calendar' element={<Calendar />} />
+                <Route path='/app/calendar' element={<Calendar />} />
             </Route> 
           </Routes>
         </ThemeProvider>

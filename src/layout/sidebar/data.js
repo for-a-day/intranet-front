@@ -27,7 +27,7 @@ const Menuitems = [
   {
     title: "일정 관리",
     icon: AssignmentTurnedInOutlinedIcon,
-    href: "/calendar",
+    href: "/app/calendar",
   },
   {
     title: "가맹점 관리",

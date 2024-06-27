@@ -1,26 +1,44 @@
 import FullCalendar from "@fullcalendar/react";
 import { Box, Stack, Typography, Grid } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import "./Calendar.css";
 
 const CalendarList = () => {
+  const [selectDate, setSelectDate] = useState(null);
+
+  const dateClick = (arg) => {
+    setSelectDate(arg.dateStr);
+  };
+
+  const dateClickEvent = (eventInfo) => {
+    if (eventInfo.event.extendedProps.isSelected) {
+      return <div style={{ backgroundColor: "skyblue", height: "100%" }}></div>;
+    }
+    return null;
+  };
+
   return (
-    <Box>
-      <Grid container spacing={0}>
-        <Grid item xs={6} lg={12}>
-          <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            events={[
-              { title: "아", date: "2024-06-01" },
-              { title: "오", date: "2024-06-01" },
-              { title: "집가고싶다", date: "2024-06-02" },
-            ]}
-          />
-        </Grid>
-      </Grid>
-    </Box>
+    <FullCalendar
+      plugins={[dayGridPlugin, interactionPlugin]}
+      initialView="dayGridMonth"
+      dateClick={dateClick}
+      events={
+        selectDate
+          ? [
+              {
+                title: "",
+                start: selectDate,
+                allDay: true,
+                display: "background",
+                extendedProps: { isSelected: true },
+              },
+            ]
+          : []
+      }
+      eventContent={dateClickEvent}
+    />
   );
 };
 
