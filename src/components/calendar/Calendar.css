@@ -1,3 +1,18 @@
+.fc-daygrid-day {
+  transition: background-color 0.2s ease;
+}
+
 .fc-daygrid-day:hover {
     cursor: pointer;
+    background-color: rgb(194, 237, 253);
   }
+
+/* 하루짜리 일정 css */
+.fc-daygrid-event:hover {
+  background-color: #ddd;
+}
+
+/* 멀티데이 일정에 대한 css */
+.fc-event.fc-event-draggable:hover {
+  background-color: #ddd; /* 원하는 호버 색상으로 변경 */
+}

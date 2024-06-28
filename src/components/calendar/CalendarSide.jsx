@@ -33,12 +33,15 @@ const customStyles = {
 
 Modal.setAppElement("#root");
 
-const CalendarSide = () => {
+const CalendarSide = ({ onSelectCalendar }) => {
   const [calendarName, setCalendarName] = useState("");
-  const [departmentCode, setDepartmentCode] = useState("");
+  const [departmentCode, setDepartmentCode] = useState(1);
   const [message, setMessage] = useState("");
   const [calendars, setCalendars] = useState([]);
+  const [selectCalendar, setSelectCalendar] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [calendarId, setCalendarId] = useState(null);
 
   useEffect(() => {
     listCalendar();
@@ -46,9 +49,14 @@ const CalendarSide = () => {
 
   const listCalendar = async () => {
     try {
-      const response = await axios.get("http://localhost:9000/app/calendar");
-      if (Array.isArray(response.data)) {
-        setCalendars(response.data);
+      const response = await axios.get(
+        "http://localhost:9000/app/calendar/department/1"
+      );
+      if (
+        response.data.status === "success" &&
+        Array.isArray(response.data.data)
+      ) {
+        setCalendars(response.data.data);
       } else {
         console.error("Expected an array but got:", response.data);
         setCalendars([]);
@@ -63,12 +71,17 @@ const CalendarSide = () => {
     event.preventDefault();
     const calendarData = { calendarName, departmentCode };
     try {
-      const response = await axios.post(
-        "http://localhost:9000/app/calendar",
-        calendarData
-      );
-      setMessage("캘린더 등록 완료");
-      listCalendar(); // 새로운 캘린더를 등록한 후 리스트 갱신
+      if (isEditMode) {
+        // 수정 모드
+        await axios.put(
+          `http://localhost:9000/app/calendar/${calendarId}`,
+          calendarData
+        );
+      } else {
+        // 등록 모드
+        await axios.post("http://localhost:9000/app/calendar", calendarData);
+      }
+      listCalendar(); // 리스트 갱신
       closeModal(); // 모달 닫기
     } catch (error) {
       console.error("등록 실패");
@@ -78,14 +91,25 @@ const CalendarSide = () => {
     }
   };
 
-  const openModal = () => {
+  const openModal = (isEdit = false, calendar = null) => {
+    setIsEditMode(isEdit);
+    if (isEdit && calendar) {
+      setCalendarId(calendar.calendarId);
+      setCalendarName(calendar.calendarName);
+      setDepartmentCode(calendar.departmentCode);
+    } else {
+      setCalendarId(null);
+      setCalendarName("");
+      setDepartmentCode(1);
+    }
     setModalIsOpen(true);
   };
 
   const closeModal = () => {
     setModalIsOpen(false);
     setCalendarName("");
-    setDepartmentCode("");
+    setDepartmentCode(1);
+    setIsEditMode(false);
   };
 
   const calendarUpdate = (calendar) => {
@@ -95,7 +119,7 @@ const CalendarSide = () => {
 
   const calendarDelete = async (calendarId) => {
     try {
-      await axios.delete("http://localhost:9000/app/calendar/${calendarId}");
+      await axios.delete(`http://localhost:9000/app/calendar/${calendarId}`);
       setMessage("캘린더 삭제");
       listCalendar(); // 리스트 갱신
     } catch (error) {
@@ -103,10 +127,19 @@ const CalendarSide = () => {
     }
   };
 
+  const selectedCalendar = (calendar) => {
+    setSelectCalendar(calendar);
+    onSelectCalendar(calendar.calendarId);
+  };
+
   return (
     <Box>
       <h2>캘린더</h2>
-      <Button variant="contained" color="success" onClick={openModal}>
+      <Button
+        variant="contained"
+        color="success"
+        onClick={() => openModal(false)}
+      >
         캘린더 등록
       </Button>
       <Modal
@@ -118,7 +151,7 @@ const CalendarSide = () => {
         aria-labelledby="modal-modal-title"
       >
         <Typography id="modal-modal-title" variant="h2" component="h2">
-          새 캘린더 추가
+          {isEditMode ? "캘린더 수정" : "캘린더 등록"}
         </Typography>
         <form onSubmit={CalendarCreateSubmit}>
           <TextField
@@ -139,7 +172,7 @@ const CalendarSide = () => {
           />
           <Box sx={{ mt: 2 }}>
             <Button type="submit" variant="contained" color="primary">
-              등록
+              {isEditMode ? "수정" : "등록"}
             </Button>
             <Button type="button" onClick={closeModal} sx={{ ml: 2 }}>
               취소
@@ -153,12 +186,15 @@ const CalendarSide = () => {
       <List>
         {calendars.map((calendar) => (
           <ListItem key={calendar.calendarId} disablePadding>
-            <ListItemButton style={{ paddingTop: 8, paddingBottom: 6 }}>
+            <ListItemButton
+              style={{ paddingTop: 8, paddingBottom: 6 }}
+              onClick={() => selectedCalendar(calendar)}
+            >
               <ListItemText primary={calendar.calendarName} />
               <IconButton
                 edge="end"
                 aria-label="edit"
-                onClick={() => calendarUpdate(calendar)}
+                onClick={() => openModal(true, calendar)}
               >
                 <EditIcon />
               </IconButton>
