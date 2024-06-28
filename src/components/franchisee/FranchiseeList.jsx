@@ -6,8 +6,12 @@ const FranchiseeList = () => {
     const [selectedFranchisee, setSelectedFranchisee] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+    const [isWarningReasonVisible, setIsWarningReasonVisible] = useState(false);
     const [formData, setFormData] = useState({
+        franchiseeId: '',
         franchiseeName: '',
+        employeeId: '',
         owner: '',
         address: '',
         phoneNumber: '',
@@ -16,6 +20,7 @@ const FranchiseeList = () => {
         warningCount: '',
     });
 
+    
     useEffect(() => {
         const fetchFranchisee = async () => {
             try {
@@ -30,20 +35,23 @@ const FranchiseeList = () => {
         fetchFranchisee();
     },[]);
 
+    // 화면 기능 - 행 클릭 시,
     const handleRowClick = (franchisee) => {
         setSelectedFranchisee(franchisee);
         setIsModalOpen(true);
     };
-
+    // 화면 기능 - 모달 창 닫기
     const closeModal = () => {
         setIsModalOpen(false);
         setIsEditModalOpen(false);
+        setIsRegisterOpen(false);
         setSelectedFranchisee(null);
     };
-
+    // 화면 기능 - 수정 모달 창 닫기
     const handleEditModalOpen = () => {
         setIsEditModalOpen(true);
         setFormData({
+            franchiseeId:selectedFranchisee.franchiseeId,
             franchiseeName: selectedFranchisee.franchiseeName,
             owner: selectedFranchisee.owner,
             address: selectedFranchisee.address,
@@ -51,25 +59,88 @@ const FranchiseeList = () => {
             contractDate: selectedFranchisee.contractDate,
             expirationDate: selectedFranchisee.expirationDate,
             warningCount: selectedFranchisee.warningCount,
+            employeeId:selectedFranchisee.employeeId.employeeId
         });
     }
-
+    // 화면 기능 - 등록 모달 창 닫기
+    const handleRegisterModalOpen = () => {
+        setIsRegisterOpen(true);
+        setFormData({
+            franchiseeId: '',
+            franchiseeName: '',
+            employeeId: '',
+            owner: '',
+            address: '',
+            phoneNumber: '',
+            contractDate: '',
+            expirationDate: '',
+            warningCount: 0
+        });
+    }
+    // 화면 기능 - 경고사유 작성 토글
+    const handleWarningReasonToggle = () => {
+        setIsWarningReasonVisible(!isWarningReasonVisible);
+    };
+    // input요소 및 만료 계약일 생성
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
         });
-    };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Send formData to server for update
-        // Implement API call here
-        // After successful update, close edit modal and update franchisee list if necessary
-        closeModal();
+        // 만료계약일 자동 설정
+        if(name === 'contractDate'){
+            const contractDate = new Date(value);
+            const expirationDate = new Date(contractDate.getFullYear() + 2
+                                            , contractDate.getMonth(), contractDate.getDate());
+            setFormData(prevState => ({
+                ...prevState,
+                expirationDate: expirationDate.toISOString().split('T')[0]
+            }));
+        }
     };
+    // 수정
+    const handleSubmit = async (e) => {
+        console.log('handleSubmit 함수가 실행되었습니다.');
+        try {
+            const url = `http://localhost:9000/app/store/${selectedFranchisee.franchiseeId}`;
+            const response = await axios.put(url, formData);
+            alert('가맹점 정보가 성공적으로 수정되었습니다!');
+            //closeModal();
+            console.log('api 담기 성공', response.data);
+        } catch (error) {
+            console.log('수정 중 에러 발생', error);
+        }
+    };
+    // 삭제
+    const handleDelete = async () => {
+        if(!window.confirm('운영하지 않는 가맹점이 맞습니까?')) return;
 
+        try {
+            await axios.post(`http://localhost:9000/app/store/${selectedFranchisee.franchiseeId}`, formData);
+            alert('해당 가맹점은 폐점 목록에서 확인하세요.');
+            closeModal();
+            console.log('삭제 api 생성 완료');
+        } catch (error) {
+            console.log('삭제 진행 중 오류 발생', error);
+        }
+    };
+    //등록
+    const handleRegister = async () => {
+        console.log('등록버튼이 눌렸습니다');
+        try {
+            const url = `http://localhost:9000/app/store`;
+            const response = await axios.post(url, formData);
+            alert('새로운 가맹점 등록을 축하드립니다!');
+            console.log('api 담기 성공', response.data);
+            closeModal(); // 등록 성공 시 모달 닫기
+        } catch (error) {
+            console.log('등록 중 에러 발생', error);
+        }
+    }; 
+    
+    // 스타일
     const styles = {
         container: {
             margin: '20px auto',
@@ -183,13 +254,22 @@ const FranchiseeList = () => {
             top: '10px',
             right: '10px',
             cursor: 'pointer',
+        },
+        warnBtn: {
+            backgroundColor: '#FF0040',
+            color: 'white',
+            padding: '4px 8px',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            marginLeft: '5px'
         }
     };
 
     return (
         <div style={styles.container}>
             <h1 style={styles.title}>가맹점 목록</h1>
-            <button style={styles.register}>등록</button>
+            <button style={styles.register} onClick={handleRegisterModalOpen}>등록</button>
             <table style={styles.table}>
                 <thead style={styles.thead}>
                     <tr>
@@ -233,7 +313,7 @@ const FranchiseeList = () => {
                             {selectedFranchisee.franchiseeId}
                         </p>
                         <p style={styles.paragraph}>
-                            <strong>사원 이름 : </strong>{' '}
+                            <strong>담당자 : </strong>{' '}
                             {selectedFranchisee.employeeId.name}
                         </p>
                         <p style={styles.paragraph}>
@@ -252,6 +332,14 @@ const FranchiseeList = () => {
                             <strong>연락처 : </strong>{' '}
                             {selectedFranchisee.phoneNumber}
                         </p>
+                        <p style={styles.paragraph}>
+                            <strong>계약일 : </strong>{' '}
+                            {selectedFranchisee.contractDate}
+                        </p>
+                        <p style={styles.paragraph}>
+                            <strong>계약만료일 : </strong>{' '}
+                            {selectedFranchisee.expirationDate}
+                        </p>
                         <button style={styles.editButton} onClick={handleEditModalOpen}>
                             수정하기
                         </button>
@@ -268,7 +356,18 @@ const FranchiseeList = () => {
                         <h2>가맹점 수정</h2>
                         <form onSubmit={handleSubmit}>
                             <p style={styles.paragraph}><label>
-                                가맹점명:
+                                가맹점 ID: {'  '}
+                                <input
+                                    type="text"
+                                    name="franchiseeId"
+                                    value={formData.franchiseeId}
+                                    onChange={handleInputChange}
+                                    readOnly
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                가맹점명: {'  '}
                                 <input
                                     type="text"
                                     name="franchiseeName"
@@ -278,7 +377,7 @@ const FranchiseeList = () => {
                                 />
                             </label></p>
                             <p style={styles.paragraph}><label>
-                                대표자명:
+                                대표자명: {' '}
                                 <input
                                     type="text"
                                     name="owner"
@@ -288,7 +387,7 @@ const FranchiseeList = () => {
                                 />
                             </label></p>
                             <p style={styles.paragraph}><label>
-                                지점주소:
+                                지점주소: {' '}
                                 <input
                                     type="text"
                                     name="address"
@@ -298,7 +397,7 @@ const FranchiseeList = () => {
                                 />
                             </label></p>
                             <p style={styles.paragraph}><label>
-                                연락처:
+                                연락처: {' '}
                                 <input
                                     type="text"
                                     name="phoneNumber"
@@ -308,8 +407,8 @@ const FranchiseeList = () => {
                                 />
                             </label></p>
                             <p style={styles.paragraph}><label>
-                                가맹계약일:
-                                <input
+                                가맹계약일: {' '}
+                                <input 
                                     type="date"
                                     name="contractDate"
                                     value={formData.contractDate}
@@ -318,7 +417,7 @@ const FranchiseeList = () => {
                                 />
                             </label></p>
                             <p style={styles.paragraph}><label>
-                                만료계약일 : 
+                                만료계약일 :  {' '}
                                 <input
                                     type="date"
                                     name="expirationDate"
@@ -328,23 +427,155 @@ const FranchiseeList = () => {
                                 />
                             </label></p>
                             <p style={styles.paragraph}><label>
-                                경고횟수 : 
+                                경고횟수 :  {' '}
                                 <input
-                                    type="text"
+                                    type="number"
                                     name="warningCount"
                                     value={formData.warningCount}
                                     onChange={handleInputChange}
                                     required
                                 />
+                            <button type="button" style={styles.warnBtn} onClick={handleWarningReasonToggle}>경고사유</button>
+                            </label>
+                            </p>
+                            {isWarningReasonVisible && (
+                                <p style={styles.paragraph}>
+                                    <label>
+                                        경고사유: {' '}
+                                        <textarea
+                                            name="warningReason"
+                                            value={formData.warningReason}
+                                            onChange={handleInputChange}
+                                            rows="1"
+                                            required
+                                        ></textarea>
+                                    </label>
+                                </p>
+                            )}
+                            <p style={styles.paragraph}><label>
+                                담당자 : {' '}
+                                <input
+                                    type="text"
+                                    name="employeeId"
+                                    value={formData.employeeId}
+                                    onChange={handleInputChange}
+                                    required
+                                />
                             </label></p>
-                            <button style={styles.saveButton} type="submit">저장</button>
-                            <button style={styles.delButton}>삭제</button>
+                            <button style={styles.saveButton} onClick={handleSubmit}>저장</button>
+                            <button style={styles.delButton} onClick={handleDelete}>삭제</button>
                         </form>
                     </div>
                 </>
             )}
+            {isRegisterOpen && (
+                    <>
+                        <div style={styles.overlay} onClick={closeModal}></div>
+                        <div style={styles.modal}>
+                            <span style={styles.closeButton} onClick={closeModal}>
+                                X
+                            </span>
+                            <h2>가맹점 등록</h2>
+                            <form onSubmit={handleSubmit}>
+                            <p style={styles.paragraph}><label>
+                                가맹점 ID: {'  '}
+                                <input
+                                    type="text"
+                                    name="franchiseeId"
+                                    value={formData.franchiseeId}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                가맹점명: {'  '}
+                                <input
+                                    type="text"
+                                    name="franchiseeName"
+                                    value={formData.franchiseeName}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                대표자명: {' '}
+                                <input
+                                    type="text"
+                                    name="owner"
+                                    value={formData.owner}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                지점주소: {' '}
+                                <input
+                                    type="text"
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                연락처: {' '}
+                                <input
+                                    type="text"
+                                    name="phoneNumber"
+                                    value={formData.phoneNumber}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                가맹계약일: {' '}
+                                <input 
+                                    type="date"
+                                    name="contractDate"
+                                    value={formData.contractDate}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                만료계약일 :  {' '}
+                                <input
+                                    type="date"
+                                    name="expirationDate"
+                                    value={formData.expirationDate}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                경고횟수 :  {' '}
+                                <input
+                                    type="hidden"
+                                    name="warningCount"
+                                    value={formData.warningCount}
+                                    onChange={handleInputChange}
+                                    required
+                                    readOnly
+                                />
+                            </label></p>
+                            <p style={styles.paragraph}><label>
+                                담당자 : {' '}
+                                <input
+                                    type="text"
+                                    name="employeeId"
+                                    value={formData.employeeId}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </label></p>
+                                <button onClick={handleRegister} style={styles.saveButton}>등록</button>
+                            </form>
+                        </div>
+                    </>
+                )}
         </div>
     );
 };
+
 
 export default FranchiseeList;
