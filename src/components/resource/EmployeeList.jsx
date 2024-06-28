@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // React Router의 Link 컴포넌트 import
-import './EmployeeList.css'; // CSS 파일을 import
+import { Link } from 'react-router-dom';
+import './EmployeeList.css';
+import EmployeeModal from './EmployeeModal'; // 모달 컴포넌트 import
 
 const EmployeeList = () => {
+  
   const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null); // 선택된 직원
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
+  const [isEditMode, setIsEditMode] = useState(false); // 수정 모드 상태
+  const [isDeleteMode, setIsDeleteMode] = useState(false); // 삭제 모드 상태
 
   useEffect(() => {
     axios.get('http://localhost:9005/api/employees/list')
       .then(response => {
-        // 날짜 포맷팅 함수를 사용하여 날짜를 년월일 형식으로 변경
-        const formattedEmployees = response.data.map(employee => ({
+        const employeesData = response.data.employees; // 응답에서 employees 데이터 추출
+
+        const formattedEmployees = employeesData.map(employee => ({
           ...employee,
           dateEmployment: formatDate(employee.dateEmployment),
+          birth: formatDate(employee.birth),
         }));
         setEmployees(formattedEmployees);
       })
@@ -21,14 +29,12 @@ const EmployeeList = () => {
       });
   }, []);
 
-  // 날짜 포맷팅 함수
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     let month = date.getMonth() + 1;
     let day = date.getDate();
 
-    // 한 자리 숫자일 경우 앞에 0을 붙여서 두 자리로 표시
     if (month < 10) {
       month = `0${month}`;
     }
@@ -39,11 +45,25 @@ const EmployeeList = () => {
     return `${year}-${month}-${day}`;
   };
 
+  const handleRowClick = (employee) => {
+    setSelectedEmployee(employee);
+    setIsModalOpen(true);
+    setIsEditMode(false); // 상세 모드로 설정
+    setIsDeleteMode(false);
+  };
+
+  const handleEditClick = () => {
+    setIsEditMode(true); // 수정 모드로 변경
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteMode(true); //삭제 모드로 변경
+  };
+
   return (
     <div>
       <div className="header">
         <h2>Employee List</h2>
-        {/* 등록 버튼을 Link 컴포넌트로 추가 */}
         <Link to="/api/employees/register" className="register-button">
           등록
         </Link>
@@ -67,7 +87,7 @@ const EmployeeList = () => {
         </thead>
         <tbody>
           {employees.map(employee => (
-            <tr key={employee.employeeId}>
+            <tr key={employee.employeeId} onClick={() => handleRowClick(employee)}>
               <td>{employee.employeeId}</td>
               <td>{employee.name}</td>
               <td>{employee.gender}</td>
@@ -84,6 +104,20 @@ const EmployeeList = () => {
           ))}
         </tbody>
       </table>
+      {isModalOpen && (
+        <EmployeeModal
+          employee={selectedEmployee}
+          isEditMode={isEditMode}
+          isDeleteMode={isDeleteMode}
+          onClose={() => setIsModalOpen(false)}
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
+          onSave={(updatedEmployee) => {
+            setEmployees(employees.map(emp => (emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp)));
+            setIsModalOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -4,8 +4,8 @@ import Main from './pages/main/Main';
 import { ThemeProvider } from '@emotion/react';
 import {baseTheme} from './assets/Theme-variable'
 import FullLayout from './layout/FullLayout';
-import EmployeeList from './components/resouce/EmployeeList';
-import EmployeeRegister from './components/resouce/EmployeeRegister';
+import EmployeeList from './components/resource/EmployeeList';
+import EmployeeRegister from './components/resource/EmployeeRegister';
 
 function App() {
   const theme = baseTheme;
