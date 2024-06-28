@@ -59,6 +59,7 @@ const FullLayout = () => {
           sx={{
             paddingTop: "20px",
             paddingLeft: isSidebarOpen && lgUp ? "280px!important" : "",
+            marginLeft: 0
           }}
         >
           <Box sx={{ minHeight: "calc(100vh - 170px)" }}>
