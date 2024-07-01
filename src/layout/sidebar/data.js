@@ -12,47 +12,47 @@ const Menuitems = [
   {
     title: "홈",
     icon: DashboardOutlinedIcon,
-    href: "/dashboards/dashboard1",
+    href: "/app/home",
   },
   {
     title: "전자결재",
     icon: AddToPhotosOutlinedIcon,
-    href: "/form-elements/autocomplete",
+    href: "/app/form-elements/autocomplete",
   },
   {
     title: "메신저",
     icon: AspectRatioOutlinedIcon,
-    href: "/form-elements/button",
+    href: "/app/form-elements/button",
   },
   {
     title: "일정 관리",
     icon: AssignmentTurnedInOutlinedIcon,
-    href: "/form-elements/checkbox",
+    href: "/app/form-elements/checkbox",
   },
   {
     title: "가맹점 관리",
     icon: AlbumOutlinedIcon,
-    href: "/form-elements/radio",
+    href: "/app/form-elements/radio",
   },
   {
     title: "인사 관리",
     icon: SwitchCameraOutlinedIcon,
-    href: "/api/employees",
+    href: "/app/employees",
   },
   {
     title: "결재 관리",
     icon: SwitchLeftOutlinedIcon,
-    href: "/form-elements/switch",
+    href: "/app/form-elements/switch",
   },
   {
     title: "Form",
     icon: DescriptionOutlinedIcon,
-    href: "/form-layouts/form-layouts",
+    href: "/app/form-layouts/form-layouts",
   },
   {
     title: "Table",
     icon: AutoAwesomeMosaicOutlinedIcon,
-    href: "/tables/basic-table",
+    href: "/app/tables/basic-table",
   },
 ];
 

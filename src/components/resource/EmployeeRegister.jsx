@@ -13,26 +13,31 @@ const EmployeeRegister = () => {
     address: '',
     emailAddress: '',
     employmentStatus: '',
-    level: null, // 직급 초기값을 null로 설정
-    department: null, // 부서 초기값을 null로 설정
-    authority: null, // 권한 초기값을 null로 설정
+    level: '', // 직급 초기값을 null로 설정
+    department: '', // 부서 초기값을 null로 설정
+    authority: '', // 권한 초기값을 null로 설정
   });
 
   const [levels, setLevels] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [authorities, setAuthorities] = useState([]);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get('http://localhost:9005/api/employees/register')
-      .then(response => {
-        setLevels(response.data.levels);
-        setDepartments(response.data.departments);
-        setAuthorities(response.data.authorities);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
+    axios.get('http://localhost:9000/app/employees/register', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      setLevels(response.data.levels);
+      setDepartments(response.data.departments);
+      setAuthorities(response.data.authorities);
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+  }, [token]); // token을 useEffect의 의존성 배열에 추가하여 토큰이 변경될 때마다 재요청
 
   // 전화번호 형식 변환 함수
   const formatPhoneNumber = (phone) => {
@@ -60,70 +65,74 @@ const EmployeeRegister = () => {
       departmentCode: employee.department ? parseInt(employee.department) : null,
       authorityCode: employee.authority ? parseInt(employee.authority) : null,
     };
-    //유효성 검사 -> 묶기(유효성검사 함수)
+    // 유효성 검사 -> 묶기(유효성검사 함수)
     if (!employee.employeeId) {
       alert('아이디를 입력하세요');
-        return;
+      return;
     }
-  
+
     if (!employee.name) {
       alert('이름을 입력하세요');
-        return;
+      return;
     }
 
     if (!employee.gender) {
       alert('성별을 선택하세요');
       return;
-  }
-  if (!employee.birth) {
-    alert('생년월일을 입력하세요');
-    return;
-}
-if (!employee.dateEmployment) {
-  alert('입사날짜를 입력하세요');
-  return;
-}
-if (!employee.contact) {
-  alert('연락처를 입력하세요');
-  return;
-}
-if (!employee.emailAddress) {
-  alert('이메일을 입력하세요');
-  return;
-}
-if (!employee.address) {
-  alert('주소를 입력하세요');
-  return;
-}
-if (!employee.employmentStatus) {
-  alert('재직상태를 입력하세요');
-  return;
-}
-if (!employee.level) {
-  alert('직급 입력하세요');
-  return;
-}
-if (!employee.department) {
-  alert('부서를 입력하세요');
-  return;
-}
-if (!employee.authority) {
-  alert('권한을 입력하세요');
-  return;
-}
+    }
+    if (!employee.birth) {
+      alert('생년월일을 입력하세요');
+      return;
+    }
+    if (!employee.dateEmployment) {
+      alert('입사날짜를 입력하세요');
+      return;
+    }
+    if (!employee.contact) {
+      alert('연락처를 입력하세요');
+      return;
+    }
+    if (!employee.emailAddress) {
+      alert('이메일을 입력하세요');
+      return;
+    }
+    if (!employee.address) {
+      alert('주소를 입력하세요');
+      return;
+    }
+    if (!employee.employmentStatus) {
+      alert('재직상태를 입력하세요');
+      return;
+    }
+    if (!employee.level) {
+      alert('직급을 입력하세요');
+      return;
+    }
+    if (!employee.department) {
+      alert('부서를 입력하세요');
+      return;
+    }
+    if (!employee.authority) {
+      alert('권한을 입력하세요');
+      return;
+    }
 
-    axios.post('http://localhost:9005/api/employees/register', requestData)
-      .then(response => {
-        console.log('Employee registered successfully:', response.data);
-        alert('등록되었습니다.');
+    axios.post('http://localhost:9000/app/employees/register', requestData, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      console.log('Employee registered successfully:', response.data);
+      alert('등록되었습니다.');
 
-        // 페이지 이동
-        window.location.href = 'http://localhost:3000/api/employees';
-      })
-      .catch(error => {
-        console.error('Error registering employee:', error);
-        alert('등록에 실패하였습니다.');
-      });
+      // 페이지 이동
+      window.location.href = 'http://localhost:3000/app/employees';
+    })
+    .catch(error => {
+      console.error('Error registering employee:', error);
+      alert('등록에 실패하였습니다.');
+    });
   };
 
   return (

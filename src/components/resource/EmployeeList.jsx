@@ -5,29 +5,44 @@ import './EmployeeList.css';
 import EmployeeModal from './EmployeeModal'; // 모달 컴포넌트 import
 
 const EmployeeList = () => {
-  
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null); // 선택된 직원
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [isEditMode, setIsEditMode] = useState(false); // 수정 모드 상태
   const [isDeleteMode, setIsDeleteMode] = useState(false); // 삭제 모드 상태
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get('http://localhost:9005/api/employees/list')
-      .then(response => {
-        const employeesData = response.data.employees; // 응답에서 employees 데이터 추출
+    console.log(token);
+    axios.get('http://localhost:9000/app/employees/list', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      let employeesData = response.data.employees;
 
-        const formattedEmployees = employeesData.map(employee => ({
+      // employeesData가 배열인지 확인하고 배열이 아니면 배열로 변환
+      if (!Array.isArray(employeesData)) {
+        employeesData = [employeesData];
+      }
+
+      const formattedEmployees = employeesData.map((employee, index) => {
+        console.log(`Employee ID: ${employee.employeeId}`); // 로그 추가
+        return {
           ...employee,
-          dateEmployment: formatDate(employee.dateEmployment),
-          birth: formatDate(employee.birth),
-        }));
-        setEmployees(formattedEmployees);
-      })
-      .catch(error => {
-        console.error('Error fetching employees:', error);
+          birth: formatDate(employee.birth), // 날짜 데이터 포맷 변경
+          dateEmployment: formatDate(employee.dateEmployment), // 날짜 데이터 포맷 변경
+          key: `employee-${employee.employeeId}-${index}` // 고유한 키 설정
+        };
       });
-  }, []);
+
+      setEmployees(formattedEmployees);
+    })
+    .catch(error => {
+      console.error('Error fetching employees:', error);
+    });
+  }, [token]); // token을 useEffect의 의존성 배열에 추가하여 토큰이 변경될 때마다 재요청
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -57,14 +72,14 @@ const EmployeeList = () => {
   };
 
   const handleDeleteClick = () => {
-    setIsDeleteMode(true); //삭제 모드로 변경
+    setIsDeleteMode(true); // 삭제 모드로 변경
   };
 
   return (
     <div>
       <div className="header">
         <h2>Employee List</h2>
-        <Link to="/api/employees/register" className="register-button">
+        <Link to="/app/employees/register" className="register-button">
           등록
         </Link>
       </div>
@@ -87,7 +102,7 @@ const EmployeeList = () => {
         </thead>
         <tbody>
           {employees.map(employee => (
-            <tr key={employee.employeeId} onClick={() => handleRowClick(employee)}>
+            <tr key={employee.key} onClick={() => handleRowClick(employee)}>
               <td>{employee.employeeId}</td>
               <td>{employee.name}</td>
               <td>{employee.gender}</td>
