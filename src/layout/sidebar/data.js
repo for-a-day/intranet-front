@@ -45,14 +45,14 @@ const Menuitems = [
     href: "/form-elements/switch",
   },
   {
-    title: "Form",
+    title: "매출 관리",
     icon: DescriptionOutlinedIcon,
-    href: "/form-layouts/form-layouts",
+    href: "/sales",
   },
   {
-    title: "Table",
+    title: "메뉴 관리",
     icon: AutoAwesomeMosaicOutlinedIcon,
-    href: "/tables/basic-table",
+    href: "/menu",
   },
 ];
 
