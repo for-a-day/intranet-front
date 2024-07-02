@@ -14,6 +14,7 @@ import {
 import Modal from "react-modal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
 
 const customStyles = {
   content: {
@@ -33,7 +34,7 @@ const customStyles = {
 
 Modal.setAppElement("#root");
 
-const CalendarSide = ({ onSelectCalendar }) => {
+const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const [calendarName, setCalendarName] = useState("");
   const [departmentCode, setDepartmentCode] = useState(1);
   const [message, setMessage] = useState("");
@@ -42,6 +43,7 @@ const CalendarSide = ({ onSelectCalendar }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [calendarId, setCalendarId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     listCalendar();
@@ -127,9 +129,15 @@ const CalendarSide = ({ onSelectCalendar }) => {
     }
   };
 
+  const scheduleCreate = () => {
+    console.log("작업");
+    navigate("/app/schedule/create");
+  };
+
   const selectedCalendar = (calendar) => {
-    setSelectCalendar(calendar);
     onSelectCalendar(calendar.calendarId);
+    setSelectCalendar(calendar);
+    navigate("/app/calendar", { state: { calendarId: calendar.calendarId } });
   };
 
   return (
@@ -141,6 +149,9 @@ const CalendarSide = ({ onSelectCalendar }) => {
         onClick={() => openModal(false)}
       >
         캘린더 등록
+      </Button>
+      <Button variant="contained" color="primary" onClick={scheduleCreate}>
+        일정 상세 등록
       </Button>
       <Modal
         isOpen={modalIsOpen}

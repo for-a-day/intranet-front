@@ -4,15 +4,51 @@
 
 .fc-daygrid-day:hover {
     cursor: pointer;
-    background-color: rgb(194, 237, 253);
   }
 
-/* 하루짜리 일정 css */
-.fc-daygrid-event:hover {
-  background-color: #ddd;
+  .single-day-event, .multi-day-event {
+    font-size: 13px;
+  }
+
+.single-day-event {
+  background-color: white;
+  border: none;
+  color:rgb(65, 61, 61);
 }
 
-/* 멀티데이 일정에 대한 css */
-.fc-event.fc-event-draggable:hover {
-  background-color: #ddd; /* 원하는 호버 색상으로 변경 */
+.single-day-event:hover {
+  background-color: white;
+}
+
+.multi-day-event {
+  background-color: rgb(186, 232, 250);
+  color:rgb(65, 61, 61);
+  border: none;
+  padding: 2px;
+}
+
+.multi-day-event:hover {
+  background-color: #86e1f1;
+}
+
+.multi-day-event, .single-day-event {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fc .fc-button {
+  background-color: white;
+  color: #ada9a9;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 17px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* 호버 상태의 버튼 스타일 */
+.fc .fc-button:hover {
+  background-color: #b4b7b9;
 }
