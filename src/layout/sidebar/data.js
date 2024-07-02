@@ -32,7 +32,8 @@ const Menuitems = [
   {
     title: "가맹점 관리",
     icon: AlbumOutlinedIcon,
-    href: "/app/form-elements/radio",
+
+    href: "/franchisee",
   },
   {
     title: "인사 관리",
@@ -45,14 +46,16 @@ const Menuitems = [
     href: "/app/form-elements/switch",
   },
   {
-    title: "Form",
+    title: "매출 관리",
     icon: DescriptionOutlinedIcon,
-    href: "/app/form-layouts/form-layouts",
+
+    href: "/sales",
   },
   {
-    title: "Table",
+    title: "메뉴 관리",
     icon: AutoAwesomeMosaicOutlinedIcon,
-    href: "/app/tables/basic-table",
+
+    href: "/menu",
   },
 ];
 
