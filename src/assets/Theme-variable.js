@@ -71,8 +71,7 @@ const baseTheme = createTheme({
       styleOverrides: {
         root: {
           paddingLeft: "15px !important",
-          paddingRight: "15px !important",
-          maxWidth: "1600px",
+          paddingRight: "15px !important"
         },
       },
     },
