@@ -1,90 +1,113 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import parse from 'html-react-parser';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FormModal from '../../components/approval/FormModal';
 import ModalPortal from '../../config/ModalPortal';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { useDispatch } from 'react-redux';
+import { _createApproval } from '../../modules/redux/approval';
+import { useLocation, useNavigate } from 'react-router-dom';
+import ApprovalSideBar from '../../components/approval/ApprovalSideBar';
 
 
 const ApprovalWrite = () => {
-  const [modal, setModal] = useState(false);
-  const [htmls, setHtmls] = useState({
-    subject: "양식 폼을 선택해주세요",
-    content: "양식 폼을 선택해주세요"
-  });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const contentRef = useRef(null);
+  const [approvalInfo, setApprovalInfo] = useState([
+    {"employeeId": 6, "seq" : 0, "type": "기안", "status": "D"},
+    {"employeeId": 5, "seq" : 1, "type": "결재", "status": "D"},
+    {"employeeId": 4, "seq" : 2, "type": "결재", "status": "D"},
+    {"employeeId": 3, "seq" : 3, "type": "결재", "status": "D"}
+  ])
+  const [approvalData, setApprovalData] = useState(location.state?.approvalData || null);
+  const [changeHtml, setChangeHtml] = useState("");
 
-  const changeForm = (data) => {
-    setHtmls(data);
-    setModal(!modal);
+  useEffect(() => {
+    // 입력 필드에 이벤트 리스너 추가
+    const inputs = contentRef.current.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+      input.addEventListener('change', handleInputChange);
+    });
+
+    return () => {
+      // 컴포넌트 언마운트 시 이벤트 리스너 제거
+      inputs.forEach(input => {
+        input.removeEventListener('change', handleInputChange);
+      });
+    };
+  }, [approvalData]);
+
+  const handleInputChange = (event) => {
+    const { value } = event.target;
+    event.target.setAttribute('value', value);
+  };
+
+  const replaceInputTextareaWithSpan = (node) => {
+    if (node.type === 'tag' && (node.name === 'input' || node.name === 'textarea' || node.name === 'select')) {
+      let value = node.attribs.value || '';  
+  
+      return (
+        <span>
+          {value}
+        </span>
+      );
+    }
+    return node;
+  };
+
+  const onChangeHtml = () => {
+    return new Promise((resolve) => {
+      const _htmls = parse(contentRef.current.innerHTML, { replace: replaceInputTextareaWithSpan });
+      const newHtml = renderToStaticMarkup(_htmls);
+      setChangeHtml(newHtml);
+      resolve(newHtml); 
+    });
   }
+  
+  const onSubmtEvent = async () => {
+    const updatedHtml = await onChangeHtml(); 
+    
+    const data = {
 
-  const onModal = () => {
-    setModal(!modal);
-  }
-
-
+      formData : {
+        subject: approvalData.subject,
+        formId: approvalData.formId,
+        docBody: updatedHtml,
+        approvalInfo: approvalInfo
+      },
+      _navigate: navigate
+    };
+  
+    dispatch(_createApproval(data));
+    navigate("/approval/")
+  };
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
-      <Stack>
-        <Box sx={{width:"200px"}}>
-          <Typography variant='h2'>전자결재</Typography>
-          <Box display="flex" alignItems="center" my={2}>
-            <Button variant='contained' color='success' sx={{width:"90%", margin:"auto", height:"45px"}} onClick={onModal}>새 결재 진행</Button>
-          </Box>
-          <Box sx={{marginTop: "20px"}}>
-            <Typography variant='h5' sx={{fontWeight:"bold"}}>자주 쓰는 양식</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>휴가 신청</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>업무 기안</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)휴가신청-연차관리연동</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)연장근무신청-근태관리연동</Typography>
-          </Box>
-          <Box sx={{marginTop: "20px"}}>
-            <Typography variant='h5' sx={{fontWeight:"bold"}}>자주 쓰는 양식</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>휴가 신청</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>업무 기안</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)휴가신청-연차관리연동</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)연장근무신청-근태관리연동</Typography>
-          </Box>
-          <Box sx={{marginTop: "20px"}}>
-            <Typography variant='h5' sx={{fontWeight:"bold"}}>자주 쓰는 양식</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>휴가 신청</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>업무 기안</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)휴가신청-연차관리연동</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)연장근무신청-근태관리연동</Typography>
-          </Box>
-          <Box sx={{marginTop: "20px"}}>
-            <Typography variant='h5' sx={{fontWeight:"bold"}}>자주 쓰는 양식</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>휴가 신청</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>업무 기안</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)휴가신청-연차관리연동</Typography>
-            <Typography variant='h6' sx={{marginLeft:"15px"}}>(신규)연장근무신청-근태관리연동</Typography>
-          </Box>
-        </Box>
-      </Stack>
+      <ApprovalSideBar setApprovalData={setApprovalData}/>
       <Stack>
         <Box sx={{marginBottom:"15px"}}>
-          <Typography variant='h2'>{htmls.subject}</Typography>
+          <Typography variant='h2'>{approvalData?.subject || ""}</Typography>
         </Box>
         <Stack direction="row" spacing={1}>
-          <Button variant='h5'>결재요청</Button>
+          <Button variant='h5' onClick={onSubmtEvent}>결재요청</Button>
           <Button variant='h5'>임시저장</Button>
           <Button variant='h5'>미리보기</Button>
           <Button variant='h5'>취소</Button>
           <Button variant='h5'>결재정보</Button>
         </Stack>
         <Box sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
-          <div>{parse(htmls.content)}</div>
+          <div ref={contentRef}>{parse(approvalData?.content || "")}</div>
         </Box>
         <Stack direction="row" spacing={1}>
-          <Button variant='h5'>결재요청</Button>
+          <Button variant='h5' onClick={onSubmtEvent}>결재요청</Button>
           <Button variant='h5'>임시저장</Button>
           <Button variant='h5'>미리보기</Button>
           <Button variant='h5'>취소</Button>
           <Button variant='h5'>결재정보</Button>
         </Stack>
       </Stack>
-      <ModalPortal>
-        {modal && <FormModal onModal={onModal} changeForm={changeForm}/>}
-       </ModalPortal>
     </Stack>
   )
 };
