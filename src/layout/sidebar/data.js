@@ -12,7 +12,7 @@ const Menuitems = [
   {
     title: "홈",
     icon: DashboardOutlinedIcon,
-    href: "/app/home",
+    href:"/",
   },
   {
     title: "전자결재",
@@ -27,7 +27,7 @@ const Menuitems = [
   {
     title: "일정 관리",
     icon: AssignmentTurnedInOutlinedIcon,
-    href: "/app/form-elements/checkbox",
+    href: "/app/calendar",
   },
   {
     title: "가맹점 관리",
