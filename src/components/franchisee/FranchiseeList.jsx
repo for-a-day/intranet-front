@@ -26,7 +26,7 @@ const FranchiseeList = () => {
         const [warnData, setWarnData] = useState({
             warningReason: '',
             franchiseeId: '',
-            closingId: null
+            closing_id: null
         });
 
         // 목록 가져오기
@@ -261,7 +261,7 @@ const FranchiseeList = () => {
                 const data = {
                     warningReason: warnData.warningReason,
                     franchisee_id: { franchiseeId: formData.franchiseeId },
-                    closingId: null
+                    closing_id: null
                 };
                 console.log('담긴 데이터 ->', data);
                 console.log('담긴 franchiseeId 데이터 ->', data.franchisee_id);
