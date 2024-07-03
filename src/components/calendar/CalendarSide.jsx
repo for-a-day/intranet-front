@@ -15,6 +15,7 @@ import Modal from "react-modal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
+import AddIcon from "@mui/icons-material/Add";
 
 const customStyles = {
   content: {
@@ -143,13 +144,6 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   return (
     <Box>
       <h2>캘린더</h2>
-      <Button
-        variant="contained"
-        color="success"
-        onClick={() => openModal(false)}
-      >
-        캘린더 등록
-      </Button>
       <Button variant="contained" color="primary" onClick={scheduleCreate}>
         일정 상세 등록
       </Button>
@@ -190,7 +184,6 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
             </Button>
           </Box>
         </form>
-        {message && <p>{message}</p>}
       </Modal>
 
       <h3 style={{ paddingTop: 6 }}>부서별 캘린더</h3>
@@ -220,6 +213,18 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
           </ListItem>
         ))}
       </List>
+      <span
+        onClick={() => openModal(false)}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          cursor: "pointer",
+          padding: "10px 20px", // 필요에 따라 추가
+          borderRadius: "4px", // 필요에 따라 추가
+        }}
+      >
+        <AddIcon style={{ marginRight: "8px" }} /> 캘린더 등록
+      </span>
     </Box>
   );
 };
