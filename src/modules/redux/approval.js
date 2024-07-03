@@ -3,6 +3,7 @@ import axios from "axios"
 
 const initialState = {
   data: {},
+  employee: {},
   approval: {},
   approvalList: [],
   formList: [],
@@ -36,6 +37,19 @@ export const _createApproval = createAsyncThunk(
     }
   }
 );
+
+//사원 및 부서 목록 조회
+export const _getEmployeeList = createAsyncThunk(
+  "approval/getEmployeeList",
+  async (payload, thunkAPI) => {
+    try {
+      const data = await axios.get(`http://localhost:9000/app/employees/list`);
+      return thunkAPI.fulfillWithValue(data.data);
+    } catch(e){
+      return thunkAPI.rejectWithValue(e);
+    }
+  }
+)
 
 //기안문 상세조회
 export const _getApprovalDetail = createAsyncThunk(
@@ -77,6 +91,18 @@ export const approvalSlice = createSlice({
                 state.approval = action.payload;
             })
             .addCase(_createApproval.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+        builder
+            .addCase(_getEmployeeList.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(_getEmployeeList.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.employee = action.payload;
+            })
+            .addCase(_getEmployeeList.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             })

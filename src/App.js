@@ -5,6 +5,7 @@ import { ThemeProvider } from '@emotion/react';
 import {baseTheme} from './assets/Theme-variable'
 import FullLayout from './layout/FullLayout';
 import ApprovalWrite from './pages/approval/ApprovalWrite';
+import ApprovalDetail from './pages/approval/ApprovalDetail';
 
 function App() {
   const theme = baseTheme;
@@ -16,6 +17,7 @@ function App() {
             <Route path='/' element={<FullLayout />} >
               <Route path='/' element={<Main />} />
               <Route path='/approval/draft/form' element={<ApprovalWrite />} />
+              <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
             </Route>
           </Routes>
         </ThemeProvider>
