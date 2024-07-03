@@ -148,9 +148,9 @@ const Menu = () => {
                     <p>
                         <TextField sx={styles.paragraph}
                             type="number"
-                            name="memu_origin_price"
+                            name="menu_origin_price"
                             label="총 원가"
-                            value={formData.memu_origin_price}
+                            value={formData.menu_origin_price}
                             onChange={handleInputChange}
                             required
                         />

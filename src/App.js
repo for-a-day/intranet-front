@@ -11,7 +11,13 @@ import EmployeeRegister from './components/resource/EmployeeRegister';
 import Login from './components/login/Login';
 import PrivateRoute from './components/PrivateRoute'; // PrivateRoute import
 import ApprovalWrite from './pages/approval/ApprovalWrite';
+import Franchisee from './pages/franchisee/Franchisee';
+import Warning from './pages/warning/Warning';
+import Closing from './pages/closing/Closing';
+import Menu from './pages/menu/Menu';
+import SalesList from './components/sales/SalesList';
 import ApprovalDetail from './pages/approval/ApprovalDetail';
+
 
 function App() {
   const theme = baseTheme;
@@ -45,6 +51,11 @@ function App() {
                 }
               />
               <Route path='/approval/draft/form' element={<ApprovalWrite />} />
+              <Route path='/franchisee' element={<Franchisee />} />
+              <Route path='/warn' element={<Warning />} />
+              <Route path='/close' element={<Closing />} />
+              <Route path='/menu' element={<Menu />} />
+              <Route path='/sales' element={<SalesList />} />
               <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
             </Route>
           </Routes>

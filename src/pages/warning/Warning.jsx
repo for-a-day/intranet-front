@@ -10,7 +10,7 @@ const Warning = () => {
             <AppBar position="static" sx={{ bgcolor: '#81BEF7' }}>
               <Toolbar>
                 <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black', fontWeight: 'bold' }}>
-                  폐점 관리 
+                  경고 가맹점 관리 
                 </Typography>
                 <Button color="inherit" href="/franchisee" sx={{ color: 'black', fontWeight: 'bold' }}>
                   가맹점
