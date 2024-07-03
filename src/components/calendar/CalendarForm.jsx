@@ -12,10 +12,16 @@ import {
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
-const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
+const CalendarForm = ({
+  isCreate,
+  scheduleId,
+  selectedCalendarId,
+  onComplete,
+}) => {
   const navigate = useNavigate();
+  const calendarLocation = useLocation();
 
   const [loading, setLoading] = useState(!isCreate);
   const [subject, setSubject] = useState("");
@@ -28,6 +34,9 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
   const [calendarId, setCalendarId] = useState(selectedCalendarId || "");
   const [calendars, setCalendars] = useState([]);
   const [events, setEvents] = useState([]);
+  const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
+
+  console.log("Form", selectedCalendarId);
 
   useEffect(() => {
     const listCalendar = async () => {
@@ -44,6 +53,13 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
 
     listCalendar();
   }, []);
+
+  useEffect(() => {
+    if (isCreate) {
+      resetForm();
+    }
+  }, [isCreate]);
+
   useEffect(() => {
     if (!isCreate && scheduleId) {
       const detailSchedule = async () => {
@@ -101,6 +117,16 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
     }
   }, [selectedCalendarId]);
 
+  const handleEndTimeChange = (time) => {
+    if (time < startTime) {
+      setEndTimeErrorMessage("종료 시간을 다시 설정해주세요.");
+      setEndTime("");
+    } else {
+      setEndTimeErrorMessage("");
+      setEndTime(time);
+    }
+  };
+
   const scheduleSubmit = async (e) => {
     e.preventDefault();
     const schedule = {
@@ -123,19 +149,22 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
           schedule
         );
       }
-      navigate("/app/calendar");
+      onComplete(calendarId);
+      navigate("/app/calendar", { state: { calendarId: calendarId } });
     } catch (error) {
       console.error("저장 실패", error);
       if (error.response) {
         console.error("Server response:", error.response.data);
       }
     }
+    console.log(calendarId);
   };
 
   const scheduleDelete = async () => {
     try {
       await axios.delete(`http://localhost:9000/app/schedule/${scheduleId}`);
-      navigate("/app/calendar");
+      onComplete(calendarId);
+      navigate("/app/calendar", { state: { calendarId: calendarId } });
     } catch (error) {
       console.error("삭제 실패", error);
     }
@@ -149,6 +178,18 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
     (cal) => cal.calendarId === calendarId
   );
 
+  const resetForm = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setSubject("");
+    setContent("");
+    setStartDate(today);
+    setEndDate(today);
+    setStartTime("09:00");
+    setEndTime("18:00");
+    setLocation("");
+    setCalendarId("");
+  };
+
   return (
     <Box p={3}>
       <Typography variant="h4" mb={3}>
@@ -156,6 +197,72 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
       </Typography>
       <form onSubmit={scheduleSubmit}>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextField
+              label="일정 제목"
+              variant="outlined"
+              fullWidth
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              label="시작일"
+              type="date"
+              variant="outlined"
+              fullWidth
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              label="시작 시간"
+              type="time"
+              variant="outlined"
+              fullWidth
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              label="종료일"
+              type="date"
+              variant="outlined"
+              fullWidth
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              InputProps={{
+                inputProps: { min: startDate },
+              }}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              label="종료 시간"
+              type="time"
+              variant="outlined"
+              fullWidth
+              value={endTime}
+              onChange={(e) => handleEndTimeChange(e.target.value)}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              error={!!endTimeErrorMessage}
+              helperText={endTimeErrorMessage}
+            />
+          </Grid>
           <Grid item xs={12}>
             {isCreate ? (
               <FormControl variant="outlined" fullWidth>
@@ -197,74 +304,13 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId }) => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="일정 제목"
-              variant="outlined"
-              fullWidth
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
               label="내용"
               variant="outlined"
               fullWidth
               multiline
-              rows={4}
+              rows={10}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="시작일"
-              type="date"
-              variant="outlined"
-              fullWidth
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="종료일"
-              type="date"
-              variant="outlined"
-              fullWidth
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="시작 시간"
-              type="time"
-              variant="outlined"
-              fullWidth
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="종료 시간"
-              type="time"
-              variant="outlined"
-              fullWidth
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              InputLabelProps={{
-                shrink: true,
-              }}
             />
           </Grid>
           <Grid item xs={12}>

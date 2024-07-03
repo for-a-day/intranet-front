@@ -14,8 +14,9 @@ import {
 import Modal from "react-modal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
+import "./Calendar.css";
 
 const customStyles = {
   content: {
@@ -41,6 +42,7 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const [message, setMessage] = useState("");
   const [calendars, setCalendars] = useState([]);
   const [selectCalendar, setSelectCalendar] = useState(null);
+  const [selectedCalendarId, setSelectedCalendarId] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [calendarId, setCalendarId] = useState(null);
@@ -143,10 +145,27 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
 
   return (
     <Box>
-      <h2>캘린더</h2>
-      <Button variant="contained" color="primary" onClick={scheduleCreate}>
-        일정 상세 등록
-      </Button>
+      <Link
+        to="/app/calendar"
+        style={{ textDecoration: "none", color: "black" }}
+      >
+        <h2>캘린더</h2>
+      </Link>
+      <Box sx={{ textAlign: "center" }}>
+        <Button
+          variant="contained"
+          onClick={scheduleCreate}
+          sx={{
+            pr: 8,
+            pl: 8,
+            pt: 1.5,
+            pb: 1.5,
+            mr: 2,
+          }}
+        >
+          일정등록
+        </Button>
+      </Box>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -191,7 +210,14 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
         {calendars.map((calendar) => (
           <ListItem key={calendar.calendarId} disablePadding>
             <ListItemButton
-              style={{ paddingTop: 8, paddingBottom: 6 }}
+              style={{
+                paddingTop: 6,
+                paddingBottom: 6,
+                backgroundColor:
+                  selectCalendar?.calendarId === calendar.calendarId
+                    ? "#ddd"
+                    : "transparent",
+              }}
               onClick={() => selectedCalendar(calendar)}
             >
               <ListItemText primary={calendar.calendarName} />
@@ -213,18 +239,11 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
           </ListItem>
         ))}
       </List>
-      <span
-        onClick={() => openModal(false)}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          cursor: "pointer",
-          padding: "10px 20px", // 필요에 따라 추가
-          borderRadius: "4px", // 필요에 따라 추가
-        }}
-      >
-        <AddIcon style={{ marginRight: "8px" }} /> 캘린더 등록
-      </span>
+      <Box sx={{ textAlign: "center", paddingRight: 3 }}>
+        <span onClick={() => openModal(false)} className="createCalendar">
+          <AddIcon style={{ marginRight: "8px" }} /> 캘린더 등록
+        </span>
+      </Box>
     </Box>
   );
 };

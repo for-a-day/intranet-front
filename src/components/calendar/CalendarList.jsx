@@ -50,17 +50,16 @@ const CalendarList = ({ calendarId }) => {
   const [events, setEvents] = useState([]); // 일정 목록
   const navigate = useNavigate(); // useNavigate 훅 사용
   const locations = useLocation();
+  const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
   const calendarIds = locations?.state?.calendarId || null;
-  console.log(calendarId);
+
+  console.log("List", calendarId);
+
   useEffect(() => {
     if (calendarId) {
       scheduleList(calendarId);
     } else {
       scheduleList(calendarIds);
-    }
-
-    if (calendarIds) {
-      navigate(locations.pathname, { state: { calendarId: null } });
     }
   }, [calendarId]);
 
@@ -89,7 +88,6 @@ const CalendarList = ({ calendarId }) => {
             },
           };
         });
-        console.log("Formatted events:", formattedEvents);
         setEvents(formattedEvents);
       } else {
         console.error("Expected an array but got:", response.data);
@@ -109,6 +107,16 @@ const CalendarList = ({ calendarId }) => {
     setStartTime("09:00");
     setEndTime("18:00");
     setModalIsOpen(true);
+  };
+
+  const handleEndTimeChange = (time) => {
+    if (time < startTime) {
+      setEndTimeErrorMessage("종료 시간을 다시 설정해주세요.");
+      setEndTime("");
+    } else {
+      setEndTimeErrorMessage("");
+      setEndTime(time);
+    }
   };
 
   const modalClose = () => {
@@ -163,7 +171,6 @@ const CalendarList = ({ calendarId }) => {
           },
         }));
         setEvents(formattedEvents);
-        console.log("일정 상태 업데이트", formattedEvents);
       } else {
         console.error("Expected an array but got:", response.data);
         setEvents([]);
@@ -317,6 +324,9 @@ const CalendarList = ({ calendarId }) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              InputProps={{
+                inputProps: { min: startDate },
+              }}
             />
           </Grid>
           <Grid item xs={3}>
@@ -326,11 +336,13 @@ const CalendarList = ({ calendarId }) => {
               variant="outlined"
               fullWidth
               value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+              onChange={(e) => handleEndTimeChange(e.target.value)}
               margin="normal"
               InputLabelProps={{
                 shrink: true,
               }}
+              error={!!endTimeErrorMessage}
+              helperText={endTimeErrorMessage}
             />
           </Grid>
         </Grid>

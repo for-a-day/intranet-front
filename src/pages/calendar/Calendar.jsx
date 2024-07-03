@@ -12,10 +12,10 @@ const Calendar = () => {
 
   return (
     <Grid container spacing={0}>
-      <Grid item xs={3} lg={2.2}>
+      <Grid item xs={3} lg={1.9} md={3} sm={3}>
         <CalendarSide onSelectCalendar={selectCalendar} />
       </Grid>
-      <Grid xs={7} lg={9.8}>
+      <Grid item xs={9} lg={9.4}>
         <CalendarList calendarId={selectedCalendarId} />
       </Grid>
     </Grid>
