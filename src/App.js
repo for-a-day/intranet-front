@@ -9,6 +9,7 @@ import EmployeeRegister from './components/resource/EmployeeRegister';
 import Login from './components/login/Login';
 import PrivateRoute from './components/PrivateRoute'; // PrivateRoute import
 import ApprovalWrite from './pages/approval/ApprovalWrite';
+import ApprovalDetail from './pages/approval/ApprovalDetail';
 
 function App() {
   const theme = baseTheme;
@@ -38,6 +39,7 @@ function App() {
                 }
               />
               <Route path='/approval/draft/form' element={<ApprovalWrite />} />
+              <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
             </Route>
           </Routes>
         </ThemeProvider>
