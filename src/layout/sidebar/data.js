@@ -17,12 +17,12 @@ const Menuitems = [
   {
     title: "전자결재",
     icon: AddToPhotosOutlinedIcon,
-    href: "/form-elements/autocomplete",
+    href: "/app/form-elements/autocomplete",
   },
   {
     title: "메신저",
     icon: AspectRatioOutlinedIcon,
-    href: "/form-elements/button",
+    href: "/app/form-elements/button",
   },
   {
     title: "일정 관리",
@@ -32,27 +32,30 @@ const Menuitems = [
   {
     title: "가맹점 관리",
     icon: AlbumOutlinedIcon,
-    href: "/form-elements/radio",
+
+    href: "/franchisee",
   },
   {
     title: "인사 관리",
     icon: SwitchCameraOutlinedIcon,
-    href: "/form-elements/slider",
+    href: "/app/employees",
   },
   {
     title: "결재 관리",
     icon: SwitchLeftOutlinedIcon,
-    href: "/form-elements/switch",
+    href: "/app/form-elements/switch",
   },
   {
-    title: "Form",
+    title: "매출 관리",
     icon: DescriptionOutlinedIcon,
-    href: "/form-layouts/form-layouts",
+
+    href: "/sales",
   },
   {
-    title: "Table",
+    title: "메뉴 관리",
     icon: AutoAwesomeMosaicOutlinedIcon,
-    href: "/tables/basic-table",
+
+    href: "/menu",
   },
 ];
 
