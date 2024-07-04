@@ -4,6 +4,7 @@ import FranchiseeList from "../../components/franchisee/FranchiseeList";
 import axios from "axios";
 
 const Franchisee = () => {
+    const [franchisee, setFranchisee] = useState([]);
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
       franchiseeId: '',
@@ -38,6 +39,19 @@ const Franchisee = () => {
       }
     };
 
+    const fetchFranchisee = async () => {
+      try {
+          const response = await axios.get('http://localhost:9000/app/store');
+          const franchiseeMap = response.data.data;
+
+          // Convert the Map object to an array
+          const franchiseeArray = Object.values(franchiseeMap);
+          setFranchisee(franchiseeArray);
+      } catch (error) {
+          console.error('에러났슴둥', error);
+      }
+  };
+
     // 모달 키기
     const handleOpen = () => {
       setOpen(true);
@@ -65,6 +79,7 @@ const Franchisee = () => {
         } catch (error) {
             console.log('등록 중 에러 발생', error);
         }
+        fetchFranchisee();
     }; 
 
     // input요소 및 만료 계약일 생성
