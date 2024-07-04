@@ -51,9 +51,7 @@ const CalendarList = ({ calendarId }) => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const locations = useLocation();
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
-  const calendarIds = locations?.state?.calendarId || null;
-
-  console.log("List", calendarId);
+  var calendarIds = locations?.state?.calendarId || null;
 
   useEffect(() => {
     if (calendarId) {
@@ -74,7 +72,6 @@ const CalendarList = ({ calendarId }) => {
       ) {
         // 이벤트 데이터 변환
         const formattedEvents = response.data.schedule.map((schedule) => {
-          console.log("Schedule data:", schedule); // 로그 추가
           return {
             scheduleId: schedule.scheduleId,
             title: schedule.subject,
@@ -101,6 +98,11 @@ const CalendarList = ({ calendarId }) => {
 
   // 날짜 클릭 시 등록 모달 창
   const dateClick = (arg) => {
+    if (!calendarIds) {
+      alert("캘린더를 선택하거나 추가해주세요.");
+      return;
+    }
+
     setSelectDate(arg.dateStr);
     setStartDate(arg.dateStr);
     setEndDate(arg.dateStr);
@@ -136,7 +138,7 @@ const CalendarList = ({ calendarId }) => {
     // 새로운 일정 생성
 
     const newSchedule = {
-      calendarId,
+      calendarId: calendarId || calendarIds,
       subject: title,
       content: "", // 내용은 빈 문자열로 설정
       startDate: startDate,
@@ -145,32 +147,33 @@ const CalendarList = ({ calendarId }) => {
       endTime: `${endTime}:00`,
       location: location,
     };
+    console.log(calendarIds);
     try {
       await axios.post("http://localhost:9000/app/schedule", newSchedule);
       console.log("일정 추가 성공");
 
       const response = await axios.get(
-        `http://localhost:9000/app/schedule/${calendarId}`
+        `http://localhost:9000/app/schedule/${calendarIds}`
       );
-      console.log("목록 불러오기", response.data);
 
       if (
         response.data.status === "success" &&
         Array.isArray(response.data.schedule)
       ) {
         const formattedEvents = response.data.schedule.map((schedule) => ({
-          id: schedule.id,
+          scheduleId: schedule.scheduleId,
           title: schedule.subject,
           start: new Date(schedule.startDate).toISOString(),
           end: new Date(schedule.endDate).toISOString(),
           allDay: false,
           extendedProps: {
-            startTime: schedule.startTime.slice(0, 5),
-            endTime: schedule.endTime.slice(0, 5),
+            startTime: schedule.startTime.slice(0, 5), // 초 단위 제거
+            endTime: schedule.endTime.slice(0, 5), // 초 단위 제거
             scheduleId: schedule.id,
           },
         }));
         setEvents(formattedEvents);
+        console.log("gggg", formattedEvents);
       } else {
         console.error("Expected an array but got:", response.data);
         setEvents([]);
