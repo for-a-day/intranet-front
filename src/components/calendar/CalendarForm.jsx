@@ -22,8 +22,9 @@ const CalendarForm = ({
 }) => {
   const navigate = useNavigate();
   const calendarLocation = useLocation();
-
   const [loading, setLoading] = useState(!isCreate);
+  const [departmentCode, setDepartmentCode] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -36,13 +37,18 @@ const CalendarForm = ({
   const [events, setEvents] = useState([]);
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
 
-  console.log("Form", selectedCalendarId);
-
   useEffect(() => {
     const listCalendar = async () => {
+      const employeeData = localStorage.getItem("employee");
+      const employee = JSON.parse(employeeData);
+      const departmentCode = employee.department?.departmentCode;
+      const departmentName = employee.department?.departmentName;
+      setDepartmentCode(departmentCode);
+      setDepartmentName(departmentName);
+
       try {
         const response = await axios.get(
-          "http://localhost:9000/app/calendar/department/1"
+          `http://localhost:9000/app/calendar/department/${departmentCode}`
         );
         console.log("캘린더 목록", response.data);
         setCalendars(response.data.data || []);
@@ -51,7 +57,7 @@ const CalendarForm = ({
       }
     };
 
-    listCalendar();
+    listCalendar(departmentCode);
   }, []);
 
   useEffect(() => {
@@ -128,6 +134,8 @@ const CalendarForm = ({
   };
 
   const scheduleSubmit = async (e) => {
+    if (!subject || !startDate || !endDate || !startTime || !endTime) return;
+
     e.preventDefault();
     const schedule = {
       calendarId,
@@ -143,11 +151,13 @@ const CalendarForm = ({
     try {
       if (isCreate) {
         await axios.post("http://localhost:9000/app/schedule", schedule);
+        alert("등록이 완료되었습니다.");
       } else {
         await axios.put(
           `http://localhost:9000/app/schedule/${scheduleId}`,
           schedule
         );
+        alert("수정이 완료되었습니다.");
       }
       onComplete(calendarId);
       navigate("/app/calendar", { state: { calendarId: calendarId } });
@@ -161,12 +171,14 @@ const CalendarForm = ({
   };
 
   const scheduleDelete = async () => {
-    try {
-      await axios.delete(`http://localhost:9000/app/schedule/${scheduleId}`);
-      onComplete(calendarId);
-      navigate("/app/calendar", { state: { calendarId: calendarId } });
-    } catch (error) {
-      console.error("삭제 실패", error);
+    if (window.confirm("일정을 삭제하시겠습니까?")) {
+      try {
+        await axios.delete(`http://localhost:9000/app/schedule/${scheduleId}`);
+        onComplete(calendarId);
+        navigate("/app/calendar", { state: { calendarId: calendarId } });
+      } catch (error) {
+        console.error("삭제 실패", error);
+      }
     }
   };
 

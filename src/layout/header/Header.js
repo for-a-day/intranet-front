@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect,useState } from "react";
 
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
@@ -22,6 +22,10 @@ import {
 
 const Header = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [employeeName, setEmployeeName] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
+  const [levelName, setLevelName] = useState("");
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -52,6 +56,15 @@ const Header = (props) => {
   const handleClose5 = () => {
     setAnchorEl5(null);
   };
+
+  useEffect(() => {
+  const employee = JSON.parse(localStorage.getItem("employee"));
+  if(employee) {
+    setEmployeeName(employee.name);
+    setDepartmentName(employee.department.departmentName);
+    setLevelName(employee.level.levelName);
+  }
+}, []);
 
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
@@ -142,7 +155,11 @@ const Header = (props) => {
           </MenuItem>
         </Menu>
         <Box flexGrow={1} />
-
+        <span> 
+        {departmentName && <span>{departmentName} </span>} 
+         {levelName && <span> {levelName} </span>}
+         {employeeName &&  <span> {employeeName} </span>} 
+        </span>
         {/* ------------------------------------------- */}
         {/* Notifications Dropdown */}
         {/* ------------------------------------------- */}

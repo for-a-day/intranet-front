@@ -29,12 +29,15 @@ function App() {
           <Routes>
             <Route path='/' element={<FullLayout />} >
               <Route path='/' element={<Main />} />
-              <Route path='/app/calendar' element={<Calendar />} />
+              <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
               <Route path='/app/schedule/create' element={<CalendarDetail isCreate={true}/>} />
               <Route path='/' element={<Main />} />
               <Route path="/login" element={<Login />} />
-              <Route
+              <Route path='/app/employees' element={<EmployeeList />} />
+              <Route path='/app/employees/register' element={<EmployeeRegister />} />
+
+              {/* <Route
                 path="/app/employees"
                 element={
                   <PrivateRoute>
@@ -49,7 +52,7 @@ function App() {
                     <EmployeeRegister />
                   </PrivateRoute>
                 }
-              />
+              /> */}
               <Route path='/approval/draft/form' element={<ApprovalWrite />} />
               <Route path='/franchisee' element={<Franchisee />} />
               <Route path='/warn' element={<Warning />} />
