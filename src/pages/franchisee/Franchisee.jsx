@@ -1,7 +1,8 @@
 import { Grid, Button, Box, AppBar, Toolbar, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FranchiseeList from "../../components/franchisee/FranchiseeList";
 import axios from "axios";
+import styles from "./FranchiseeStyle";
 
 const Franchisee = () => {
     const [franchisee, setFranchisee] = useState([]);
@@ -17,28 +18,7 @@ const Franchisee = () => {
       expirationDate: '',
       warningCount: '',
     });
-
-    // 스타일
-    const styles = {
-      register: {
-        backgroundColor: '#007BFF',
-        color: 'white',
-        padding: '8px 16px',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        marginLeft: '10px',
-      },
-      modal: {
-        width: "60vw", 
-        maxWidth: "800px", 
-      },
-      paragraph: {
-        width: "65%",
-        marginBottom: "10px",
-      }
-    };
-
+    
     const fetchFranchisee = async () => {
       try {
           const response = await axios.get('http://localhost:9000/app/store');
@@ -50,7 +30,11 @@ const Franchisee = () => {
       } catch (error) {
           console.error('에러났슴둥', error);
       }
-  };
+    };
+
+    useEffect(() => {
+      fetchFranchisee();
+    }, []);
 
     // 모달 키기
     const handleOpen = () => {
@@ -75,11 +59,10 @@ const Franchisee = () => {
             const response = await axios.post(url, formData);
             alert('새로운 가맹점 등록을 축하드립니다!');
             console.log('api 담기 성공', response.data);
-            handleClose(); // 등록 성공 시 모달 닫기
+            fetchFranchisee();
         } catch (error) {
             console.log('등록 중 에러 발생', error);
         }
-        fetchFranchisee();
     }; 
 
     // input요소 및 만료 계약일 생성

@@ -233,6 +233,7 @@ const FranchiseeList = () => {
                     console.log('오류 메시지:', error.message);
                 }
             }
+            fetchFranchisee();
         };
         
 
