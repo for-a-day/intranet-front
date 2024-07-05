@@ -378,7 +378,7 @@ const CalendarForm = ({
           {!isCreate && (
             <Button
               variant="contained"
-              color="secondary"
+              color="error"
               onClick={scheduleDelete}
               sx={{ ml: 2 }}
             >
