@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
-const Drawing = () => {
+const NoteApp = () => {
   const [note, setNote] = useState("");
 
   useEffect(() => {
-    const savedNote = localStorage.getItem("note");
+    const savedNote = Cookies.get("note");
     if (savedNote) {
-      setNote(savedNote);
+      const { value, expiry } = JSON.parse(savedNote);
+      if (new Date().getTime() > expiry) {
+        Cookies.remove("note");
+      } else {
+        setNote(value);
+      }
     }
   }, []);
 
@@ -15,7 +21,12 @@ const Drawing = () => {
   };
 
   const handleSave = () => {
-    localStorage.setItem("note", note);
+    const now = new Date();
+    const item = {
+      value: note,
+      expiry: now.getTime() + 24 * 60 * 60 * 1000, // 24 hours from now
+    };
+    Cookies.set("note", JSON.stringify(item), { expires: 1 }); // Expires in 1 day
     alert("Note saved!");
   };
 
@@ -27,17 +38,12 @@ const Drawing = () => {
         onChange={handleChange}
         rows="10"
         cols="50"
-        style={{
-          width: "100%",
-          padding: "10px",
-          fontSize: "20px",
-          fontWeight: "bold",
-        }}
+        style={{ width: "100%", padding: "10px", fontSize: "16px" }}
       />
       <div style={{ marginTop: "10px" }}>
         <button
           onClick={handleSave}
-          style={{ padding: "10px 20px", fontSize: "20px" }}
+          style={{ padding: "10px 20px", fontSize: "16px" }}
         >
           Save
         </button>
@@ -46,4 +52,4 @@ const Drawing = () => {
   );
 };
 
-export default Drawing;
+export default NoteApp;
