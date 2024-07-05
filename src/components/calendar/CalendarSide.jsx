@@ -50,14 +50,33 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const employeeData = localStorage.getItem("employee");
-    const employee = JSON.parse(employeeData);
-    const departmentCode = employee.department?.departmentCode;
-    const departmentName = employee.department?.departmentName;
-    setDepartmentCode(departmentCode);
-    setDepartmentName(departmentName);
+    const userDataAndListCalendar = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await axios.get(
+            "http://localhost:9000/app/employees/token",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const employee = response.data.employee;
+          const deptCode = employee.department?.departmentCode;
+          const deptName = employee.department?.departmentName;
+          setDepartmentCode(deptCode);
+          setDepartmentName(deptName);
 
-    listCalendar(departmentCode);
+          // 부서 코드로 캘린더 조회
+          await listCalendar(deptCode);
+        } catch (error) {
+          console.error("유저 정보 못 불러옴", error);
+        }
+      }
+    };
+
+    userDataAndListCalendar();
   }, []);
 
   const listCalendar = async (departmentCode) => {

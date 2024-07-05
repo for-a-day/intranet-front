@@ -19,6 +19,7 @@ import {
   Divider,
   ListItemIcon,
 } from "@mui/material";
+import axios from "axios";
 
 const Header = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -58,13 +59,27 @@ const Header = (props) => {
   };
 
   useEffect(() => {
-  const employee = JSON.parse(localStorage.getItem("employee"));
-  if(employee) {
-    setEmployeeName(employee.name);
-    setDepartmentName(employee.department.departmentName);
-    setLevelName(employee.level.levelName);
-  }
-}, []);
+    const userData = async () => {
+      const token = localStorage.getItem("token");
+      if(token) {
+        try {
+          const response = await axios.get("http://localhost:9000/app/employees/token", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          });
+          const employee = response.data.employee;
+          setEmployeeName(employee.name);
+          setDepartmentName(employee.department.departmentName);
+          setLevelName(employee.level.levelName);
+        } catch (error) {
+          console.error("유저 정보 못불러옴", error);
+        }
+      }
+    };
+
+    userData();
+  }, []);
 
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
@@ -156,9 +171,9 @@ const Header = (props) => {
         </Menu>
         <Box flexGrow={1} />
         <span> 
-        {departmentName && <span>{departmentName} </span>} 
-         {levelName && <span> {levelName} </span>}
-         {employeeName &&  <span> {employeeName} </span>} 
+        <span>{departmentName} </span>
+         <span> {levelName} </span>
+         <span> {employeeName} </span>
         </span>
         {/* ------------------------------------------- */}
         {/* Notifications Dropdown */}
