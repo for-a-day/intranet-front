@@ -1,8 +1,8 @@
 import React from 'react';
-import { MenuItem, TextField } from '@mui/material';
+import { MenuItem, TextField, styled } from '@mui/material';
 
     // 스타일
-    const styles = {
+      export const styles = {
         register: {
           backgroundColor: '#007BFF',
           color: 'white',
@@ -22,4 +22,18 @@ import { MenuItem, TextField } from '@mui/material';
         },
       };
 
-export default styles;
+      export const RedDot = styled('div')({
+        width: 10,
+        height: 10,
+        borderRadius: '50%',
+        backgroundColor: 'red',
+        display: 'inline-block',
+      });
+      
+      export const GreenDot = styled('div')({
+        width: 10,
+        height: 10,
+        borderRadius: '50%',
+        backgroundColor: 'green',
+        display: 'inline-block'
+      });

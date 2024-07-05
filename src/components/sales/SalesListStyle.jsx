@@ -140,6 +140,14 @@ import { MenuItem, TextField } from '@mui/material';
         fontWeight: 'bold',  // 제목의 글꼴 두께
         marginBottom: '1rem',  // 제목 아래 여백
         color: '#333',  // 제목의 글자 색상
+    },
+    highest: {
+        color: 'green',
+        fontWeight: 'bold',
+      },
+    lowest: {
+        color: 'red',
+        fontWeight: 'bold',
     }
 };
 

@@ -26,24 +26,30 @@ const OrderList = () => {
       <table style={styles.table}>
       <thead>
       <tr>
-          <th style={styles.th}></th>
-          <th style={styles.th}>가맹점 ID</th>
-          <th style={styles.th}>메뉴 ID</th>
-          <th style={styles.th}>주문량</th>
-          <th style={styles.th}>주문 날짜</th>
-          <th style={styles.th}>총 가격</th>
+            <th style={styles.th}>신청 제품</th>
+            <th style={styles.th}>가맹점ID</th>
+            <th style={styles.th}>가맹점명</th>
+            <th style={styles.th}>사업자명</th>
+            <th style={styles.th}>주소</th>
+            <th style={styles.th}>연락처</th>
+            <th style={styles.th}>개수</th>
+            <th style={styles.th}>단가</th>
+            <th style={styles.th}>총액</th>
       </tr>
       </thead>
       <tbody>
         {order.map(order => (
-            <tr key={order.orderId}> 
-              <td style={styles.td}>{order.order_id}</td>
-              <td style={styles.td}>{order.franchisee_id}</td>
-              <td style={styles.td}>{order.menu_id}</td>
-              <td style={styles.td}>{order.order_quantity}</td>
-              <td style={styles.td}>{order.order_date}</td>
-              <td style={styles.td}>{order.order_price} 원</td>
-            </tr>
+          <tr key={order.order_id}>
+            <td style={styles.td}>{order.menu_id.menu_name}</td>
+            <td style={styles.td}>{order.franchisee_id.franchiseeId}</td>
+            <td style={styles.td}>{order.franchisee_id.franchiseeName}</td>
+            <td style={styles.td}>{order.franchisee_id.owner}</td>
+            <td style={styles.td}>{order.franchisee_id.address}</td>
+            <td style={styles.td}>{order.franchisee_id.phoneNumber}</td>
+            <td style={styles.td}>{order.order_quantity}</td>
+            <td style={styles.td}>{order.menu_id.menu_origin_price}</td>
+            <td style={styles.td}>{order.order_price} 원</td>
+        </tr>
         ))}    
       </tbody>
       </table>
