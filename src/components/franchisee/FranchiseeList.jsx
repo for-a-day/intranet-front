@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { TextField } from "@mui/material";
+import styles from "./FranchiseeListStyle";
 
 const FranchiseeList = () => {
         const [franchisee, setFranchisee] = useState([]);
@@ -29,20 +30,21 @@ const FranchiseeList = () => {
             closing_id: null
         });
 
+        const fetchFranchisee = async () => {
+            try {
+                const response = await axios.get('http://localhost:9000/app/store');
+                const franchiseeMap = response.data.data;
+
+                // Convert the Map object to an array
+                const franchiseeArray = Object.values(franchiseeMap);
+                setFranchisee(franchiseeArray);
+            } catch (error) {
+                console.error('에러났슴둥', error);
+            }
+        };
+
         // 목록 가져오기
         useEffect(() => {
-            const fetchFranchisee = async () => {
-                try {
-                    const response = await axios.get('http://localhost:9000/app/store');
-                    const franchiseeMap = response.data.data;
-
-                    // Convert the Map object to an array
-                    const franchiseeArray = Object.values(franchiseeMap);
-                    setFranchisee(franchiseeArray);
-                } catch (error) {
-                    console.error('에러났슴둥', error);
-                }
-            };
             fetchFranchisee();
         }, []);
 
@@ -126,7 +128,9 @@ const FranchiseeList = () => {
                 const url = `http://localhost:9000/app/store/${selectedFranchisee.franchiseeId}`;
                 const response = await axios.put(url, formData);
                 closeModal();
+                fetchFranchisee();
                 console.log('api 담기 성공', response.data);
+                //alert("수정이 완료되었습니다!");
             } catch (error) {
                 console.log('수정 중 에러 발생', error);
             }
@@ -171,7 +175,7 @@ const FranchiseeList = () => {
                     expirationDate: formatDateString(formData.expirationDate),
                     warningCount: formData.warningCount,
                     closingDate: new Date().toISOString().split('T')[0],
-                    employeeId: parseInt(selectedFranchisee.employeeId.employeeId, 10),
+                    employeeId: parseInt(formData.employeeId, 10),
                     closingReason: formData.closingReason
                 };
                 
@@ -180,10 +184,12 @@ const FranchiseeList = () => {
                 // 폐점 API 호출
                 const closeResponse = await axios.post(`http://localhost:9000/app/close`, closeData);
                 console.log('폐점 API 응답:', closeResponse.data);
-        
+            
                 // 경고 API 호출 전에 franchisee_id가 경고 테이블에 존재하는지 확인
                 const checkWarningExists = await axios.get( `http://localhost:9000/app/warn/exist/${franchisee_id}`);
-                const warningExists = checkWarningExists.data.exists;
+                console.log(checkWarningExists);
+                const warningExists = checkWarningExists.data;
+                console.log('존재하는가? ', warningExists);
                 
                 if(warningExists){
 
@@ -191,25 +197,14 @@ const FranchiseeList = () => {
                     const warnData = {
                         warningReason: formData.warningReason || '-',
                         franchisee_id: null,
-                        closing_id: {
-                            closingId: formData.franchiseeId,  
-                            closingName: 'Closing Name',
-                            owner: formData.owner,
-                            address: formData.address,
-                            phoneNumber: formData.phoneNumber,
-                            contractDate: formatDateString(formData.contractDate),
-                            expirationDate: formatDateString(formData.expirationDate),
-                            warningCount: formData.warningCount,
-                            closingDate: new Date().toISOString().split('T')[0],
-                            employeeId: parseInt(selectedFranchisee.employeeId.employeeId, 10),
-                            closingReason: formData.closingReason 
-                        }
+                        closing_id: formData.franchiseeId
                     };
+
+                    console.log('경고 API :', warnData); 
 
                     // 경고 API 호출
                     const warnResponse = await axios.put(`http://localhost:9000/app/warn/${franchisee_id}`, warnData);
-                    console.log('경고 API 응답:', warnResponse.data);   
-
+                    console.log('경고 DB 확인', warnResponse.data);
                 }else{
                     console.log(`franchisee_id ${franchisee_id}에 해당하는 경고가 없습니다. 경고 API 호출을 스킵합니다.`);
                 }
@@ -238,19 +233,16 @@ const FranchiseeList = () => {
                     console.log('오류 메시지:', error.message);
                 }
             }
+            fetchFranchisee();
         };
         
 
         // 경고 초기 횟수 값 설정
         useEffect(() => {
-            console.log('formData.warningCount', formData.warningCount);
-
             if (formData.warningCount !== initialWarningCount.warningCount && !isWarningReasonClicked) {
                 console.log('변경 : ', formData.warningCount, '기존 : ', initialWarningCount);
             }
-
             setInitialWarningCount(formData.warningCount);
-
         }, [formData.warningCount]);
 
         // 경고 등록
@@ -260,198 +252,23 @@ const FranchiseeList = () => {
                 const url = `http://localhost:9000/app/warn`;
                 const data = {
                     warningReason: warnData.warningReason,
-                    franchisee_id: { franchiseeId: formData.franchiseeId },
+                    franchisee_id: formData.franchiseeId,
                     closing_id: null
                 };
+
                 console.log('담긴 데이터 ->', data);
                 console.log('담긴 franchiseeId 데이터 ->', data.franchisee_id);
+
                 const response = await axios.post(url, data);
+
                 alert('가맹점 경고사항이 반영되었습니다');
+
                 console.log('api 담기 성공', response.data);
+
                 closeModal(); // 등록 성공 시 모달 닫기
                 await editSubmit();
             } catch (error) {
                 console.log('등록 중 에러 발생', error);
-            }
-        };
-
-        // 스타일
-        const styles = {
-            container: {
-                margin: '20px auto',
-                maxWidth: '1000px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-            },
-            title: {
-                textAlign: 'center',
-                marginBottom: '20px',
-                fontSize: '24px',
-            },
-            table: {
-                width: '100%',
-                borderCollapse: 'collapse',
-            },
-            thead: {
-                backgroundColor: '#f2f2f2',
-            },
-            th: {
-                padding: '12px 15px',
-                textAlign: 'left',
-                border: '1px solid #ddd',
-                backgroundColor: '#f4f4f4',
-                fontWeight: 'bold',
-                whiteSpace: 'nowrap',
-            },
-            td: {
-                padding: '12px 15px',
-                textAlign: 'left',
-                border: '1px solid #ddd',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                cursor: 'pointer',
-            },
-            tr: {
-                nthChildEven: {
-                    backgroundColor: '#f9f9f9',
-                },
-                hover: {
-                    backgroundColor: '#f1f1f1',
-                },
-            },
-            editButton: {
-                backgroundColor: '#0080FF',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-            },
-            input: {
-                width: "100%", 
-                marginBottom: "10px",
-                height: "10%"
-            },     
-            saveButton: {
-                backgroundColor: '#0080FF',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-            },
-            delButton: {
-                backgroundColor: '#FF0040',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-                marginLeft: '10px'
-            },
-            confirmButton: {
-                backgroundColor: '#FF0040',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-                marginLeft: '10px'
-            },
-            modal: {
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                backgroundColor: 'white',
-                padding: '20px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                zIndex: 1000,
-                width: '40%',
-                maxWidth: '600px', // 최대 너비 설정
-                height: '45%',
-                maxHeight: '80vh', // 최대 높이 설정
-                overflow: 'auto',
-            },
-            delModal :{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                backgroundColor: 'white',
-                padding: '20px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                zIndex: 1000,
-                width: '55%',
-                maxWidth: '600px', // 최대 너비 설정
-                height: '55%',
-                maxHeight: '80vh', // 최대 높이 설정
-                overflow: 'auto',
-            },
-            paragraph: {
-                margin: '20px', 
-                marginLeft: '10px'
-            },
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 999,
-            },
-            closeButton: {
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                cursor: 'pointer',
-            },
-            cancelButton: {
-                backgroundColor: '#0080FF',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-                marginLeft : '15px'
-            },
-            warnBtn: {
-                backgroundColor: '#FF0040',       
-                color: 'white',
-                padding: '20px 14px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginLeft: '5px'
-            },
-            warnInput: {
-                width: "84%", 
-                marginBottom: "10px",
-                height: "10%"
-            },
-            warnRegister: {
-                backgroundColor: '#0080FF',       
-                color: 'white',
-                padding: '20px 27px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginLeft: '5px'
-            },
-            closingOverlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: '-600px',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 999,
             }
         };
 

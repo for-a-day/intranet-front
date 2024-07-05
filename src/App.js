@@ -15,8 +15,9 @@ import Franchisee from './pages/franchisee/Franchisee';
 import Warning from './pages/warning/Warning';
 import Closing from './pages/closing/Closing';
 import Menu from './pages/menu/Menu';
-import SalesList from './components/sales/SalesList';
 import ApprovalDetail from './pages/approval/ApprovalDetail';
+import Sales from './pages/sales/Sales';
+import Order from './pages/order/Order';
 
 
 function App() {
@@ -58,8 +59,9 @@ function App() {
               <Route path='/warn' element={<Warning />} />
               <Route path='/close' element={<Closing />} />
               <Route path='/menu' element={<Menu />} />
-              <Route path='/sales' element={<SalesList />} />
+              <Route path='/sales' element={<Sales />} />
               <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
+              <Route path='/order' element={<Order />} />
             </Route>
           </Routes>
         </ThemeProvider>

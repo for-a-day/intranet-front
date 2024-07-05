@@ -1,9 +1,10 @@
 import { Grid, Button, Box, AppBar, Toolbar, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MenuList from "../../components/menu/MenuList";
 import axios from "axios";
 
 const Menu = () => {
+    const [menu, setMenu] = useState([]);
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
         menu_id: '',
@@ -13,6 +14,23 @@ const Menu = () => {
         menu_origin_price: 0,
         menu_end: 1
       });
+
+    // 목록
+    const fetchMenu = async () => {
+        try {
+            const response = await axios.get('http://localhost:9000/app/menu');
+            const menuMap = response.data.data;
+
+            const menuArray = Object.values(menuMap);
+            setMenu(menuArray);
+        } catch (error) {
+            console.error('폐점 목록 : 에러', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchMenu();
+    }, []);  
 
     // 스타일
     const styles = {
@@ -35,7 +53,7 @@ const Menu = () => {
         }
       };
 
-          // 모달 키기
+    // 모달 키기
     const handleOpen = () => {
         setOpen(true);
     };
@@ -75,7 +93,8 @@ const Menu = () => {
             const response = await axios.post(url, formData);
             alert('신메뉴가 정상적으로 등록되었습니다');
             console.log('api 담기 성공', response.data);
-            handleClose(); // 등록 성공 시 모달 닫기
+            handleClose();
+            fetchMenu();
         } catch (error) {
             console.log('등록 중 에러 발생', error);
         }

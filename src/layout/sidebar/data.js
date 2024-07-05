@@ -2,11 +2,12 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import AddToPhotosOutlinedIcon from '@mui/icons-material/AddToPhotosOutlined';
 import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
-import AlbumOutlinedIcon from '@mui/icons-material/AlbumOutlined';
 import SwitchCameraOutlinedIcon from '@mui/icons-material/SwitchCameraOutlined';
 import SwitchLeftOutlinedIcon from '@mui/icons-material/SwitchLeftOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaicOutlined';
+import LocalDiningOutlinedIcon from '@mui/icons-material/LocalDiningOutlined';
+import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';
 
 const Menuitems = [
   {
@@ -31,7 +32,7 @@ const Menuitems = [
   },
   {
     title: "가맹점 관리",
-    icon: AlbumOutlinedIcon,
+    icon: LocalBarOutlinedIcon,
 
     href: "/franchisee",
   },
@@ -53,9 +54,15 @@ const Menuitems = [
   },
   {
     title: "메뉴 관리",
-    icon: AutoAwesomeMosaicOutlinedIcon,
+    icon: LocalDiningOutlinedIcon,
 
     href: "/menu",
+  },
+  {
+    title: "주문 관리",
+    icon: AutoAwesomeMosaicOutlinedIcon,
+
+    href: "/order",
   },
 ];
 
