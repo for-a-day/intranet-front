@@ -15,7 +15,6 @@ function Login() {
       console.log(response.data);
       // JWT 토큰을 로컬 스토리지에 저장
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("employee", JSON.stringify(response.data.employee));
       // 로그인 성공 후 처리 (예: 리디렉션)
       alert("로그인 성공");
       window.location.href = "http://localhost:3000";

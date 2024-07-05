@@ -15,7 +15,7 @@ const Calendar = () => {
       <Grid item xs={3} lg={1.9} md={3} sm={3}>
         <CalendarSide onSelectCalendar={selectCalendar} />
       </Grid>
-      <Grid item xs={9} lg={9.4}>
+      <Grid item xs={9} lg={9.8}>
         <CalendarList calendarId={selectedCalendarId} />
       </Grid>
     </Grid>

@@ -252,6 +252,7 @@ const CalendarList = ({ calendarId }) => {
         initialView="dayGridMonth"
         dateClick={dateClick}
         events={events}
+        locale={"ko"}
         eventTimeFormat={{
           hour: "2-digit",
           minute: "2-digit",
@@ -259,14 +260,23 @@ const CalendarList = ({ calendarId }) => {
           meridiem: false,
         }}
         headerToolbar={{
-          left: "prev",
-          center: "title",
-          right: "today next",
+          left: "dayGridMonth dayGridWeek",
+          center: "prev title next today",
+          right: "",
         }}
-        titleFormat={{ year: "numeric", month: "2-digit" }} // 제목 포맷 설정
+        buttonText={{
+          today: "오늘",
+          dayGridMonth: "월간",
+          dayGridWeek: "주간",
+        }}
+        dayCellContent={(args) => {
+          return { html: args.date.getDate().toString() }; // 숫자만 출력
+        }}
+        titleFormat={{ year: "numeric", month: "2-digit" }}
         eventClick={eventClick}
         eventDidMount={eventDidMount}
         eventContent={eventContent}
+        className="height-calendar"
       />
 
       <Modal
@@ -368,6 +378,7 @@ const CalendarList = ({ calendarId }) => {
             <MenuItem value="4층 회의실">4층 회의실</MenuItem>
             <MenuItem value="5층 스튜디오">5층 스튜디오</MenuItem>
             <MenuItem value="3층 회의실">3층 회의실</MenuItem>
+            <MenuItem value="미지정">미지정</MenuItem>
           </Select>
         </FormControl>
         <Box display="flex" justifyContent="flex-end" mt={2}>

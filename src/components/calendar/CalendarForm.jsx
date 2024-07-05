@@ -38,27 +38,53 @@ const CalendarForm = ({
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
 
   useEffect(() => {
-    const listCalendar = async () => {
-      const employeeData = localStorage.getItem("employee");
-      const employee = JSON.parse(employeeData);
-      const departmentCode = employee.department?.departmentCode;
-      const departmentName = employee.department?.departmentName;
-      setDepartmentCode(departmentCode);
-      setDepartmentName(departmentName);
+    const userDataAndListCalendar = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await axios.get(
+            "http://localhost:9000/app/employees/token",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const employee = response.data.employee;
+          const deptCode = employee.department?.departmentCode;
+          const deptName = employee.department?.departmentName;
+          setDepartmentCode(deptCode);
+          setDepartmentName(deptName);
 
-      try {
-        const response = await axios.get(
-          `http://localhost:9000/app/calendar/department/${departmentCode}`
-        );
-        console.log("캘린더 목록", response.data);
-        setCalendars(response.data.data || []);
-      } catch (error) {
-        console.error("캘린더 목록 호출 실패", error);
+          // 부서 코드로 캘린더 조회
+          await listCalendar(deptCode);
+        } catch (error) {
+          console.error("유저 정보 못 불러옴", error);
+        }
       }
     };
 
-    listCalendar(departmentCode);
+    userDataAndListCalendar();
   }, []);
+
+  const listCalendar = async (departmentCode) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:9000/app/calendar/department/${departmentCode}`
+      );
+      if (
+        response.data.status === "success" &&
+        Array.isArray(response.data.data)
+      ) {
+        setCalendars(response.data.data);
+      } else {
+        console.error("Expected an array but got:", response.data);
+        setCalendars([]);
+      }
+    } catch (error) {
+      console.error("목록 불러오기 실패:", error);
+    }
+  };
 
   useEffect(() => {
     if (isCreate) {
@@ -340,6 +366,7 @@ const CalendarForm = ({
                 <MenuItem value="4층 회의실">4층 회의실</MenuItem>
                 <MenuItem value="5층 스튜디오">5층 스튜디오</MenuItem>
                 <MenuItem value="3층 회의실">3층 회의실</MenuItem>
+                <MenuItem value="미지정">미지정</MenuItem>
               </Select>
             </FormControl>
           </Grid>
