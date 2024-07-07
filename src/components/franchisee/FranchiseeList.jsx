@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { TextField } from "@mui/material";
+import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody, Grid, Button, IconButton } from "@mui/material";
 import styles from "./FranchiseeListStyle";
+import { Close as CloseIcon } from "@mui/icons-material";
 
 const FranchiseeList = () => {
         const [franchisee, setFranchisee] = useState([]);
@@ -273,49 +274,109 @@ const FranchiseeList = () => {
         };
 
         return (
-            <div style={styles.container}>
-                <table style={styles.table}>
-                    <thead style={styles.thead}>
-                        <tr>
-                            <th style={styles.th}>가맹점 아이디</th>
-                            <th style={styles.th}>담당자</th>
-                            <th style={styles.th}>가맹점명</th>
-                            <th style={styles.th}>대표자명</th>
-                            <th style={styles.th}>지점주소</th>
-                            <th style={styles.th}>연락처</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <Box sx={{width:'95%', mx:'auto', mt:4}}>
+                 <Table
+                    aria-label="simple table"
+                    sx={{
+                    whiteSpace: "nowrap",
+                    }}
+                >
+                    <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+                    <TableRow>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            가맹점 아이디
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            담당자
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            가맹점명
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            대표자명
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            지점주소
+                        </Typography>   
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            연락처
+                        </Typography>
+                        </TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
                         {franchisee.map(franchisee => (
-                            <tr
+                            <TableRow
                                 key={franchisee.franchiseeId}
                                 style={franchisee.franchiseeId % 2 === 0 ? styles.tr.nthChildEven : null}
                                 onMouseOver={e => e.currentTarget.style.backgroundColor = styles.tr.hover.backgroundColor}
                                 onMouseOut={e => e.currentTarget.style.backgroundColor = franchisee.franchiseeId % 2 === 0 ? styles.tr.nthChildEven.backgroundColor : ''}
-                                onClick={() => handleRowClick(franchisee)}
+                                onClick={() => handleRowClick(franchisee)} 
+                                sx={{
+                                    cursor: "pointer",
+                                    "&:hover": { backgroundColor: "#f5f5f5" },
+                                }}
                             >
-                                <td style={styles.td}>{franchisee.franchiseeId}</td>
-                                <td style={styles.td}>{franchisee.employeeId.name}</td>
-                                <td style={{
-                                    ...styles.td,
-                                    color: franchisee.warningCount >= 5 ? 'red' : 'inherit'
-                                }}>
+                                 <TableCell>
+                                 <Typography variant="h6" align="center">
+                                    {franchisee.franchiseeId}
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.employeeId.name}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell
+                                    sx={{
+                                    color: franchisee.warningCount >= 5 ? "red" : "inherit",
+                                    }}
+                                >
+                                    <Typography variant="h6" align="center">
                                     {franchisee.franchiseeName}
-                                </td>
-                                <td style={styles.td}>{franchisee.owner}</td>
-                                <td style={styles.td}>{franchisee.address}</td>
-                                <td style={styles.td}>{franchisee.phoneNumber}</td>
-                            </tr>
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.owner}
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.address}
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.phoneNumber}
+                                </Typography>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
                 {isModalOpen && (
                     <>
                         <div style={styles.overlay} onClick={closeModal}></div>
                         <div style={styles.modal}>
-                            <span style={styles.closeButton} onClick={closeModal}>
-                                X
-                            </span>
+
+                        <IconButton
+                            sx={{ position: "absolute", top: 10, right: 10 }}
+                            onClick={closeModal}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                             <h2>가맹점 상세 정보</h2>
                             <p style={styles.paragraph}>
                                 <strong>가맹점 아이디 : </strong>{' '}
@@ -362,13 +423,18 @@ const FranchiseeList = () => {
                 {isEditModalOpen && (
                     <>
                         <div style={styles.overlay} onClick={closeModal}></div>
-                        <div style={styles.modal}>
-                            <span style={styles.closeButton} onClick={closeModal}>
-                                X
-                            </span>
+                        <div style={styles.modalEdit}>
+                        <IconButton
+                            sx={{ position: "absolute", top: 10, right: 10 }}
+                            onClick={closeModal}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                             <h2>가맹점 수정</h2>
+                            <hr style={{marginBottom:'25px'}}></hr>
                             <form onSubmit={editSubmit}>
-                                <div style={styles.paragraph}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="franchiseeId"
@@ -377,8 +443,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         readOnly
                                         required
-                                    /></div>
-                                <div style={styles.paragraph}>
+                                    /></Grid>
+                                <Grid item xs={6}>
                                     <TextField 
                                         sx={styles.input}
                                         type="text"
@@ -388,8 +454,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={12}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="owner"
@@ -398,8 +464,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="address"
@@ -408,8 +474,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="phoneNumber"
@@ -418,8 +484,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField  sx={styles.input}
                                         type="date"
                                         name="contractDate"
@@ -428,8 +494,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="date"
                                         name="expirationDate"
@@ -438,8 +504,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         disabled
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField 
                                         sx={styles.warnInput}
                                         type="number"
@@ -450,21 +516,23 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
+                                </Grid>
+                                    <Grid item xs={3}>
                                 <button type="button" style={styles.warnBtn} onClick={handleWarningReasonToggle}>경고사유</button>
-                                </div>
+                                </Grid>
                                 {isWarningReasonVisible && (
-                                    <div style={styles.paragraph}>
+                                    <><Grid item xs={10}>
                                             <TextField sx={styles.warnInput}
                                                 name="warningReason"
                                                 value={formData.warningReason}
                                                 label="경고사유"
                                                 onChange={handleInputChange}
-                                                rows="1"
-                                            />
-                                            <button style={styles.warnRegister} type="submit" onClick={warnSubmit}>저장</button>
-                                    </div>
+                                                rows="1" />
+                                        </Grid><Grid item xs={2}>
+                                                <button style={styles.warnRegister} type="submit" onClick={warnSubmit}>저장</button>
+                                            </Grid></>
                                 )}
-                                <div style={styles.paragraph}>
+                                <Grid item xs={12}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="employeeId"
@@ -473,8 +541,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={9}>
                                     <input sx={styles.input}
                                         type="hidden"
                                         name="employeeId"
@@ -483,16 +551,37 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <button style={styles.saveButton} onClick={editSubmit} type="submit">저장</button>
-                                <button style={styles.delButton} onClick={handleDeleteModalOpen}>삭제</button>
+                                </Grid>
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={editSubmit}
+                                    type="submit"
+                                    sx={{ marginRight: 2 }}
+                                    >
+                                    저장
+                                    </Button>
+                                    <Button
+                                    variant="contained"
+                                    onClick={handleDeleteModalOpen}
+                                    sx={{backgroundColor:'#FF0040'}}
+                                    >
+                                    삭제
+                                    </Button>
+                                    </Box>
                                 {isDeleteModalOpen && (
                                     <>
                                         <div style={styles.closingOverlay} onClick={closeModal}></div>
                                         <div style={styles.delModal}>
-                                            <span style={styles.closeButton} onClick={closeModal}>X</span>
+                                        <IconButton
+                                            sx={{ position: "absolute", top: 10, right: 10 }}
+                                            onClick={closeModal}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
                                             <h4>가맹점 폐점 사유를 입력해주세요</h4>
-                                            <div style={styles.paragraph}>
+                                            <Grid item xs={12}>
                                                     <TextField sx={styles.input}
                                                         type="text"
                                                         name="closingReason"
@@ -501,17 +590,33 @@ const FranchiseeList = () => {
                                                         onChange={handleInputChange}
                                                         required
                                                     />
-                                                </div>
-                                            <button style={styles.confirmButton} onClick={handleDelete}>삭제</button>
-                                            <button style={styles.cancelButton} onClick={closeModal}>취소</button>                                   
+                                                </Grid>
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                                                <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    onClick={handleDelete}
+                                                    sx={{ marginRight: 1, backgroundColor:'#FF0040' }}
+                                                    >
+                                                    삭제
+                                                    </Button>
+                                                    <Button
+                                                    variant="contained"
+                                                    onClick={closeModal}
+                                                    sx={{ backgroundColor: '#6c757d', color: '#fff' }}
+                                                    >
+                                                    취소
+                                                    </Button>              
+                                                    </Box>                                               
                                         </div>
                                     </>
                                 )} 
+                                </Grid>
                             </form>
                         </div>
                     </>
                 )}
-            </div>
+            </Box>
         );
 };
 

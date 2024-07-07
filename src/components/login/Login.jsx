@@ -1,7 +1,22 @@
+import { Link } from 'react-router-dom';
 import React, { useState } from "react";
 import axios from "axios";
+import {
+  Grid,
+  Box,
+  Card,
+  Stack,
+  Typography,
+  FormGroup,
+  FormControlLabel,
+  Button,
+  Checkbox,
+  TextField,
+  Paper
+} from '@mui/material';
+import LogoIcon from "../../layout/Logo/LogoIcon";
 
-function Login() {
+const Login = () => {
   const [employeeId, setEmployeeId] = useState("");
   const [employeePassword, setEmployeePassword] = useState("");
 
@@ -23,30 +38,101 @@ function Login() {
     }
   };
 
+
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>ID: </label>
-          <input
-            type="text"
-            value={employeeId}
-            onChange={(e) => setEmployeeId(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Password: </label>
-          <input
-            type="password"
-            value={employeePassword}
-            onChange={(e) => setEmployeePassword(e.target.value)}
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+    <Paper title="Login" description="this is Login page">
+      <Box
+        sx={{
+          position: 'relative',
+          '&:before': {
+            content: '""',
+            background: 'radial-gradient(#d2f1df, #d3d7fa, #bad8f4)',
+            backgroundSize: '400% 400%',
+            animation: 'gradient 15s ease infinite',
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            opacity: '0.3',
+          },
+        }}
+      >
+        <Grid container spacing={0} justifyContent="center" sx={{ height: '100vh' }}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            lg={4}
+            xl={3}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Card elevation={9} sx={{ p: 4, zIndex: 1, width: '100%', maxWidth: '500px' }}>
+              <Box display="flex" alignItems="center" justifyContent="center" sx={{mr:3, mb:1}}>
+              <LogoIcon />
+              </Box>
+              <Typography variant="subtitle1" textAlign="center" color="textSecondary" mb={1}>
+                사원 통합 관리 시스템
+              </Typography>
+              <form onSubmit={handleSubmit}>
+              <Stack>
+                <Box>
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={600}
+                    component="label"
+                    htmlFor="username"
+                    mb="5px"
+                  >
+                    Username
+                  </Typography>
+                  <TextField id="username" variant="outlined" fullWidth 
+                  value={employeeId}
+                  onChange={(e) => setEmployeeId(e.target.value)}/>
+                </Box>
+                <Box mt="20px">
+                  <Typography
+                    variant="subtitle1"
+                    fontWeight={600}
+                    component="label"
+                    htmlFor="password"
+                    mb="5px"
+                  >
+                    Password
+                  </Typography>
+                  <TextField id="password" type="password" variant="outlined" fullWidth value={employeePassword}
+                      onChange={(e) => setEmployeePassword(e.target.value)}/>
+                </Box>
+                <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={<Checkbox defaultChecked />}
+                      label="아이디 저장"
+                    />
+                  </FormGroup>
+                </Stack>
+              </Stack>
+              <Box>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  type="submit"
+                >
+                  로그인
+                </Button>
+              </Box>
+              </form>
+              <Stack direction="row" spacing={1} justifyContent="center" mt={2}>
+                
+              </Stack>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+    </Paper>
   );
-}
+};
 
 export default Login;

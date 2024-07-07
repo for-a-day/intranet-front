@@ -35,7 +35,7 @@ const Order = () => {
       <Grid container spacing={2}>
       <Grid item xs={12}>
         <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static" sx={{ bgcolor: '#81BEF7' }}>
+          <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)' }}>
             <Toolbar>
               <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black', fontWeight: 'bold' }}>
                 주문 관리(물류부)

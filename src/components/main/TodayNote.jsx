@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 
-const NoteApp = () => {
+const TodayNote = () => {
   const [note, setNote] = useState("");
 
   useEffect(() => {
@@ -52,4 +52,4 @@ const NoteApp = () => {
   );
 };
 
-export default NoteApp;
+export default TodayNote;

@@ -60,7 +60,7 @@ const Sales = () => {
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static" sx={{ bgcolor: '#81BEF7' }}>
+          <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)' }}>
             <Toolbar>
             <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant="h3" component="div" sx={{ color: 'black', fontWeight: 'bold' }}>

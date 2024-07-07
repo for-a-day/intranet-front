@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './EmployeeRegister.css'; // 등록 폼 CSS 파일을 import
+import {
+  Paper,
+  TextField,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Select,
+  MenuItem,
+  Button,
+  Typography,
+  Grid,
+  Box,
+  InputLabel
+} from '@mui/material';
 
 const EmployeeRegister = () => {
   const [employee, setEmployee] = useState({
@@ -136,92 +151,165 @@ const EmployeeRegister = () => {
   };
 
   return (
-    <div>
-      <h2>Register Employee</h2>
-      <table className="register-table">
-        <tbody>
-          <tr>
-            <td><label>사번:</label></td>
-            <td><input type="text" name="employeeId" value={employee.employeeId} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>이름:</label></td>
-            <td><input type="text" name="name" value={employee.name} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>성별:</label></td>
-            <td>
-              <input type="radio" name="gender" value="남" checked={employee.gender === '남'} onChange={handleChange} required /> 남
-              <input type="radio" name="gender" value="여" checked={employee.gender === '여'} onChange={handleChange} required /> 여
-            </td>
-          </tr>
-          <tr>
-            <td><label>생년월일:</label></td>
-            <td><input type="date" name="birth" value={employee.birth} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>입사날짜:</label></td>
-            <td><input type="date" name="dateEmployment" value={employee.dateEmployment} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>연락처:</label></td>
-            <td><input type="text" name="contact" value={employee.contact} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>주소:</label></td>
-            <td><input type="text" name="address" value={employee.address} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>이메일:</label></td>
-            <td><input type="email" name="emailAddress" value={employee.emailAddress} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>재직상태:</label></td>
-            <td><input type="text" name="employmentStatus" value={employee.employmentStatus} onChange={handleChange} required /></td>
-          </tr>
-          <tr>
-            <td><label>직급:</label></td>
-            <td>
-              <select name="level" value={employee.level} onChange={handleChange} required>
-                <option value="">직급선택</option>
+    <Paper sx={{ padding: 4, maxWidth: 600, mx: 'auto' }}>
+      <h2>사원 등록</h2>
+      <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off">
+      <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="사번"
+              name="employeeId"
+              value={employee.employeeId}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="이름"
+              name="name"
+              value={employee.name}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl component="fieldset">
+              <RadioGroup row name="gender" value={employee.gender} onChange={handleChange} required>
+                <FormControlLabel value="남" control={<Radio />} label="남" />
+                <FormControlLabel value="여" control={<Radio />} label="여" />
+              </RadioGroup>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="date"
+              label="생년월일"
+              name="birth"
+              value={employee.birth}
+              onChange={handleChange}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              type="date"
+              label="입사날짜"
+              name="dateEmployment"
+              value={employee.dateEmployment}
+              onChange={handleChange}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <TextField
+              fullWidth
+              label="연락처"
+              name="contact"
+              value={employee.contact}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <TextField
+              fullWidth
+              label="주소"
+              name="address"
+              value={employee.address}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <TextField
+              fullWidth
+              label="이메일"
+              name="emailAddress"
+              value={employee.emailAddress}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <TextField
+              fullWidth
+              label="재직상태"
+              name="employmentStatus"
+              value={employee.employmentStatus}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth>
+            <InputLabel id="level-label">직급선택</InputLabel>
+              <Select
+                label="직급"
+                name="level"
+                value={employee.level}
+                onChange={handleChange}
+              >
                 {levels.map(level => (
-                  <option key={level.levelCode} value={level.levelCode}>
+                  <MenuItem key={level.levelCode} value={level.levelCode}>
                     {level.levelName}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td><label>부서:</label></td>
-            <td>
-              <select name="department" value={employee.department} onChange={handleChange} required>
-                <option value="">부서선택</option>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth>
+            <InputLabel id="department-label">부서선택</InputLabel>
+              <Select
+                label="부서"
+                name="department"
+                value={employee.department}
+                onChange={handleChange}
+              >
                 {departments.map(department => (
-                  <option key={department.departmentCode} value={department.departmentCode}>
+                  <MenuItem key={department.departmentCode} value={department.departmentCode}>
                     {department.departmentName}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td><label>권한:</label></td>
-            <td>
-              <select name="authority" value={employee.authority} onChange={handleChange} required>
-                <option value="">권한선택</option>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth>
+            <InputLabel id="authority-label">권한선택</InputLabel>
+              <Select
+                label="권한"
+                name="authority"
+                value={employee.authority}
+                onChange={handleChange}
+              >
+                <MenuItem value="">권한선택</MenuItem>
                 {authorities.map(authority => (
-                  <option key={authority.authorityCode} value={authority.authorityCode}>
+                  <MenuItem key={authority.authorityCode} value={authority.authorityCode}>
                     {authority.authorityName}
-                  </option>
+                  </MenuItem>
                 ))}
-              </select>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button className="register-button" onClick={handleSubmit}>Register</button>
-    </div>
+              </Select>
+            </FormControl>
+          </Grid>
+      </Grid>
+      <Box sx={{textAlign:'right'}}>
+      <Button
+  variant="contained"
+  color="primary"
+  onClick={handleSubmit}
+  sx={{ marginTop: 2 }}
+>
+  사원 등록
+</Button>
+
+
+
+
+</Box>
+
+
+      </Box>
+    </Paper>
   );
 };
 

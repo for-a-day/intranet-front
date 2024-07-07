@@ -9,7 +9,9 @@ import {
   FormControl,
   Select,
   InputLabel,
+  IconButton,
 } from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -85,6 +87,7 @@ const CalendarList = ({ calendarId }) => {
             },
           };
         });
+
         setEvents(formattedEvents);
       } else {
         console.error("Expected an array but got:", response.data);
@@ -132,8 +135,26 @@ const CalendarList = ({ calendarId }) => {
   };
 
   const scheduleSumbit = async () => {
-    // 필수 입력값 확인
-    if (!title || !startDate || !endDate || !startTime || !endTime) return;
+    if (!title) {
+      alert("일정 제목을 작성해주세요.");
+      return;
+    }
+    if (!startDate) {
+      alert("시작일을 작성해주세요.");
+      return;
+    }
+    if (!endDate) {
+      alert("종료일을 작성해주세요.");
+      return;
+    }
+    if (!startTime) {
+      alert("시작 시간을 작성해주세요.");
+      return;
+    }
+    if (!endTime) {
+      alert("종료 시간을 작성해주세요.");
+      return;
+    }
 
     // 새로운 일정 생성
 
@@ -172,8 +193,8 @@ const CalendarList = ({ calendarId }) => {
             scheduleId: schedule.id,
           },
         }));
+
         setEvents(formattedEvents);
-        console.log("gggg", formattedEvents);
       } else {
         console.error("Expected an array but got:", response.data);
         setEvents([]);
@@ -277,6 +298,7 @@ const CalendarList = ({ calendarId }) => {
         eventDidMount={eventDidMount}
         eventContent={eventContent}
         className="height-calendar"
+        eventOrder="startTime"
       />
 
       <Modal
@@ -285,9 +307,14 @@ const CalendarList = ({ calendarId }) => {
         style={modalStyle}
         shouldCloseOnOverlayClick={false}
       >
-        <Typography variant="h3" component="h2">
-          일정 간편 추가
-        </Typography>
+         <IconButton
+            sx={{ position: "absolute", top: 10, right: 10 }}
+            onClick={modalClose}
+          >
+            <CloseIcon />
+          </IconButton>
+        <h2 style={{fontSize:'1.5rem', color: '#333'}}>일정 간편 등록</h2>
+        <hr></hr>
         <TextField
           label="일정 제목"
           variant="outlined"
@@ -387,9 +414,8 @@ const CalendarList = ({ calendarId }) => {
           </Button>
           <Button
             variant="contained"
-            color="inherit"
             onClick={modalClose}
-            sx={{ ml: 2 }}
+            sx={{ ml: 2, backgroundColor:'#dc3545', color:"white"}}
           >
             취소
           </Button>

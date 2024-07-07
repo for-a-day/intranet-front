@@ -18,6 +18,7 @@ import Menu from './pages/menu/Menu';
 import ApprovalDetail from './pages/approval/ApprovalDetail';
 import Sales from './pages/sales/Sales';
 import Order from './pages/order/Order';
+import Chat from './components/chat/Chat';
 
 
 function App() {
@@ -34,7 +35,6 @@ function App() {
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
               <Route path='/app/schedule/create' element={<CalendarDetail isCreate={true}/>} />
               <Route path='/' element={<Main />} />
-              <Route path="/login" element={<Login />} />
               <Route path='/app/employees' element={<EmployeeList />} />
               <Route path='/app/employees/register' element={<EmployeeRegister />} />
 
@@ -55,6 +55,7 @@ function App() {
                 }
               /> */}
               <Route path='/approval/draft/form' element={<ApprovalWrite />} />
+              <Route path='/' element={<FullLayout />} ></Route>
               <Route path='/franchisee' element={<Franchisee />} />
               <Route path='/warn' element={<Warning />} />
               <Route path='/close' element={<Closing />} />
@@ -63,7 +64,9 @@ function App() {
               <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
               <Route path='/order' element={<Order />} />
             </Route>
+            <Route path="/login" element={<Login />} />
           </Routes>
+          <Chat />
         </ThemeProvider>
       </BrowserRouter>
     </>

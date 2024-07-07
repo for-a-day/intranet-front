@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CountdownTimer = () => {
+const Timer = () => {
   // 퇴근 시간 (오후 6시 = 18시)
   const endHour = 17;
   const endMinute = 0;
@@ -57,4 +57,4 @@ const CountdownTimer = () => {
   );
 };
 
-export default CountdownTimer;
+export default Timer;

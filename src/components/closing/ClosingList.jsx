@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody, IconButton } from "@mui/material";
 import styles from "./ClosingListStyle";
+import { Close as CloseIcon } from "@mui/icons-material";
 
 const ClosingList = () => {
         const [close, setClose] = useState([]);
@@ -34,45 +36,114 @@ const ClosingList = () => {
         };
 
         return (
-            <div style={styles.container}>
-                <table style={styles.table}>
-                    <thead style={styles.thead}>
-                        <tr>
-                            <th style={styles.th}>폐점 아이디</th>
-                            <th style={styles.th}>가맹점명</th>
-                            <th style={styles.th}>대표자명</th>
-                            <th style={styles.th}>주소</th>
-                            <th style={styles.th}>계약일</th>
-                            <th style={styles.th}>계약 만료일</th>
-                            <th style={styles.th}>폐점일</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <Box sx={{width:'95%', mx:'auto', mt:4}}>
+                 <Table
+                    aria-label="simple table"
+                    sx={{
+                    whiteSpace: "nowrap",
+                    }}
+                >
+                    <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+                        <TableRow>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                폐점 아이디                    
+                            </Typography>
+                            </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                가맹점명
+                            </Typography>
+                            </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                대표자명
+                            </Typography>
+                            </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                주소
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                계약일
+                                </Typography>
+                                </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                계약 만료일
+                                </Typography>
+                                </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                폐점일
+                            </Typography>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
                         {close.map((close) => (
-                            <tr key={close.closingId}
+                            <TableRow key={close.closingId}
                                 style={close.closingId % 2 === 0 ? styles.tr.nthChildEven : null}
                                 onMouseOver={e => e.currentTarget.style.backgroundColor = styles.tr.hover.backgroundColor}
                                 onMouseOut={e => e.currentTarget.style.backgroundColor = close.closingId % 2 === 0 ? styles.tr.nthChildEven.backgroundColor : ''}
                                 onClick={() => handleRowClick(close)}
+                                sx={{
+                                    cursor: "pointer",
+                                    "&:hover": { backgroundColor: "#f5f5f5" },
+                                }}
                             >
-                                <td style={styles.td}>{close.closingId}</td>
-                                <td style={styles.td}>{close.closingName}</td>
-                                <td style={styles.td}>{close.owner}</td>
-                                <td style={styles.td}>{close.address}</td>
-                                <td style={styles.td}>{close.contractDate}</td>
-                                <td style={styles.td}>{close.expirationDate}</td>
-                                <td style={styles.td}>{close.closingDate}</td>
-                            </tr>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {close.closingId}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {close.closingName}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {close.owner}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {close.address}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {close.contractDate}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {close.expirationDate}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {close.closingDate}
+                                    </Typography>
+                                    </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
                 {isModalOpen && (
                 <>
                     <div style={styles.overlay} onClick={closeModal}></div>
                     <div style={styles.modal}>
-                        <span style={styles.closeButton} onClick={closeModal}>
-                            X
-                        </span>
+                    <IconButton
+                            sx={{ position: "absolute", top: 10, right: 10 }}
+                            onClick={closeModal}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+
                         <h2>가맹점 상세 정보</h2>
                         <p style={styles.paragraph}>
                             <strong>가맹점 아이디 : </strong>{' '}
@@ -113,7 +184,7 @@ const ClosingList = () => {
                     </div>
                 </>
             )}
-            </div>
+            </Box>
         );
 }
 

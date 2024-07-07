@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./WarningListStyles";
+import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody } from "@mui/material";
 
 const WarningList = () => {
         const [warn, setWarn] = useState([]);
@@ -21,32 +22,69 @@ const WarningList = () => {
         }, []);
 
         return (
-            <div style={styles.container}>
-                <table style={styles.table}>
-                    <thead style={styles.thead}>
-                        <tr>
-                            <th style={styles.th}></th>
-                            <th style={styles.th}>경고사유</th>
-                            <th style={styles.th}>폐점명</th>
-                            <th style={styles.th}>가맹점명</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <Box sx={{width:'80%', mx:'auto', mt:4}}>
+                  <Table
+                    aria-label="simple table"
+                    sx={{
+                    whiteSpace: "nowrap",
+                    }}
+                >
+                    <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+                        <TableRow>
+                            <TableCell sx={{width:50}}>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                번호
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                경고사유
+                                </Typography>
+                                </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                폐점명
+                                </Typography>
+                                </TableCell>
+                            <TableCell>
+                            <Typography color="textSecondary" variant="h6" align="center">
+                                가맹점명
+                                </Typography>
+                                </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
                         {warn.map((warn) => (
-                            <tr key={warn.warningId}>
-                                <td style={styles.td}>{warn.warningId}</td>
-                                <td style={styles.td}>{warn.warningReason}</td>
-                                <td style={styles.td}>
+                            <TableRow key={warn.warningId}
+                            sx={{
+                                cursor: "pointer",
+                                "&:hover": { backgroundColor: "#f5f5f5" },
+                            }}>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {warn.warningId}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {warn.warningReason}
+                                    </Typography>
+                                    </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
                                     {warn.closing ? warn.closing.closingName : '-'}
-                                </td>
-                                <td style={styles.td}>
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
                                     {warn.franchisee ? warn.franchisee.franchiseeName : '-'}
-                                </td>
-                            </tr>
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
-            </div>
+                    </TableBody>
+                </Table>
+            </Box>
         );
 }
 
