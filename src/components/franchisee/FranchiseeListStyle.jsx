@@ -96,12 +96,29 @@ const styles = {
         backgroundColor: 'white',
         padding: '20px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        zIndex: 10000,
+        width: '40%',
+        maxWidth: '600px', // 최대 너비 설정
+        height: '520px',
+        maxHeight: '80vh', // 최대 높이 설정
+        overflow: 'auto',
+        borderRadius:'7px'
+    },
+    modalEdit : {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: 'white',
+        padding: '20px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
         zIndex: 1000,
         width: '40%',
         maxWidth: '600px', // 최대 너비 설정
-        height: '45%',
+        height: '660px',
         maxHeight: '80vh', // 최대 높이 설정
         overflow: 'auto',
+        borderRadius:'7px'
     },
     delModal :{
         position: 'fixed',
@@ -129,7 +146,7 @@ const styles = {
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 999,
+        zIndex: 9999,
     },
     closeButton: {
         position: 'absolute',
@@ -154,10 +171,9 @@ const styles = {
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
-        marginLeft: '5px'
     },
     warnInput: {
-        width: "84%", 
+        width: "100%", 
         marginBottom: "10px",
         height: "10%"
     },
@@ -168,7 +184,6 @@ const styles = {
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
-        marginLeft: '5px'
     },
     closingOverlay: {
         position: 'fixed',

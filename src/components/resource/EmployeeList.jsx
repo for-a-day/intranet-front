@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './EmployeeList.css';
+import {
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Chip,
+  Button,
+} from "@mui/material";
 import EmployeeModal from './EmployeeModal'; // 모달 컴포넌트 import
 
 const EmployeeList = () => {
@@ -76,49 +86,188 @@ const EmployeeList = () => {
   };
 
   return (
-    <div>
-      <div className="header">
-        <h2>Employee List</h2>
-        <Link to="/app/employees/register" className="register-button">
-          등록
-        </Link>
-      </div>
-      <table className="employee-table">
-        <thead>
-          <tr>
-            <th>아이디</th>
-            <th>이름</th>
-            <th>성별</th>
-            <th>생년월일</th>
-            <th>입사날짜</th>
-            <th>연락처</th>
-            <th>주소</th>
-            <th>이메일</th>
-            <th>재직상태</th>
-            <th>직급</th>
-            <th>부서</th>
-            <th>권한등급</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Box 
+      sx={{ 
+        width: '95%', 
+      }}
+    >
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+      <h2>사원 리스트</h2>
+      </Box>
+      <Box sx={{backgroundColor:'#F5F5F5', height:80, borderRadius:1, alignItems: 'center', display:'flex', paddingLeft: 3}}>
+      <Typography variant="h5" sx={{fontWeight:600}}>현재 사원 수</Typography>
+      <Typography variant="h5" sx={{fontWeight:600, marginLeft:10}}>{employees.length}명</Typography>
+      </Box>
+      <Box>
+      <Button
+          sx={{mt:3, ml:2, mb:1}}
+          component={Link}
+          to="/app/employees/register"
+          variant="contained"
+          color="primary"
+        >
+          사원 등록
+        </Button>
+      </Box>
+      <Table
+        aria-label="simple table"
+        sx={{
+          whiteSpace: "nowrap",
+        }}
+      >
+        <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+          <TableRow>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                아이디
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                이름
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                성별
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                생년월일
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                입사날짜
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                연락처
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                주소
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                이메일
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                재직상태
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                직급
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                부서
+              </Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" variant="h6" align="center">
+                권한등급
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {employees.map(employee => (
-            <tr key={employee.key} onClick={() => handleRowClick(employee)}>
-              <td>{employee.employeeId}</td>
-              <td>{employee.name}</td>
-              <td>{employee.gender}</td>
-              <td>{employee.birth}</td>
-              <td>{employee.dateEmployment}</td>
-              <td>{employee.contact}</td>
-              <td>{employee.address}</td>
-              <td>{employee.emailAddress}</td>
-              <td>{employee.employmentStatus}</td>
-              <td>{employee.level}</td>
-              <td>{employee.department}</td>
-              <td>{employee.authority}</td>
-            </tr>
+            <TableRow key={employee.key} onClick={() => handleRowClick(employee)} sx={{
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "#f5f5f5" },
+            }} >
+               <TableCell>
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: "500",
+                  }}
+                  align="center"
+                >
+                  {employee.employeeId}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: "600",
+                      }}
+                      align="center"
+                    >
+                      {employee.name}
+                    </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.gender}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.birth}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.dateEmployment}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.contact}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.address}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.emailAddress}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.employmentStatus}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.level}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  {employee.department}
+                </Typography>
+              </TableCell>
+              <TableCell sx={{textAlign:'center'}}>
+                <Chip
+                  sx={{
+                    pl: "4px",
+                    pr: "4px",
+                    backgroundColor: "primary.main",
+                    color: "#fff",
+                  }}
+                  size="small"
+                  label={employee.authority}
+                ></Chip>
+              </TableCell>
+              </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
       {isModalOpen && (
         <EmployeeModal
           employee={selectedEmployee}
@@ -133,7 +282,7 @@ const EmployeeList = () => {
           }}
         />
       )}
-    </div>
+    </Box>
   );
 };
 

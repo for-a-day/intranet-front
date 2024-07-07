@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import FranchiseeList from "../../components/franchisee/FranchiseeList";
 import axios from "axios";
 import styles from "./FranchiseeStyle";
+import { Add as AddIcon, Store as StoreIcon, Warning as WarningIcon, Close as CloseIcon } from '@mui/icons-material';
 
 const Franchisee = () => {
     const [franchisee, setFranchisee] = useState([]);
@@ -99,7 +100,7 @@ const Franchisee = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Box sx={{ flexGrow: 1 }}>
-              <AppBar position="static" sx={{ bgcolor: '#81BEF7' }}>
+              <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)', minWidth:500 }}>
                 <Toolbar>
                   <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
                     <Typography
@@ -109,16 +110,18 @@ const Franchisee = () => {
                     >
                       가맹점 관리
                     </Typography>
-                    <button style={styles.register} onClick={handleOpen}>등록</button>
+                    <button style={styles.register} onClick={handleOpen}>
+                    <AddIcon/> 등록
+                    </button>
                   </Box>
-                  <Button color="inherit" href="/franchisee" sx={{ color: 'black', fontWeight: 'bold' }}>
-                    가맹점
+                  <Button color="inherit" href="/franchisee" sx={{ color: 'black', fontWeight: 'bold', backgroundColor: "#59bfcf", margin: '0 5px', borderRadius: '8px' }}>
+                  <StoreIcon /> 가맹점
                   </Button>
-                  <Button color="inherit" href="/close" sx={{ color: 'black', fontWeight: 'bold' }}>
-                    폐점
+                  <Button color="inherit" href="/close" sx={{ color: 'black', fontWeight: 'bold', margin: '0 5px', borderRadius: '8px'  }}>
+                  <CloseIcon/> 폐점
                   </Button>
                   <Button color="inherit" href="/warn" sx={{ color: 'black', fontWeight: 'bold' }}>
-                    경고 가맹점
+                  <WarningIcon/> 경고 가맹점
                   </Button>
                 </Toolbar>
               </AppBar>
@@ -128,43 +131,47 @@ const Franchisee = () => {
             <FranchiseeList />
           </Grid>
           <Dialog open={open}>
-            <DialogTitle>가맹점 등록</DialogTitle>
             <DialogContent onClick={handleDialogClick}>
             {open && (
               <div style={styles.modal}>
                   <h2>가맹점 등록</h2>
+                  <hr style={{marginBottom:'25px'}}></hr>
                   <form onSubmit={handleSubmit}>
-                    <p>
-                      <TextField sx={styles.paragraph}
+                  <Grid container spacing={3}>
+                  <Grid item xs={6}>
+                      <TextField
                         type="text"
                         name="franchiseeId"
                         label="가맹점 ID"
                         value={formData.franchiseeId}
                         onChange={handleInputChange}
                         required
+                        fullWidth
                       />
-                    </p>
-                    <p>
-                      <TextField sx={styles.paragraph}
+                      </Grid>
+                      <Grid item xs={6}>
+                      <TextField
                         type="text"
                         name="franchiseeName"
                         label="가맹점명"
                         value={formData.franchiseeName}
                         onChange={handleInputChange}
                         required
+                        fullWidth
                       />
-                    </p>
-                    <p>
-                      <TextField sx={styles.paragraph}
+                      </Grid>
+                      <Grid item xs={12}>
+                      <TextField
                         type="text"
                         name="owner"
                         label="대표자명"
                         value={formData.owner}
                         onChange={handleInputChange}
                         required
+                        fullWidth
                       />
-                    </p>
-                    <p>
+                      </Grid>
+                      <Grid item xs={6}>
                       <TextField sx={styles.paragraph}
                         type="text"
                         name="address"
@@ -172,9 +179,10 @@ const Franchisee = () => {
                         value={formData.address}
                         onChange={handleInputChange}
                         required
+                        fullWidth
                       />
-                    </p>
-                    <p>
+                      </Grid>
+                      <Grid item xs={6}>
                       <TextField sx={styles.paragraph}
                         type="text"
                         name="phoneNumber"
@@ -182,9 +190,10 @@ const Franchisee = () => {
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
                         required
+                        fullWidth
                       />
-                    </p>
-                    <p>
+                      </Grid>
+                      <Grid item xs={6}>
                       <TextField sx={styles.paragraph}
                         type="date"
                         name="contractDate"
@@ -192,12 +201,13 @@ const Franchisee = () => {
                         value={formData.contractDate}
                         onChange={handleInputChange}
                         required
+                        fullWidth
                         InputLabelProps={{
                           shrink: true,
                         }}
                       />
-                    </p>
-                    <p>
+                      </Grid>
+                      <Grid item xs={6}>
                       <TextField sx={styles.paragraph}
                         type="date"
                         name="expirationDate"
@@ -208,19 +218,20 @@ const Franchisee = () => {
                         InputLabelProps={{
                           shrink: true,
                         }}
+                        fullWidth
                       />
-                    </p>
-                    <p>
+                      </Grid>
+                      <Grid item xs={12}>
                       <TextField sx={styles.paragraph}
-                        type="text"
+                        type="text"s
                         name="employeeId"
                         label="담당자"
                         value={formData.employeeId}
                         onChange={handleInputChange}
                         required
+                        fullWidth
                       />
-                    </p>
-                    <p>
+                      </Grid>
                       <input
                         type="hidden"
                         name="warningCount"
@@ -229,21 +240,21 @@ const Franchisee = () => {
                         required
                         readOnly
                       />
-                    </p>
+                      </Grid>
                   </form>
               </div>
             )}
             </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                취소
-              </Button>
-              <Button onClick={handleRegister} color="primary">
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, mr:3, mb:3 }}>
+            <Button onClick={handleRegister} color="primary" sx={{backgroundColor:'#1a97f5', color:"white"}}>
                 등록
               </Button>
-            </DialogActions>
+              <Button onClick={handleClose} color="primary" sx={{backgroundColor:'#dc3545' , color:"white", ml:1}}>
+                취소
+              </Button>         
+              </Box>
           </Dialog>
-        </Grid>
+          </Grid>
       </>  
     );
   };

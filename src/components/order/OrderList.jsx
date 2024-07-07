@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './OrderListStyle';
+import {
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Chip,
+  Button,
+} from "@mui/material";
 
 const OrderList = () => {
   const [order, setOrder] = useState([]);
@@ -22,38 +33,123 @@ const OrderList = () => {
     }, []);
 
   return (
-    <div style={styles.container}>
-      <table style={styles.table}>
-      <thead>
-      <tr>
-            <th style={styles.th}>신청 제품</th>
-            <th style={styles.th}>가맹점ID</th>
-            <th style={styles.th}>가맹점명</th>
-            <th style={styles.th}>사업자명</th>
-            <th style={styles.th}>주소</th>
-            <th style={styles.th}>연락처</th>
-            <th style={styles.th}>개수</th>
-            <th style={styles.th}>단가</th>
-            <th style={styles.th}>총액</th>
-      </tr>
-      </thead>
-      <tbody>
+    <Box 
+        sx={{ 
+          width: '90%', 
+          mx:'auto'
+        }}
+      >
+       <Table
+        aria-label="simple table"
+        sx={{
+          whiteSpace: "nowrap",
+        }}
+      >
+      <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+      <TableRow>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              신청 제품
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              가맹점ID
+              </Typography> 
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              가맹점명
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              사업자명
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              주소
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              연락처
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              개수
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              단가
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography color="textSecondary" variant="h6" align="center">
+              총액
+              </Typography>
+              </TableCell>
+      </TableRow>
+      </TableHead>
+      <TableBody>
         {order.map(order => (
-          <tr key={order.order_id}>
-            <td style={styles.td}>{order.menu_id.menu_name}</td>
-            <td style={styles.td}>{order.franchisee_id.franchiseeId}</td>
-            <td style={styles.td}>{order.franchisee_id.franchiseeName}</td>
-            <td style={styles.td}>{order.franchisee_id.owner}</td>
-            <td style={styles.td}>{order.franchisee_id.address}</td>
-            <td style={styles.td}>{order.franchisee_id.phoneNumber}</td>
-            <td style={styles.td}>{order.order_quantity}</td>
-            <td style={styles.td}>{order.menu_id.menu_origin_price}</td>
-            <td style={styles.td}>{order.order_price} 원</td>
-        </tr>
+          <TableRow key={order.order_id} sx={{
+            cursor: "pointer",
+            "&:hover": { backgroundColor: "#f5f5f5" },
+          }} >
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.menu_id.menu_name}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.franchisee_id.franchiseeId}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.franchisee_id.franchiseeName}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.franchisee_id.owner}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.franchisee_id.address}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.franchisee_id.phoneNumber}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.order_quantity}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.menu_id.menu_origin_price}
+              </Typography>
+              </TableCell>
+            <TableCell>
+            <Typography variant="h6" align="center">
+              {order.order_price} 원
+              </Typography>
+              </TableCell>
+        </TableRow>
         ))}    
-      </tbody>
-      </table>
-    </div>
+      </TableBody>
+      </Table>
+    </Box>
   );
 };
 

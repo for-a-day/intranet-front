@@ -12,14 +12,6 @@ import { MenuItem, TextField } from '@mui/material';
           cursor: 'pointer',
           marginLeft: '10px',
         },
-        modal: {
-          width: "60vw", 
-          maxWidth: "800px", 
-        },
-        paragraph: {
-          width: "65%",
-          marginBottom: "10px",
-        }
       };
 
 export default styles;

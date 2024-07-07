@@ -37,18 +37,16 @@ const Menu = () => {
         register: {
           backgroundColor: '#007BFF',
           color: 'white',
-          padding: '8px 16px',
+          padding: '6px 10px',
           border: 'none',
           borderRadius: '4px',
           cursor: 'pointer',
           marginLeft: '10px',
         },
         modal: {
-          width: "60vw", 
-          maxWidth: "800px", 
+          width: "500px", 
         },
         paragraph: {
-          width: "65%",
           marginBottom: "10px",
         }
       };
@@ -104,7 +102,7 @@ const Menu = () => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" sx={{ bgcolor: '#81BEF7' }}>
+            <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)' }}>
               <Toolbar>
                 <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black', fontWeight: 'bold' }}>
                   메뉴 관리 
@@ -118,11 +116,11 @@ const Menu = () => {
           <MenuList />
         </Grid>      
         <Dialog open={open}>
-            <DialogTitle>신메뉴 등록</DialogTitle>
             <DialogContent onClick={handleDialogClick}>
             {open && (
                 <div style={styles.modal}>
                     <h2>가맹점 등록</h2>
+                    <hr style={{ marginBottom: '20px' }}></hr>
                     <form onSubmit={handleSubmit}>
                     <p>
                         <TextField sx={styles.paragraph}
@@ -131,6 +129,7 @@ const Menu = () => {
                             label="메뉴 ID"
                             value={formData.menu_id}
                             onChange={handleInputChange}
+                            fullWidth
                             required
                         />
                     </p>
@@ -142,6 +141,7 @@ const Menu = () => {
                             value={formData.menu_name}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     <p>
@@ -152,6 +152,7 @@ const Menu = () => {
                             value={formData.menu_price}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     <p>
@@ -162,6 +163,7 @@ const Menu = () => {
                             value={formData.menu_recipe}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     <p>
@@ -172,6 +174,7 @@ const Menu = () => {
                             value={formData.menu_origin_price}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     </form>
@@ -179,11 +182,11 @@ const Menu = () => {
             )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                취소
-                </Button>
-                <Button onClick={handleRegister} color="primary">
+            <Button sx={styles.register} onClick={handleRegister} color="primary">
                 등록
+                </Button>
+                <Button sx={styles.register} onClick={handleClose} color="primary">
+                취소
                 </Button>
             </DialogActions>
             </Dialog>

@@ -39,8 +39,21 @@ const CalendarDetail = ({ isCreate }) => {
   };
 
   return (
-    <Grid container spacing={0}>
-      <Grid item xs={3} lg={1.9}>
+    <Grid container spacing={0} sx={{
+      display: "flex",
+      flexDirection: { xs: "column", sm: "row" },
+      flexWrap: "nowrap",
+    }}>
+      <Grid
+        item
+        xs={12}
+        sm={3}
+        lg={2}
+        sx={{
+          minWidth: 220,
+          flexShrink: 0,
+        }}
+      >
         <CalendarSide
           onSelectCalendar={selectCalendar}
           onCreateClick={handleCreateClick}

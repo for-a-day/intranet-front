@@ -160,7 +160,30 @@ const CalendarForm = ({
   };
 
   const scheduleSubmit = async (e) => {
-    if (!subject || !startDate || !endDate || !startTime || !endTime) return;
+    if (!subject) {
+      alert("일정 제목을 작성해주세요.");
+      return;
+    }
+    if (!startDate) {
+      alert("시작일을 작성해주세요.");
+      return;
+    }
+    if (!endDate) {
+      alert("종료일을 작성해주세요.");
+      return;
+    }
+    if (!startTime) {
+      alert("시작 시간을 작성해주세요.");
+      return;
+    }
+    if (!endTime) {
+      alert("종료 시간을 작성해주세요.");
+      return;
+    }
+    if (!calendarId) {
+      alert("캘린더를 선택해주세요.");
+      return;
+    }
 
     e.preventDefault();
     const schedule = {
@@ -378,9 +401,8 @@ const CalendarForm = ({
           {!isCreate && (
             <Button
               variant="contained"
-              color="error"
               onClick={scheduleDelete}
-              sx={{ ml: 2 }}
+              sx={{ ml: 2, backgroundColor:'#dc3545'}}
             >
               삭제
             </Button>
