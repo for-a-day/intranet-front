@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './EmployeeModal.css';
 import axios from 'axios';
+import { Modal, Paper, Typography, TextField, FormControl, RadioGroup, FormControlLabel, Radio, Button, Grid, Box } from '@mui/material';
 
 const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, onDelete, onSave }) => {
   const [editEmployee, setEditEmployee] = useState({
@@ -89,191 +90,374 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
   };
 
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <span className="close" onClick={onClose}>&times;</span>
+    <Modal open onClose={onClose}>
+      <Paper sx={{ padding: 4, margin: 'auto', maxWidth: 600, mt: 4 }}>
+        <h2 sx={{fontSize:'1.5rem', color:'#333'}}>
+          {isEditMode ? '사원 수정' : isDeleteMode ? '사원 삭제' : '상세 정보'}
+        </h2>
+        <hr style={{marginBottom:'25px'}}></hr>
         {isEditMode ? (
-          <div>
-            <h2>수정 모드</h2>
-            <table>
-              <tbody>
-                <tr>
-                  <td><label>사번:</label></td>
-                  <td><input type="text" name="employeeId" value={editEmployee.employeeId} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>이름:</label></td>
-                  <td><input type="text" name="name" value={editEmployee.name} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>성별:</label></td>
-                  <td>
-                    <input type="radio" name="gender" value="남" checked={editEmployee.gender === '남'} onChange={handleChange} /> 남
-                    <input type="radio" name="gender" value="여" checked={editEmployee.gender === '여'} onChange={handleChange} /> 여
-                  </td>
-                </tr>
-                <tr>
-                  <td><label>생년월일:</label></td>
-                  <td><input type="date" name="birth" value={editEmployee.birth} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>입사날짜:</label></td>
-                  <td><input type="date" name="dateEmployment" value={editEmployee.dateEmployment} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>연락처:</label></td>
-                  <td><input type="text" name="contact" value={editEmployee.contact} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>주소:</label></td>
-                  <td><input type="text" name="address" value={editEmployee.address} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>이메일:</label></td>
-                  <td><input type="email" name="emailAddress" value={editEmployee.emailAddress} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>재직상태:</label></td>
-                  <td><input type="text" name="employmentStatus" value={editEmployee.employmentStatus} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>직급:</label></td>
-                  <td><input type="text" name="level" value={editEmployee.level} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>부서:</label></td>
-                  <td><input type="text" name="department" value={editEmployee.department} onChange={handleChange} /></td>
-                </tr>
-                <tr>
-                  <td><label>권한등급:</label></td>
-                  <td><input type="text" name="authority" value={editEmployee.authority} onChange={handleChange} /></td>
-                </tr>
-              </tbody>
-            </table>
-            <button className="save-button" onClick={handleSave}>저장</button>
-          </div>
+          <Box component="form" noValidate autoComplete="off">
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="사번"
+                  name="employeeId"
+                  value={editEmployee.employeeId}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="이름"
+                  name="name"
+                  value={editEmployee.name}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl component="fieldset">
+                  <RadioGroup row name="gender" value={editEmployee.gender} onChange={handleChange}>
+                    <FormControlLabel value="남" control={<Radio />} label="남" />
+                    <FormControlLabel value="여" control={<Radio />} label="여" />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="생년월일"
+                  name="birth"
+                  value={editEmployee.birth}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="입사날짜"
+                  name="dateEmployment"
+                  value={editEmployee.dateEmployment}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="연락처"
+                  name="contact"
+                  value={editEmployee.contact}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="주소"
+                  name="address"
+                  value={editEmployee.address}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="이메일"
+                  name="emailAddress"
+                  value={editEmployee.emailAddress}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="재직상태"
+                  name="employmentStatus"
+                  value={editEmployee.employmentStatus}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  label="직급"
+                  name="level"
+                  value={editEmployee.level}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  label="부서"
+                  name="department"
+                  value={editEmployee.department}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  label="권한등급"
+                  name="authority"
+                  value={editEmployee.authority}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ marginTop: 2 }}
+              onClick={handleSave}
+            >
+              저장
+            </Button>
+          </Box>
         ) : isDeleteMode ? (
-          <div>
-            <h2>삭제 모드</h2>
-            <table>
-              <tbody>
-                <tr>
-                  <td><label>사번:</label></td>
-                  <td><input type="text" name="employeeId" value={editEmployee.employeeId} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>이름:</label></td>
-                  <td><input type="text" name="name" value={editEmployee.name} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>성별:</label></td>
-                  <td>
-                    <input type="radio" name="gender" value="남" checked={editEmployee.gender === '남'} onChange={handleChange} disabled /> 남
-                    <input type="radio" name="gender" value="여" checked={editEmployee.gender === '여'} onChange={handleChange} disabled /> 여
-                  </td>
-                </tr>
-                <tr>
-                  <td><label>생년월일:</label></td>
-                  <td><input type="date" name="birth" value={editEmployee.birth} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>입사날짜:</label></td>
-                  <td><input type="date" name="dateEmployment" value={editEmployee.dateEmployment} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>연락처:</label></td>
-                  <td><input type="text" name="contact" value={editEmployee.contact} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>주소:</label></td>
-                  <td><input type="text" name="address" value={editEmployee.address} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>이메일:</label></td>
-                  <td><input type="email" name="emailAddress" value={editEmployee.emailAddress} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>직급:</label></td>
-                  <td><input type="text" name="levelName" value={editEmployee.level} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>부서:</label></td>
-                  <td><input type="text" name="departmentName" value={editEmployee.department} onChange={handleChange} disabled /></td>
-                </tr>
-                <tr>
-                  <td><label>퇴사날짜:</label></td>
-                  <td><input type='date' name="dateRetirement" value={editEmployee.dateRetirement} onChange={handleChange} required /></td>
-                </tr>
-                <tr>
-                  <td><label>퇴직사유:</label></td>
-                  <td><input type="text" name="reasonRetirement" value={editEmployee.reasonRetirement} onChange={handleChange} required /></td>
-                </tr>
-              </tbody>
-            </table>
-            <p>정말로 이 직원을 삭제하시겠습니까?</p>
-            <button className="delete-button" onClick={handleDelete}>삭제</button>
-          </div>
+          <Box component="form" noValidate autoComplete="off">
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="사번"
+                  name="employeeId"
+                  value={editEmployee.employeeId}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="이름"
+                  name="name"
+                  value={editEmployee.name}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl component="fieldset">
+                  <RadioGroup row name="gender" value={editEmployee.gender} onChange={handleChange} disabled>
+                    <FormControlLabel value="남" control={<Radio />} label="남" disabled />
+                    <FormControlLabel value="여" control={<Radio />} label="여" disabled />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="생년월일"
+                  name="birth"
+                  value={editEmployee.birth}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="입사날짜"
+                  name="dateEmployment"
+                  value={editEmployee.dateEmployment}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="연락처"
+                  name="contact"
+                  value={editEmployee.contact}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="주소"
+                  name="address"
+                  value={editEmployee.address}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="이메일"
+                  name="emailAddress"
+                  value={editEmployee.emailAddress}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="직급"
+                  name="levelName"
+                  value={editEmployee.level}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="부서"
+                  name="departmentName"
+                  value={editEmployee.department}
+                  onChange={handleChange}
+                  disabled
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  type="date"
+                  label="퇴사날짜"
+                  name="dateRetirement"
+                  value={editEmployee.dateRetirement}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  required
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="퇴직사유"
+                  name="reasonRetirement"
+                  value={editEmployee.reasonRetirement}
+                  onChange={handleChange}
+                  required
+                />
+              </Grid>
+            </Grid>
+            <Typography variant="body1" sx={{ marginTop: 2 }}>
+              정말로 이 직원을 삭제하시겠습니까?
+            </Typography>
+            <Button
+              variant="contained"
+              sx={{ marginTop: 2, backgroundColor:'#dc3545' }}
+              onClick={handleDelete}
+            >
+              삭제
+            </Button>
+          </Box>
         ) : (
-          <div>
-            <h2>상세 정보</h2>
-            <table>
-              <tbody>
-                <tr>
-                  <td>사번:</td>
-                  <td>{employee.employeeId}</td>
-                </tr>
-                <tr>
-                  <td>이름:</td>
-                  <td>{employee.name}</td>
-                </tr>
-                <tr>
-                  <td>성별:</td>
-                  <td>{employee.gender}</td>
-                </tr>
-                <tr>
-                  <td>생년월일:</td>
-                  <td>{employee.birth}</td>
-                </tr>
-                <tr>
-                  <td>입사날짜:</td>
-                  <td>{employee.dateEmployment}</td>
-                </tr>
-                <tr>
-                  <td>연락처:</td>
-                  <td>{employee.contact}</td>
-                </tr>
-                <tr>
-                  <td>주소:</td>
-                  <td>{employee.address}</td>
-                </tr>
-                <tr>
-                  <td>이메일:</td>
-                  <td>{employee.emailAddress}</td>
-                </tr>
-                <tr>
-                  <td>재직상태:</td>
-                  <td>{employee.employmentStatus}</td>
-                </tr>
-                <tr>
-                  <td>직급:</td>
-                  <td>{employee.level}</td>
-                </tr>
-                <tr>
-                  <td>부서:</td>
-                  <td>{employee.department}</td>
-                </tr>
-                <tr>
-                  <td>권한등급:</td>
-                  <td>{employee.authority}</td>
-                </tr>
-              </tbody>
-            </table>
-            <button className="edit-button" onClick={onEdit}>수정</button>
-            <button className="delete-button" onClick={onDelete}>삭제</button>
-          </div>
+          <Paper sx={{padding: 3, backgroundColor: '#fffcfc', borderRadius: 2, boxShadow: 3}}>
+            <Grid container spacing={3}>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>사번 </Typography>
+              </Grid>
+              <Grid item xs={9}>
+              <Typography variant="body1">{employee.employeeId}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+              <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>이름</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.name}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>성별</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.gender}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>생년월일</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.birth}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>입사날짜</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.dateEmployment}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>연락처</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.contact}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>주소</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.address}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>이메일</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.emailAddress}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>재직상태</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.employmentStatus}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>직급</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.level}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>부서</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.department}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" sx={{fontWeight:'bold', color:'#5c5b5b'}}>권한등급</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{employee.authority}</Typography>
+              </Grid>
+            </Grid>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Button 
+              variant="contained"
+              color="primary"
+              sx={{ marginTop: 2 }}
+              onClick={onEdit}
+            >
+              수정
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              sx={{ marginTop: 2, marginLeft: 1, backgroundColor:'#dc3545' }}
+              onClick={onDelete}
+            >
+              삭제
+            </Button>
+            </Box>
+          </Paper>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Modal>
   );
 };
 

@@ -9,7 +9,9 @@ import {
   FormControl,
   Select,
   InputLabel,
+  IconButton,
 } from "@mui/material";
+import { Close as CloseIcon } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -50,17 +52,14 @@ const CalendarList = ({ calendarId }) => {
   const [events, setEvents] = useState([]); // 일정 목록
   const navigate = useNavigate(); // useNavigate 훅 사용
   const locations = useLocation();
-  const calendarIds = locations?.state?.calendarId || null;
-  console.log(calendarId);
+  const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
+  var calendarIds = locations?.state?.calendarId || null;
+
   useEffect(() => {
     if (calendarId) {
       scheduleList(calendarId);
     } else {
       scheduleList(calendarIds);
-    }
-
-    if (calendarIds) {
-      navigate(locations.pathname, { state: { calendarId: null } });
     }
   }, [calendarId]);
 
@@ -75,7 +74,6 @@ const CalendarList = ({ calendarId }) => {
       ) {
         // 이벤트 데이터 변환
         const formattedEvents = response.data.schedule.map((schedule) => {
-          console.log("Schedule data:", schedule); // 로그 추가
           return {
             scheduleId: schedule.scheduleId,
             title: schedule.subject,
@@ -89,7 +87,7 @@ const CalendarList = ({ calendarId }) => {
             },
           };
         });
-        console.log("Formatted events:", formattedEvents);
+
         setEvents(formattedEvents);
       } else {
         console.error("Expected an array but got:", response.data);
@@ -103,12 +101,27 @@ const CalendarList = ({ calendarId }) => {
 
   // 날짜 클릭 시 등록 모달 창
   const dateClick = (arg) => {
+    if (!calendarIds) {
+      alert("캘린더를 선택하거나 추가해주세요.");
+      return;
+    }
+
     setSelectDate(arg.dateStr);
     setStartDate(arg.dateStr);
     setEndDate(arg.dateStr);
     setStartTime("09:00");
     setEndTime("18:00");
     setModalIsOpen(true);
+  };
+
+  const handleEndTimeChange = (time) => {
+    if (time < startTime) {
+      setEndTimeErrorMessage("종료 시간을 다시 설정해주세요.");
+      setEndTime("");
+    } else {
+      setEndTimeErrorMessage("");
+      setEndTime(time);
+    }
   };
 
   const modalClose = () => {
@@ -122,13 +135,31 @@ const CalendarList = ({ calendarId }) => {
   };
 
   const scheduleSumbit = async () => {
-    // 필수 입력값 확인
-    if (!title || !startDate || !endDate || !startTime || !endTime) return;
+    if (!title) {
+      alert("일정 제목을 작성해주세요.");
+      return;
+    }
+    if (!startDate) {
+      alert("시작일을 작성해주세요.");
+      return;
+    }
+    if (!endDate) {
+      alert("종료일을 작성해주세요.");
+      return;
+    }
+    if (!startTime) {
+      alert("시작 시간을 작성해주세요.");
+      return;
+    }
+    if (!endTime) {
+      alert("종료 시간을 작성해주세요.");
+      return;
+    }
 
     // 새로운 일정 생성
 
     const newSchedule = {
-      calendarId,
+      calendarId: calendarId || calendarIds,
       subject: title,
       content: "", // 내용은 빈 문자열로 설정
       startDate: startDate,
@@ -137,33 +168,33 @@ const CalendarList = ({ calendarId }) => {
       endTime: `${endTime}:00`,
       location: location,
     };
+    console.log(calendarIds);
     try {
       await axios.post("http://localhost:9000/app/schedule", newSchedule);
       console.log("일정 추가 성공");
 
       const response = await axios.get(
-        `http://localhost:9000/app/schedule/${calendarId}`
+        `http://localhost:9000/app/schedule/${calendarIds}`
       );
-      console.log("목록 불러오기", response.data);
 
       if (
         response.data.status === "success" &&
         Array.isArray(response.data.schedule)
       ) {
         const formattedEvents = response.data.schedule.map((schedule) => ({
-          id: schedule.id,
+          scheduleId: schedule.scheduleId,
           title: schedule.subject,
           start: new Date(schedule.startDate).toISOString(),
           end: new Date(schedule.endDate).toISOString(),
           allDay: false,
           extendedProps: {
-            startTime: schedule.startTime.slice(0, 5),
-            endTime: schedule.endTime.slice(0, 5),
+            startTime: schedule.startTime.slice(0, 5), // 초 단위 제거
+            endTime: schedule.endTime.slice(0, 5), // 초 단위 제거
             scheduleId: schedule.id,
           },
         }));
+
         setEvents(formattedEvents);
-        console.log("일정 상태 업데이트", formattedEvents);
       } else {
         console.error("Expected an array but got:", response.data);
         setEvents([]);
@@ -242,6 +273,7 @@ const CalendarList = ({ calendarId }) => {
         initialView="dayGridMonth"
         dateClick={dateClick}
         events={events}
+        locale={"ko"}
         eventTimeFormat={{
           hour: "2-digit",
           minute: "2-digit",
@@ -249,14 +281,24 @@ const CalendarList = ({ calendarId }) => {
           meridiem: false,
         }}
         headerToolbar={{
-          left: "prev",
-          center: "title",
-          right: "today next",
+          left: "dayGridMonth dayGridWeek",
+          center: "prev title next today",
+          right: "",
         }}
-        titleFormat={{ year: "numeric", month: "2-digit" }} // 제목 포맷 설정
+        buttonText={{
+          today: "오늘",
+          dayGridMonth: "월간",
+          dayGridWeek: "주간",
+        }}
+        dayCellContent={(args) => {
+          return { html: args.date.getDate().toString() }; // 숫자만 출력
+        }}
+        titleFormat={{ year: "numeric", month: "2-digit" }}
         eventClick={eventClick}
         eventDidMount={eventDidMount}
         eventContent={eventContent}
+        className="height-calendar"
+        eventOrder="startTime"
       />
 
       <Modal
@@ -265,9 +307,14 @@ const CalendarList = ({ calendarId }) => {
         style={modalStyle}
         shouldCloseOnOverlayClick={false}
       >
-        <Typography variant="h3" component="h2">
-          일정 간편 추가
-        </Typography>
+         <IconButton
+            sx={{ position: "absolute", top: 10, right: 10 }}
+            onClick={modalClose}
+          >
+            <CloseIcon />
+          </IconButton>
+        <h2 style={{fontSize:'1.5rem', color: '#333'}}>일정 간편 등록</h2>
+        <hr></hr>
         <TextField
           label="일정 제목"
           variant="outlined"
@@ -317,6 +364,9 @@ const CalendarList = ({ calendarId }) => {
               InputLabelProps={{
                 shrink: true,
               }}
+              InputProps={{
+                inputProps: { min: startDate },
+              }}
             />
           </Grid>
           <Grid item xs={3}>
@@ -326,11 +376,13 @@ const CalendarList = ({ calendarId }) => {
               variant="outlined"
               fullWidth
               value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
+              onChange={(e) => handleEndTimeChange(e.target.value)}
               margin="normal"
               InputLabelProps={{
                 shrink: true,
               }}
+              error={!!endTimeErrorMessage}
+              helperText={endTimeErrorMessage}
             />
           </Grid>
         </Grid>
@@ -353,6 +405,7 @@ const CalendarList = ({ calendarId }) => {
             <MenuItem value="4층 회의실">4층 회의실</MenuItem>
             <MenuItem value="5층 스튜디오">5층 스튜디오</MenuItem>
             <MenuItem value="3층 회의실">3층 회의실</MenuItem>
+            <MenuItem value="미지정">미지정</MenuItem>
           </Select>
         </FormControl>
         <Box display="flex" justifyContent="flex-end" mt={2}>
@@ -361,9 +414,8 @@ const CalendarList = ({ calendarId }) => {
           </Button>
           <Button
             variant="contained"
-            color="inherit"
             onClick={modalClose}
-            sx={{ ml: 2 }}
+            sx={{ ml: 2, backgroundColor:'#dc3545', color:"white"}}
           >
             취소
           </Button>

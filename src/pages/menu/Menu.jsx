@@ -1,9 +1,10 @@
 import { Grid, Button, Box, AppBar, Toolbar, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MenuList from "../../components/menu/MenuList";
 import axios from "axios";
 
 const Menu = () => {
+    const [menu, setMenu] = useState([]);
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
         menu_id: '',
@@ -14,28 +15,43 @@ const Menu = () => {
         menu_end: 1
       });
 
+    // 목록
+    const fetchMenu = async () => {
+        try {
+            const response = await axios.get('http://localhost:9000/app/menu');
+            const menuMap = response.data.data;
+
+            const menuArray = Object.values(menuMap);
+            setMenu(menuArray);
+        } catch (error) {
+            console.error('폐점 목록 : 에러', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchMenu();
+    }, []);  
+
     // 스타일
     const styles = {
         register: {
           backgroundColor: '#007BFF',
           color: 'white',
-          padding: '8px 16px',
+          padding: '6px 10px',
           border: 'none',
           borderRadius: '4px',
           cursor: 'pointer',
           marginLeft: '10px',
         },
         modal: {
-          width: "60vw", 
-          maxWidth: "800px", 
+          width: "500px", 
         },
         paragraph: {
-          width: "65%",
           marginBottom: "10px",
         }
       };
 
-          // 모달 키기
+    // 모달 키기
     const handleOpen = () => {
         setOpen(true);
     };
@@ -75,7 +91,8 @@ const Menu = () => {
             const response = await axios.post(url, formData);
             alert('신메뉴가 정상적으로 등록되었습니다');
             console.log('api 담기 성공', response.data);
-            handleClose(); // 등록 성공 시 모달 닫기
+            handleClose();
+            fetchMenu();
         } catch (error) {
             console.log('등록 중 에러 발생', error);
         }
@@ -85,7 +102,7 @@ const Menu = () => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" sx={{ bgcolor: '#81BEF7' }}>
+            <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)' }}>
               <Toolbar>
                 <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black', fontWeight: 'bold' }}>
                   메뉴 관리 
@@ -99,11 +116,11 @@ const Menu = () => {
           <MenuList />
         </Grid>      
         <Dialog open={open}>
-            <DialogTitle>신메뉴 등록</DialogTitle>
             <DialogContent onClick={handleDialogClick}>
             {open && (
                 <div style={styles.modal}>
                     <h2>가맹점 등록</h2>
+                    <hr style={{ marginBottom: '20px' }}></hr>
                     <form onSubmit={handleSubmit}>
                     <p>
                         <TextField sx={styles.paragraph}
@@ -112,6 +129,7 @@ const Menu = () => {
                             label="메뉴 ID"
                             value={formData.menu_id}
                             onChange={handleInputChange}
+                            fullWidth
                             required
                         />
                     </p>
@@ -123,6 +141,7 @@ const Menu = () => {
                             value={formData.menu_name}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     <p>
@@ -133,6 +152,7 @@ const Menu = () => {
                             value={formData.menu_price}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     <p>
@@ -143,6 +163,7 @@ const Menu = () => {
                             value={formData.menu_recipe}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     <p>
@@ -153,6 +174,7 @@ const Menu = () => {
                             value={formData.menu_origin_price}
                             onChange={handleInputChange}
                             required
+                            fullWidth
                         />
                     </p>
                     </form>
@@ -160,11 +182,11 @@ const Menu = () => {
             )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary">
-                취소
-                </Button>
-                <Button onClick={handleRegister} color="primary">
+            <Button sx={styles.register} onClick={handleRegister} color="primary">
                 등록
+                </Button>
+                <Button sx={styles.register} onClick={handleClose} color="primary">
+                취소
                 </Button>
             </DialogActions>
             </Dialog>

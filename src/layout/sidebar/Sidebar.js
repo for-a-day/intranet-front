@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router";
 import { Link, NavLink } from "react-router-dom";
+import LogoIcon from "../Logo/LogoIcon";
 import {
   Box,
   Drawer,
@@ -30,8 +31,8 @@ const Sidebar = (props) => {
   const SidebarContent = (
     <Box sx={{ p: 3, height: "calc(100vh - 40px)" }}>
       <Link to="/">
-        <Box sx={{ display: "flex", alignItems: "Center" }}>
-          {/* <LogoIcon /> */}
+        <Box sx={{ display: "flex", alignItems: "Center", pl:2 }}>
+          <LogoIcon />
         </Box>
       </Link>
 

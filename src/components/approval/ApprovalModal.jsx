@@ -8,9 +8,9 @@ import { _getEmployeeList } from '../../modules/redux/approval';
 
 
 
-const ApprovalModal = ({onModal, setApprovalInfo}) => {
+const ApprovalModal = ({onModal, setApprovalInfo, approvalInfo, htmlApproveSetting}) => {
   const dispatch = useDispatch();
-  const [datas, setDatas] = useState([]);
+  const [datas, setDatas] = useState(approvalInfo || []);
   const [storageData, setStorageData] = useState([
     { departmentCode: 1, departmentName: '샘플' },
   ]);
@@ -45,13 +45,27 @@ const ApprovalModal = ({onModal, setApprovalInfo}) => {
       return <div>{error.message}</div>;
   }
 
-  // 검색어를 기준으로 데이터를 필터링
-  const filteredData = employeeData?.filter(item =>
+  //사원 정보 저장
+  const employeeList = employeeData.map((employee) => {
+    let updatedEmployee = { ...employee, selectStatus: false };
+    
+    for (let i = 0; i < datas.length; i++) {
+      if (datas[i].employeeId === employee.employeeId) {
+        updatedEmployee = { ...employee, selectStatus: true };
+        break;
+      }
+    }
+    
+    return updatedEmployee;
+  });
+
+  //검색어를 기준으로 데이터를 필터링
+  const filteredData = employeeList?.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.level.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // 검색 기능 구현 예정
   const handleSearch = (e) => {
-    // 검색 기능 구현 예정
     setSearchTerm(e.target.value);
   };
 
@@ -68,11 +82,11 @@ const ApprovalModal = ({onModal, setApprovalInfo}) => {
 
   const changeData = (form) => {
     if (!datas.some((data) => data.employeeId === form.employeeId)) {
-      setDatas([...datas, {...form, status: true}]);
+      setDatas([...datas, {...form, selectStatus: true}]);
     }
 
     const updatedFilteredData = filteredData.map((item) =>
-      item.employeeId === form.employeeId ? { ...item, status: true } : item
+      item.employeeId === form.employeeId ? { ...item, selectStatus: true } : item
     );
     setEmployeeData(updatedFilteredData);
   };
@@ -88,17 +102,17 @@ const ApprovalModal = ({onModal, setApprovalInfo}) => {
   const onRemove = (id) => {
     setDatas((prevData) => prevData.filter((item) => item.employeeId !== id));
     const updatedFilteredData = filteredData.map((item) =>
-      item.employeeId === id ? { ...item, status: false } : item
+      item.employeeId === id ? { ...item, selectStatus: false } : item
     );
     setEmployeeData(updatedFilteredData);
   };
 
   const selectApprovalInfo = () => {
     const updatedData = datas.map((data,index) => {
-      return { employeeId: data.employeeId, seq: index+1, type: "결재", status: "D" }; 
+      return { ...data, seq: index+1, type: "결재", status: "대기" }; 
     });
-
     setApprovalInfo(updatedData);
+    htmlApproveSetting(updatedData);
     onModal(false);
   }
 
@@ -153,7 +167,7 @@ const ApprovalModal = ({onModal, setApprovalInfo}) => {
                                   <ListItemText
                                     primary={
                                       <Box display="flex" alignItems="center">
-                                        {!form.status ?(
+                                        {!form.selectStatus ?(
                                           <Chip label={form.level} color="success" size="small" sx={{ fontSize: '0.75rem', marginRight: '1rem' }} />
                                         ) : (
                                           <Chip label={form.level} size="small" sx={{ fontSize: '0.75rem', marginRight: '1rem' }} />
@@ -164,7 +178,7 @@ const ApprovalModal = ({onModal, setApprovalInfo}) => {
                                       </Box>
                                     }
                                   />
-                                  {!form.status ?(
+                                  {!form.selectStatus ?(
                                     <Button onClick={() => changeData(form)} sx={{ minWidth: '40px', minHeight: '40px', fontSize: '1.5rem', lineHeight: 'normal', padding: 0}}>+</Button>
                                   ) : (
                                     <Button onClick={() => onRemove(form.employeeId)} sx={{ minWidth: '40px', minHeight: '40px', fontSize: '1.5rem', lineHeight: 'normal', padding: 0}}>-</Button>

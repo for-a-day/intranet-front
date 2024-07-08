@@ -14,8 +14,9 @@ import {
 import Modal from "react-modal";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
+import "./Calendar.css";
 
 const customStyles = {
   content: {
@@ -37,23 +38,51 @@ Modal.setAppElement("#root");
 
 const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const [calendarName, setCalendarName] = useState("");
-  const [departmentCode, setDepartmentCode] = useState(1);
+  const [departmentCode, setDepartmentCode] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
   const [message, setMessage] = useState("");
   const [calendars, setCalendars] = useState([]);
   const [selectCalendar, setSelectCalendar] = useState(null);
+  const [selectedCalendarId, setSelectedCalendarId] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [calendarId, setCalendarId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    listCalendar();
+    const userDataAndListCalendar = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await axios.get(
+            "http://localhost:9000/app/employees/token",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const employee = response.data.employee;
+          const deptCode = employee.department?.departmentCode;
+          const deptName = employee.department?.departmentName;
+          setDepartmentCode(deptCode);
+          setDepartmentName(deptName);
+
+          // 부서 코드로 캘린더 조회
+          await listCalendar(deptCode);
+        } catch (error) {
+          console.error("유저 정보 못 불러옴", error);
+        }
+      }
+    };
+
+    userDataAndListCalendar();
   }, []);
 
-  const listCalendar = async () => {
+  const listCalendar = async (departmentCode) => {
     try {
       const response = await axios.get(
-        "http://localhost:9000/app/calendar/department/1"
+        `http://localhost:9000/app/calendar/department/${departmentCode}`
       );
       if (
         response.data.status === "success" &&
@@ -84,7 +113,7 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
         // 등록 모드
         await axios.post("http://localhost:9000/app/calendar", calendarData);
       }
-      listCalendar(); // 리스트 갱신
+      listCalendar(departmentCode); // 리스트 갱신
       closeModal(); // 모달 닫기
     } catch (error) {
       console.error("등록 실패");
@@ -99,11 +128,9 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
     if (isEdit && calendar) {
       setCalendarId(calendar.calendarId);
       setCalendarName(calendar.calendarName);
-      setDepartmentCode(calendar.departmentCode);
     } else {
       setCalendarId(null);
       setCalendarName("");
-      setDepartmentCode(1);
     }
     setModalIsOpen(true);
   };
@@ -111,7 +138,6 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const closeModal = () => {
     setModalIsOpen(false);
     setCalendarName("");
-    setDepartmentCode(1);
     setIsEditMode(false);
   };
 
@@ -121,18 +147,24 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   };
 
   const calendarDelete = async (calendarId) => {
-    try {
-      await axios.delete(`http://localhost:9000/app/calendar/${calendarId}`);
-      setMessage("캘린더 삭제");
-      listCalendar(); // 리스트 갱신
-    } catch (error) {
-      console.error("삭제 실패", error);
+    if (window.confirm("캘린더를 삭제하시겠습니까?")) {
+      try {
+        await axios.delete(`http://localhost:9000/app/calendar/${calendarId}`);
+        setMessage("캘린더 삭제");
+        listCalendar(departmentCode); // 리스트 갱신
+      } catch (error) {
+        console.error("삭제 실패", error);
+      }
     }
   };
 
   const scheduleCreate = () => {
-    console.log("작업");
-    navigate("/app/schedule/create");
+    if (calendars.length === 0) {
+      alert("하나 이상의 캘린더가 있어야 합니다.");
+      setModalIsOpen(true); // 캘린더가 없으면 모달 열기
+    } else {
+      navigate("/app/schedule/create");
+    }
   };
 
   const selectedCalendar = (calendar) => {
@@ -143,10 +175,27 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
 
   return (
     <Box>
-      <h2>캘린더</h2>
-      <Button variant="contained" color="primary" onClick={scheduleCreate}>
-        일정 상세 등록
-      </Button>
+      <Link
+        to="/app/calendar"
+        style={{ textDecoration: "none", color: "black" }}
+      >
+        <h2>캘린더</h2>
+      </Link>
+      <Box sx={{ textAlign: "center" }}>
+        <Button
+          variant="contained"
+          onClick={scheduleCreate}
+          sx={{
+            pr: 8,
+            pl: 8,
+            pt: 1.5,
+            pb: 1.5,
+            mr: 2,
+          }}
+        >
+          일정등록
+        </Button>
+      </Box>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -167,14 +216,6 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
             onChange={(e) => setCalendarName(e.target.value)}
             margin="normal"
           />
-          <TextField
-            label="부서 코드"
-            variant="outlined"
-            fullWidth
-            value={departmentCode}
-            onChange={(e) => setDepartmentCode(e.target.value)}
-            margin="normal"
-          />
           <Box sx={{ mt: 2 }}>
             <Button type="submit" variant="contained" color="primary">
               {isEditMode ? "수정" : "등록"}
@@ -186,12 +227,19 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
         </form>
       </Modal>
 
-      <h3 style={{ paddingTop: 6 }}>부서별 캘린더</h3>
+      <h3 style={{ paddingTop: 6 }}>{departmentName} 캘린더</h3>
       <List>
         {calendars.map((calendar) => (
           <ListItem key={calendar.calendarId} disablePadding>
             <ListItemButton
-              style={{ paddingTop: 8, paddingBottom: 6 }}
+              style={{
+                paddingTop: 6,
+                paddingBottom: 6,
+                backgroundColor:
+                  selectCalendar?.calendarId === calendar.calendarId
+                    ? "#ddd"
+                    : "transparent",
+              }}
               onClick={() => selectedCalendar(calendar)}
             >
               <ListItemText primary={calendar.calendarName} />
@@ -213,18 +261,11 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
           </ListItem>
         ))}
       </List>
-      <span
-        onClick={() => openModal(false)}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          cursor: "pointer",
-          padding: "10px 20px", // 필요에 따라 추가
-          borderRadius: "4px", // 필요에 따라 추가
-        }}
-      >
-        <AddIcon style={{ marginRight: "8px" }} /> 캘린더 등록
-      </span>
+      <Box sx={{ textAlign: "center", paddingRight: 3 }}>
+        <span onClick={() => openModal(false)} className="createCalendar">
+          <AddIcon style={{ marginRight: "8px" }} /> 캘린더 등록
+        </span>
+      </Box>
     </Box>
   );
 };
