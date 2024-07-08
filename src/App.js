@@ -117,10 +117,10 @@ function App() {
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
               <Route path='/app/schedule/create' element={<CalendarDetail isCreate={true}/>} />
               <Route path='/' element={<Main />} />
-              <Route path='/app/employees' element={<EmployeeList />} />
-              <Route path='/app/employees/register' element={<EmployeeRegister />} />
+              {/* <Route path='/app/employees' element={<EmployeeList />} />
+              <Route path='/app/employees/register' element={<EmployeeRegister />} /> */}
 
-              {/* <Route
+              <Route
                 path="/app/employees"
                 element={
                   <PrivateRoute>
@@ -135,7 +135,7 @@ function App() {
                     <EmployeeRegister />
                   </PrivateRoute>
                 }
-              /> */}
+              />
               <Route path='/' element={<FullLayout />} ></Route>
               <Route path='/franchisee' element={<Franchisee />} />
               <Route path='/warn' element={<Warning />} />

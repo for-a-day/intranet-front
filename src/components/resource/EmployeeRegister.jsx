@@ -16,6 +16,7 @@ import {
   Box,
   InputLabel
 } from '@mui/material';
+import instance from '../../axiosConfig';
 
 const EmployeeRegister = () => {
   const [employee, setEmployee] = useState({
@@ -39,7 +40,7 @@ const EmployeeRegister = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get('http://localhost:9000/app/employees/register', {
+    instance.get('/app/employees/register', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -132,7 +133,7 @@ const EmployeeRegister = () => {
       return;
     }
 
-    axios.post('http://localhost:9000/app/employees/register', requestData, {
+    instance.post('/app/employees/register', requestData, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
