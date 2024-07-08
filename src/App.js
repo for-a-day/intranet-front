@@ -26,6 +26,7 @@ import ApprovalMain from './pages/approval/ApprovalMain';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import instance from './axiosConfig';
 
 
 
@@ -96,13 +97,7 @@ function App() {
   // 서버로부터 받아온 알림 갯수를 state에 저장
   const getNotice = async () => {
     setCount(0);
-    const res = await axios.post("http://localhost:9000/app/auth/notice","",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    const res = await instance.post("/app/auth/notice");
     setCount(res.data.data.unreadCount);
   }
 
