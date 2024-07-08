@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import styles from './OrderListStyle';
 import {
   Typography,
@@ -12,15 +11,17 @@ import {
   Chip,
   Button,
 } from "@mui/material";
+import instance from "../../axiosConfig";
 
 const OrderList = () => {
+  const token = localStorage.getItem('token');
   const [order, setOrder] = useState([]);
 
     // 목록
     useEffect(() => {
       const fetchOrder = async () => {
           try {
-              const response = await axios.get('http://localhost:9000/app/order');
+              const response = await instance.get('/app/order');
               const orderMap = response.data.data;
 
               const orderArray = Object.values(orderMap);
@@ -30,7 +31,7 @@ const OrderList = () => {
           }
       };
       fetchOrder();
-    }, []);
+    }, [token]);
 
   return (
     <Box 

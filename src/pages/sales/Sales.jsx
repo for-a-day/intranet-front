@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Box, AppBar, Toolbar, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import axios from "axios";
 import SalesList from "../../components/sales/SalesList";
 import {styles, GreenDot, RedDot } from "./SalesStyle";
 import NoSales from "../../components/sales/NoSales";
+import instance from "../../axiosConfig";
 
 const currentYear = new Date().getFullYear();
 
 const Sales = () => {
+    const token = localStorage.getItem('token');
     const [sales, setSales] = useState([]);
     const [openModal, setOpenModal] = useState(false); // 모달 열림 여부 상태
     const [selectedYear, setSelectedYear] = useState(currentYear); // 선택된 년도 상태
@@ -28,7 +29,7 @@ const Sales = () => {
 
     const fetchSales = async () => {
         try {
-            const response = await axios.get('http://localhost:9000/app/sales');
+            const response = await instance.get('/app/sales');
             const salesMap = response.data.data;
 
             const saleArray = Object.values(salesMap);
@@ -37,14 +38,22 @@ const Sales = () => {
             console.error('매출 목록 : 에러', error);
         }
     };
-  
+    
+    useEffect(() => {
+      fetchSales();
+    }, [token]);  
+
     const fetchSalesCall = () => {
       if (!selectedYear || !selectedMonth) {
         alert('년도와 월을 선택해주세요.');
         return;
       }
 
-      axios.post('http://localhost:9000/api/go/sales', { year: selectedYear, month: selectedMonth })
+      instance.post('/api/go/sales', { year: selectedYear, month: selectedMonth },{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
         .then(response => {
           console.log('데이터가 성공적으로 저장되었습니다:', response.data);
           alert('매출정보를 불러옵니다. 잠시만 기다려주십시오.');
