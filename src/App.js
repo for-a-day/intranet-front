@@ -32,7 +32,7 @@ import instance from './axiosConfig';
 
 function App() {
   const theme = baseTheme;
-  const [count, setCount] = useState();
+  const [count, setCount] = useState(0);
   const token = localStorage.getItem("token");
 
   // SSE
@@ -98,7 +98,9 @@ function App() {
   const getNotice = async () => {
     setCount(0);
     const res = await instance.post("/app/auth/notice");
-    setCount(res.data.data.unreadCount);
+    if(res !== undefined){
+      setCount(res.data.data.unreadCount);
+    }
   }
 
   return (
@@ -106,7 +108,7 @@ function App() {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            <Route path='/' element={<FullLayout />} >
+            <Route path='/' element={<FullLayout count={count}/>} >
               <Route path='/' element={<Main />} />
               <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />

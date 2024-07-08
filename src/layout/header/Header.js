@@ -98,29 +98,25 @@ const Header = (props) => {
     setAnchorEl5(null);
   };
 
-  useEffect(() => {
-    const userData = async () => {
-      const token = localStorage.getItem("token");
-      if(token) {
-        try {
-          const response = instance.get("/app/employees/token", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            }
-          });
-          const employee = response.data.employee;
-          setEmployeeName(employee.name);
-          setDepartmentName(employee.department.departmentName);
-          setLevelName(employee.level.levelName);
-        } catch (error) {
-          console.error("유저 정보 못불러옴", error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const userData = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if(token) {
+  //       try {
+  //         const response = instance.get("/app/employees/token");
+  //         const employee = response.data.employee;
+  //         setEmployeeName(employee.name);
+  //         setDepartmentName(employee.department.departmentName);
+  //         setLevelName(employee.level.levelName);
+  //       } catch (error) {
+  //         console.error("유저 정보 못불러옴", error);
+  //       }
+  //     }
+  //   };
 
-    userData();
-  }, []);
-  console.log(count);
+  //   userData();
+  // }, []);
+
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
       <Toolbar>

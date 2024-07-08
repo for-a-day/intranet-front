@@ -38,7 +38,7 @@ const PageWrapper = experimentalStyled("div")(({ theme }) => ({
   },
 }));
 const drawerWidth = 283; // 오른쪽 사이드바 너비 설정
-const FullLayout = () => {
+const FullLayout = ({count}) => {
   const theme = useTheme(); // useTheme 훅을 사용하여 테마 가져오기
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const mdDown = useMediaQuery(theme.breakpoints.down("md"));
@@ -56,6 +56,7 @@ const FullLayout = () => {
         }}
         toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
         toggleMobileSidebar={() => setMobileSidebarOpen(true)}
+        count={count}
       />
       <Sidebar
         isSidebarOpen={isSidebarOpen}
