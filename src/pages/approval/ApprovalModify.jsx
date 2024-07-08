@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, Stack, Typography } from '@mui/material';
 import parse from 'html-react-parser';
 import React, { useEffect, useRef, useState } from 'react';
 import ModalPortal from '../../config/ModalPortal';
@@ -37,6 +37,7 @@ const ApprovalModify = () => {
   const [modal, setModal] = useState(false);
   const {isLoading, error, modfiyApproval = {}} = useSelector((state) => state.approval);
   const [approvalData, setApprovalData] = useState(null);
+  const [urgency, setUrgency] = useState(modfiyApproval?.urgency ||0);
   const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
   const data = {
     _id : id
@@ -57,10 +58,14 @@ const ApprovalModify = () => {
 
 
   useEffect(() => {
-    if(modfiyApproval && modfiyApproval.status !== 'T' && modfiyApproval.approvalId){
-      navigate(`/approval/draft/detail/${modfiyApproval?.approvalId}`);
+    if (modfiyApproval && Object.keys(modfiyApproval).length !== 0) {
+      console.log(modfiyApproval);
+      if (modfiyApproval.approvalType !== "기안") {
+        alert("해당 문서는 상신 취소 되었습니다");
+        navigate('/approval/draft');
+      }
+      setApprovalData(modfiyApproval);
     }
-    setApprovalData(modfiyApproval);
   }, [modfiyApproval,navigate]);
 
   useEffect(() => {
@@ -239,6 +244,7 @@ const ApprovalModify = () => {
           docBody: updatedHtml,
           tempBody: tempHtml,
           saveType: saveType,
+          urgency: urgency,
           approvalInfo: approvalInfo
         },
         _navigate: navigate
@@ -260,13 +266,24 @@ const ApprovalModify = () => {
     }
   }
 
+    //긴급 기능
+    const onUrgency = (event) => {
+      setUrgency(event.target.checked ? 1 : 0);
+    };
 
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
       <ApprovalSideBar setApprovalData={setApprovalData}/>
       <Stack>
-        <Box sx={{marginBottom:"15px"}}>
-          <Typography variant='h2'>{approvalData?.subject || ""}</Typography>
+        <Box sx={{ marginBottom: "15px", display: "flex", alignItems: "flex-start" }}>
+            <Typography variant='h2'>{approvalData?.subject}</Typography>
+            <FormGroup sx={{ display: "flex", alignItems: "flex-start", marginLeft: 2 }}>
+              <FormControlLabel sx={{ '& .MuiSvgIcon-root': { fontSize: 32 }, alignItems: "flex-start", marginTop: "-0.5em"}} 
+                    onChange={onUrgency} 
+                    control={<Checkbox checked={urgency === 1}  sx={{ alignSelf: 'flex-start' }} />} 
+                    label={<Typography variant='h4' sx={{marginTop: '13px', marginLeft:"-8px"}}>긴급</Typography>} 
+                />
+            </FormGroup>
         </Box>
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<SendIcon />} onClick={() => onSubmtEvent("C")}>결재요청</Button>

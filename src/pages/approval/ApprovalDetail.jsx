@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Chip, Stack, Typography } from '@mui/material';
 import parse from 'html-react-parser';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,7 +24,7 @@ const ApprovalDetail = () => {
   const {isLoading, error, approval = {}} = useSelector((state) => state.approval);
   const [participant, setParticipant] = useState({});
   const [participantList, setParticipantList] = useState([]);
-
+  console.log(approval);
   useEffect(() => {
     dispatch(_getApprovalDetail(id));
 
@@ -53,8 +53,8 @@ const ApprovalDetail = () => {
 
     //기안일
     const docNo = contentRef.current.querySelector('#docNo');
-    if (docNo) {
-      docNo.textContent = approval.approvalId;
+    if (docNo && approval.docNo !== null && approval.docNo !== undefined) {
+      docNo.textContent = `NG-결재-2024-${String(approval?.docNo).padStart(4, '0')}`; 
     }
   },[approval, navigate]);
 
@@ -121,11 +121,11 @@ const ApprovalDetail = () => {
       <ApprovalSideBar />
       <Stack>
         <Box sx={{marginBottom:"15px"}}>
-          <Typography variant='h2'>{approval.subject}</Typography>
+          <Typography variant='h2'>{approval.subject} {approval?.urgency && <Chip label="긴급" color="error" size="small" />}</Typography>
         </Box>
         <ApprovalDetailMenu contentRef={contentRef} type={approval.approvalType} backHistory={backHistory} approval={approval} participants={approval.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
         <Stack direction="row" spacing={4}>
-          <Box className='print-container' sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
+          <Box className='print-container' sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
             <div ref={contentRef} className='print-container'>{parse(approval.docBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import { Link } from 'react-router-dom';
 import {
   Typography,
@@ -13,6 +13,7 @@ import {
   Button,
 } from "@mui/material";
 import EmployeeModal from './EmployeeModal'; // 모달 컴포넌트 import
+import instance from '../../axiosConfig';
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -24,7 +25,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     console.log(token);
-    axios.get('http://localhost:9000/app/employees/list', {
+    instance.get('/app/employees/list', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
