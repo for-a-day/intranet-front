@@ -65,7 +65,6 @@ function App() {
               <Route path='/close' element={<Closing />} />
               <Route path='/menu' element={<Menu />} />
 
-              <Route path='/sales' element={<SalesList />} />
               <Route path='/sales' element={<Sales />} />
               <Route path='/order' element={<Order />} />
 
