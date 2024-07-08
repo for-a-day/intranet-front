@@ -18,41 +18,31 @@ import MiniCalendar from "./MiniCalendar";
 const MainContent = () => {
   return (
     <Grid container spacing={2}>
-      <Grid item xs={2}>
-        <Box>
+      <Grid item xs={2.5}>
+        <Box className="box" sx={{ backgroundColor: "#56cddd" }}>
           <UserCard />
         </Box>
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={6}>
         <Box className="box" sx={{ height: 400 }}>
           전자 결재 문서
         </Box>
       </Grid>
-      <Grid item xs={2}>
-        <Stack direction="column" spacing={1}>
-          <Button sx={{ bgcolor: "#56CDDD", color: "white", fontSize: "20px", fontWeight: "bold" }}>
-            외근/휴가신청
-          </Button>
-          <Button sx={{ bgcolor: "#56CDDD", color: "white", fontSize: "20px", fontWeight: "bold" }}>
-            일정등록
-          </Button>
-          <Button sx={{ bgcolor: "#56CDDD", color: "white", fontSize: "20px", fontWeight: "bold" }}>
-            버튼3
-          </Button>
-        </Stack>
-      </Grid>
       <Grid item xs={3}>
-        <Box>
+        <TodayNote />
+      </Grid>
+      <Grid item xs={2.5}>
+        <Box className="box">
           <Timer />
         </Box>
       </Grid>
-      <Grid item xs={4}>
-        <Box>
+      <Grid item xs={6}>
+        <Box className="box">
           <TodayNote />
         </Box>
       </Grid>
-      <Grid item xs={4}>
-        <Box>
+      <Grid item xs={3}>
+        <Box className="box">
           <TodaySchedule />
         </Box>
       </Grid>

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -12,8 +12,8 @@ import {
   Button,
   Checkbox,
   TextField,
-  Paper
-} from '@mui/material';
+  Paper,
+} from "@mui/material";
 import LogoIcon from "../../layout/Logo/LogoIcon";
 
 const Login = () => {
@@ -44,20 +44,20 @@ const Login = () => {
     <Paper title="Login" description="this is Login page">
       <Box
         sx={{
-          position: 'relative',
-          '&:before': {
+          position: "relative",
+          "&:before": {
             content: '""',
-            background: 'radial-gradient(#d2f1df, #d3d7fa, #bad8f4)',
-            backgroundSize: '400% 400%',
-            animation: 'gradient 15s ease infinite',
-            position: 'absolute',
-            height: '100%',
-            width: '100%',
-            opacity: '0.3',
+            background: "radial-gradient(#d2f1df, #d3d7fa, #bad8f4)",
+            backgroundSize: "400% 400%",
+            animation: "gradient 15s ease infinite",
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            opacity: "0.3",
           },
         }}
       >
-        <Grid container spacing={0} justifyContent="center" sx={{ height: '100vh' }}>
+        <Grid container spacing={0} justifyContent="center" sx={{ height: "100vh" }}>
           <Grid
             item
             xs={12}
@@ -87,9 +87,11 @@ const Login = () => {
                     >
                       Username
                     </Typography>
+
                     <TextField id="username" variant="outlined" fullWidth
                       value={employeeId}
                       onChange={(e) => setEmployeeId(e.target.value)} />
+
                   </Box>
                   <Box mt="20px">
                     <Typography

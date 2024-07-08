@@ -128,7 +128,7 @@ const styles = {
     backgroundColor: "white",
     padding: "20px",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    zIndex: 1000,
+    zIndex: 10000,
     width: "55%",
     maxWidth: "600px", // 최대 너비 설정
     height: "55%",
