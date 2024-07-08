@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import instance from "../../axiosConfig";
 
 const Header = (props) => {
   const navigate = useNavigate();
@@ -45,27 +46,13 @@ const Header = (props) => {
 
   // 서버로부터 받아온 데이터를 저장
   const getNotice = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.post("http://localhost:9000/api/auth/notice",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    const res = await instance.post("/app/auth/notice");
     setData(res.data.data.notificationResponses);
   };
 
   // 읽음 버튼을 클릭했을 때 서버로 보냄
   const readHandler = async (id) => {
-    const token = localStorage.getItem("token");
-    await axios.put(`http://localhost:9000/api/auth/notice/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    await instance.put(`/app/auth/notice/${id}`);
   };
 
   const handleClick = (event) => {
@@ -116,7 +103,7 @@ const Header = (props) => {
       const token = localStorage.getItem("token");
       if(token) {
         try {
-          const response = await axios.get("http://localhost:9000/app/employees/token", {
+          const response = instance.get("/app/employees/token", {
             headers: {
               Authorization: `Bearer ${token}`,
             }
@@ -133,7 +120,7 @@ const Header = (props) => {
 
     userData();
   }, []);
-
+  console.log(count);
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
       <Toolbar>
