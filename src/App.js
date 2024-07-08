@@ -135,8 +135,10 @@ function App() {
                     <EmployeeRegister />
                   </PrivateRoute>
                 }
+
+              /> */}
+              <Route path='/approval/draft/form' element={<ApprovalWrite />} />
               />
-              <Route path='/' element={<FullLayout />} ></Route>
               <Route path='/franchisee' element={<Franchisee />} />
               <Route path='/warn' element={<Warning />} />
               <Route path='/close' element={<Closing />} />
