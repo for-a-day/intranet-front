@@ -68,6 +68,7 @@ const FranchiseeList = () => {
             setIsEditModalOpen(false);
             setIsDeleteModalOpen(false);
             setSelectedFranchisee(null);
+             setIsWarningReasonVisible(false);
         };
 
         // 화면 기능 - 수정 모달 창
@@ -85,14 +86,16 @@ const FranchiseeList = () => {
                     warningCount: selectedFranchisee.warningCount,
                     employeeId: selectedFranchisee.employeeId.employeeId
                 });
+                setInitialWarningCount(selectedFranchisee.warningCount);
+                setIsWarningReasonVisible(false);
             }
         };
 
         // 화면 기능 - 경고사유 작성 토글
-        const handleWarningReasonToggle = () => {
-            setIsWarningReasonVisible(!isWarningReasonVisible);
-            setIsWarningReasonClicked(true);
-        };
+        //const handleWarningReasonToggle = () => {
+            //setIsWarningReasonVisible(!isWarningReasonVisible);
+            //setIsWarningReasonClicked(true);
+        //};
 
         // input요소 변동 시, 반영기능
         const handleInputChange = (e) => {
@@ -196,7 +199,6 @@ const FranchiseeList = () => {
 
                     // 경고 데이터
                     const warnData = {
-                        warningReason: formData.warningReason || '-',
                         franchisee_id: null,
                         closing_id: formData.franchiseeId
                     };
@@ -238,36 +240,51 @@ const FranchiseeList = () => {
         };
         
 
-        // 경고 초기 횟수 값 설정
+        // 경고 횟수 변경을 감지
         useEffect(() => {
-            if (formData.warningCount !== initialWarningCount.warningCount && !isWarningReasonClicked) {
-                console.log('변경 : ', formData.warningCount, '기존 : ', initialWarningCount);
+            if (formData.warningCount !== initialWarningCount) {
+                setIsWarningReasonVisible(true);
             }
-            setInitialWarningCount(formData.warningCount);
-        }, [formData.warningCount]);
+        }, [formData.warningCount, initialWarningCount]);
 
         // 경고 등록
-        const warnSubmit = async () => {
+        const warnSubmit = async (e) => {
             console.log('저장버튼이 눌렸습니다');
             try {
-                const url = `http://localhost:9000/app/warn`;
-                const data = {
-                    warningReason: warnData.warningReason,
-                    franchisee_id: formData.franchiseeId,
-                    closing_id: null
-                };
+                let canSubmit = true; // 폼 제출 가능 여부를 나타내는 변수
 
-                console.log('담긴 데이터 ->', data);
-                console.log('담긴 franchiseeId 데이터 ->', data.franchisee_id);
+                // 경고 사유 입력 여부 체크
+                if (warnData.warningReason === '') {
+                    alert('경고 사유는 반드시 입력되어야 합니다!');
+                    e.preventDefault();
+                    canSubmit = false; // 경고 사유가 비어 있으면 폼 제출 금지
+                }
+                
+                console.log('canSubmit : ', canSubmit);
 
-                const response = await axios.post(url, data);
+                if (canSubmit) {
+                    console.log('경고 api 실행 간다');
+                    const url = `http://localhost:9000/app/warn`;
+                    const data = {
+                        warningReason: warnData.warningReason,
+                        franchisee_id: formData.franchiseeId,
+                        closing_id: null
+                    };
 
-                alert('가맹점 경고사항이 반영되었습니다');
+                    console.log('담긴 데이터 ->', data);
+                    console.log('담긴 franchiseeId 데이터 ->', data.franchisee_id);
 
-                console.log('api 담기 성공', response.data);
+                    const response = await axios.post(url, data);
 
-                closeModal(); // 등록 성공 시 모달 닫기
-                await editSubmit();
+                    alert('가맹점 경고사항이 반영되었습니다');
+
+                    console.log('api 담기 성공', response.data);
+
+                    closeModal(); // 등록 성공 시 모달 닫기
+                    await editSubmit();
+                } else {
+                    console.log('폼 제출을 막았습니다.');
+                }
             } catch (error) {
                 console.log('등록 중 에러 발생', error);
             }
@@ -516,9 +533,6 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </Grid>
-                                    <Grid item xs={3}>
-                                <button type="button" style={styles.warnBtn} onClick={handleWarningReasonToggle}>경고사유</button>
                                 </Grid>
                                 {isWarningReasonVisible && (
                                     <><Grid item xs={10}>

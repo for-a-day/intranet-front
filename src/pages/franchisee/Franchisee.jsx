@@ -4,10 +4,12 @@ import FranchiseeList from "../../components/franchisee/FranchiseeList";
 import axios from "axios";
 import styles from "./FranchiseeStyle";
 import { Add as AddIcon, Store as StoreIcon, Warning as WarningIcon, Close as CloseIcon } from '@mui/icons-material';
+import AddressSearch from "./AddressSearch";
 
 const Franchisee = () => {
     const [franchisee, setFranchisee] = useState([]);
     const [open, setOpen] = useState(false);
+    const [addressOpen, setAddressOpen] = useState(false);
     const [formData, setFormData] = useState({
       franchiseeId: '',
       franchiseeName: '',
@@ -50,6 +52,22 @@ const Franchisee = () => {
     // 모달 꺼짐 방지 
     const handleDialogClick = (e) => {
       e.stopPropagation();
+    };
+
+    const handleAddressSearchOpen = () => {
+      setAddressOpen(true);
+    };
+
+    const handleAddressSearchClose = () => {
+        setAddressOpen(false);
+    };
+
+    const handleAddressComplete = (address) => {
+        setFormData({
+            ...formData,
+            address
+        });
+        handleAddressSearchClose();
     };
 
     //등록
@@ -180,7 +198,15 @@ const Franchisee = () => {
                         onChange={handleInputChange}
                         required
                         fullWidth
-                      />
+                        InputProps={{
+                          readOnly: true,
+                          endAdornment: (
+                              <Button onClick={handleAddressSearchOpen}>
+                                  검색
+                              </Button>
+                              )
+                            }}
+                        />
                       </Grid>
                       <Grid item xs={6}>
                       <TextField sx={styles.paragraph}
@@ -253,6 +279,12 @@ const Franchisee = () => {
                 취소
               </Button>         
               </Box>
+          </Dialog>
+          <Dialog open={addressOpen} onClose={handleAddressSearchClose}>
+                    <DialogTitle>주소 검색</DialogTitle>
+                    <DialogContent>
+                        <AddressSearch onComplete={handleAddressComplete} />
+                    </DialogContent>
           </Dialog>
           </Grid>
       </>  
