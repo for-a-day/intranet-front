@@ -6,6 +6,7 @@ import AddToPhotosOutlinedIcon from '@mui/icons-material/AddToPhotosOutlined';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 
 import {
   AppBar,
@@ -18,22 +19,74 @@ import {
   Avatar,
   Divider,
   ListItemIcon,
+  Typography,
+  Stack,
 } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Header = (props) => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [employeeName, setEmployeeName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [levelName, setLevelName] = useState("");
 
+  //SSE
+  const [data, setData] = useState();
+  const [count, setCount] = useState(props.count || 0);
+
+  useEffect(() =>{
+    setCount(props.count);
+  },[props.count])
+
+  // 안 읽은 알람만 출력
+  const notReadData = data && data.filter((data) => data.read === false).reverse();
+
+  // 서버로부터 받아온 데이터를 저장
+  const getNotice = async () => {
+    const token = localStorage.getItem("token");
+    const res = await axios.post("http://localhost:9000/api/auth/notice",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    setData(res.data.data.notificationResponses);
+  };
+
+  // 읽음 버튼을 클릭했을 때 서버로 보냄
+  const readHandler = async (id) => {
+    const token = localStorage.getItem("token");
+    await axios.put(`http://localhost:9000/api/auth/notice/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+  };
 
   const handleClick = (event) => {
+    getNotice();
     setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const readClick = (id, url) => {
+    const _data = notReadData.filter((data) => data.id !== id);
+    const _count = count - 1;
+    readHandler(id);
+    setData(_data);
+    setCount(_count);
+    setAnchorEl(null);
+    setTimeout(() => {
+      navigate(url);
+    },[500])
   };
 
   // 4
@@ -109,12 +162,17 @@ const Header = (props) => {
         {/* ------------------------------------------- */}
         <IconButton
           aria-label="menu"
-          color="inherit"
+          color= "inherit"
           aria-controls="notification-menu"
           aria-haspopup="true"
           onClick={handleClick}
         >
-          <NotificationsNoneOutlinedIcon width="20" height="20" />
+          {(count === undefined || count === 0) ? (
+            <NotificationsNoneOutlinedIcon width="20" height="20"/>
+          ) : (
+            <NotificationsActiveIcon width="20" height="20" sx={{color: "red"}}/>
+          )}
+
         </IconButton>
         <Menu
           id="notification-menu"
@@ -126,15 +184,26 @@ const Header = (props) => {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           sx={{
             "& .MuiMenu-paper": {
-              width: "200px",
+              width: "400px",
+              maxHeight: "280px",
               right: 0,
               top: "70px !important",
             },
           }}
         >
-          <MenuItem onClick={handleClose}>Action</MenuItem>
-          <MenuItem onClick={handleClose}>Action Else</MenuItem>
-          <MenuItem onClick={handleClose}>Another Action</MenuItem>
+          {notReadData?.length === 0 ? (
+            <MenuItem onClick={handleClose}>
+              <Typography>조회할 알림이 없습니다.</Typography>
+            </MenuItem>
+          ) : (
+            notReadData?.map((list) => (
+              <MenuItem key={list.id} onClick={() => readClick(list?.id, list?.url)}>
+                <Stack>
+                  <Typography>{list?.content}</Typography>
+                </Stack>
+              </MenuItem>
+            ))
+          )}
         </Menu>
         {/* ------------------------------------------- */}
         {/* End Notifications Dropdown */}
