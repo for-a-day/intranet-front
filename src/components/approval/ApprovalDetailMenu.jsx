@@ -32,7 +32,7 @@ const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants,
   const [reasonModal, setReasonModal] = useState(false);
   const [rejectModal, setRejectModal] = useState(false);
   const [modalType, setModalType] = useState(null);
-  console.log(approval);
+
   const backHistoryClick = () => {
     if(backHistory === null){
       navigate(-1);

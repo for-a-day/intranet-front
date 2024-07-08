@@ -219,7 +219,7 @@ const ApprovalWrite = () => {
     setUrgency(event.target.checked ? 1 : 0);
   };
 
-  console.log(urgency);
+
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
       <ApprovalSideBar setApprovalData={setApprovalData}/>

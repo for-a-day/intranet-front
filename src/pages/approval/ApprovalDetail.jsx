@@ -24,7 +24,7 @@ const ApprovalDetail = () => {
   const {isLoading, error, approval = {}} = useSelector((state) => state.approval);
   const [participant, setParticipant] = useState({});
   const [participantList, setParticipantList] = useState([]);
-  console.log(approval);
+
   useEffect(() => {
     dispatch(_getApprovalDetail(id));
 

@@ -22,7 +22,6 @@ instance.interceptors.request.use(
 // 응답 인터셉터 설정
 instance.interceptors.response.use(
   function (response) {
-    console.log("response start", response);
     return response;
   },
   async (error) => {
