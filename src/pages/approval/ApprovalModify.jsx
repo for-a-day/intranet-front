@@ -4,10 +4,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import ModalPortal from '../../config/ModalPortal';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useDispatch } from 'react-redux';
-import { _createApproval } from '../../modules/redux/approval';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { _getApprovalModifyDetail, _updateApproval } from '../../modules/redux/approval';
+import { useNavigate, useParams } from 'react-router-dom';
 import ApprovalSideBar from '../../components/approval/ApprovalSideBar';
 import ApprovalModal from '../../components/approval/ApprovalModal';
+import { useSelector } from 'react-redux';
 import approve from '../../assets/image/approve.png';
 
 //아이콘
@@ -17,6 +18,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ApprovalDraftList from '../../components/approval/ApprovalDraftList';
 
+
 //JWT토큰 이후에 삭제 예정
 const employee = {
   department: '영업부',
@@ -25,27 +27,72 @@ const employee = {
 };
 sessionStorage.setItem('employee', JSON.stringify(employee));
 
-const ApprovalWrite = () => {
+const ApprovalModify = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  const {id} = useParams();
   const contentRef = useRef(null);
   const [approvalInfo, setApprovalInfo] = useState([])
-  const [approvalData, setApprovalData] = useState(location.state?.approvalData || null);
   const [formValues, setFormValues] = useState({});
   const [modal, setModal] = useState(false);
+  const {isLoading, error, modfiyApproval = {}} = useSelector((state) => state.approval);
+  const [approvalData, setApprovalData] = useState(null);
   const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
+  const data = {
+    _id : id
+  }
+  useEffect(() => {
+    if(id){
+      dispatch(_getApprovalModifyDetail(data));
+    }
+
+    if (isLoading) {
+      return <div>로딩중....</div>;
+    }
+  
+    if (error) {
+        return <div>{error.message}</div>;
+    }
+  },[dispatch, id]);
+
 
   useEffect(() => {
+    if(modfiyApproval && modfiyApproval.status !== 'T' && modfiyApproval.approvalId){
+      navigate(`/approval/draft/detail/${modfiyApproval?.approvalId}`);
+    }
+    setApprovalData(modfiyApproval);
+  }, [modfiyApproval,navigate]);
+
+  useEffect(() => {
+    if(approvalData && approvalData.status !== 'T' && approvalData.approvalId){
+      navigate(`/approval/draft/detail/${approvalData?.approvalId}`);
+    }
+
+    //ApprovalReApply.jsx 보고 수정하기
+    const [drafter, ...aprovers] = modfiyApproval?.participantList || [];
+    setApprovalInfo(aprovers);
+
     // 입력 필드에 이벤트 리스너 추가
-    const inputs = contentRef.current.querySelectorAll('input, textarea, select');
+    const inputs = contentRef.current.querySelectorAll('input,textarea, select');
     inputs.forEach(input => {
       input.addEventListener('change', handleInputChange);
+      input.setAttribute('value', input.value);
     });
 
     //현재 날짜
     const today = new Date();
     const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+    //기안일
+    const draftDate = contentRef.current.querySelector('#draftDate');
+    if (draftDate) {
+      draftDate.textContent =formattedDate;
+    }
+
+    const draftDates = contentRef.current.querySelector('#draftDates');
+    if (draftDates) {
+      draftDates.textContent = "";
+    }
 
     //기안자
     const draftUser = contentRef.current.querySelector('#draftUser');
@@ -59,10 +106,10 @@ const ApprovalWrite = () => {
       draftDept.textContent = participant.department || "";
     }
 
-    //기안일
-    const draftDate = contentRef.current.querySelector('#draftDate');
-    if (draftDate) {
-      draftDate.textContent = formattedDate;
+    //도장
+    const draftImg = contentRef.current.querySelector('#draftImg');
+    if (draftImg) {
+      draftImg.removeAttribute('src');
     }
 
     return () => {
@@ -108,8 +155,8 @@ const ApprovalWrite = () => {
 
   const replaceInputTextareaWithSpan = (node) => {
     if (node.type === 'tag' && (node.name === 'input' || node.name === 'textarea' || node.name === 'select')) {
-      let value = formValues[node.attribs.name] || node.attribs.value || '';  
-  
+      let value = formValues[node.attribs.name] || node.attribs.value ||  '';  
+
       return (
         <span>
           {value}
@@ -186,6 +233,7 @@ const ApprovalWrite = () => {
       const tempHtml = await onChangeHtml(replaceInputValue);
       const data = {
         formData : {
+          approvalId : approvalData.approvalId,
           subject: approvalData.subject,
           formId: approvalData.formId,
           docBody: updatedHtml,
@@ -195,9 +243,9 @@ const ApprovalWrite = () => {
         },
         _navigate: navigate
       };
-      
-      dispatch(_createApproval(data));
-    }
+
+      dispatch(_updateApproval(data));
+    }    
   };
 
   //결재정보 모달창
@@ -228,13 +276,13 @@ const ApprovalWrite = () => {
         </Stack>
         <Stack direction="row" spacing={4}>
           <Box sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
-            <div ref={contentRef}>{parse(approvalData?.content || "")}</div>
+            <div ref={contentRef}>{parse(approvalData?.tempBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}
           <ApprovalDraftList type="W" participant={participant} participants={approvalInfo}/>  
         </Stack>
         <Stack direction="row" spacing={1}>
-          <Button variant='h5' startIcon={<SendIcon />}onClick={() => onSubmtEvent("C")}>결재요청</Button>
+          <Button variant='h5' startIcon={<SendIcon />} onClick={() => onSubmtEvent("C")}>결재요청</Button>
           <Button variant='h5' startIcon={<SaveIcon />} onClick={() => onSubmtEvent("T")}>임시저장</Button>
           <Button variant='h5' startIcon={<ArrowBackIcon />} onClick={cancel}>취소</Button>
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
@@ -247,4 +295,4 @@ const ApprovalWrite = () => {
   )
 };
 
-export default ApprovalWrite;
+export default ApprovalModify;

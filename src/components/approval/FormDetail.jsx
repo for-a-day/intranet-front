@@ -2,7 +2,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import React from 'react';
 
 const FormDetail = ({data}) => {
-  console.log(data);
+
   return (
     <Stack spacing={3} sx={{border: "1px solid #ddd"}} width={330} height={360}>
       <Box height="15%" display="flex" alignItems="center" sx={{backgroundColor:"#ddd", paddingLeft: "3%"}}>
