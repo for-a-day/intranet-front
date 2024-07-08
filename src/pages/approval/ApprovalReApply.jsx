@@ -4,11 +4,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import ModalPortal from '../../config/ModalPortal';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useDispatch } from 'react-redux';
-import { _createApproval } from '../../modules/redux/approval';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { _createApproval, _getApprovalModifyDetail } from '../../modules/redux/approval';
+import { useNavigate, useParams } from 'react-router-dom';
 import ApprovalSideBar from '../../components/approval/ApprovalSideBar';
 import ApprovalModal from '../../components/approval/ApprovalModal';
+import { useSelector } from 'react-redux';
 import approve from '../../assets/image/approve.png';
+
 
 //아이콘
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -16,6 +18,9 @@ import SendIcon from '@mui/icons-material/Send';
 import SaveIcon from '@mui/icons-material/Save';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ApprovalDraftList from '../../components/approval/ApprovalDraftList';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import RejectionModal from '../../components/approval/RejectionModal';
+
 
 //JWT토큰 이후에 삭제 예정
 const employee = {
@@ -25,27 +30,63 @@ const employee = {
 };
 sessionStorage.setItem('employee', JSON.stringify(employee));
 
-const ApprovalWrite = () => {
+const ApprovalReApply = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  const {id} = useParams();
   const contentRef = useRef(null);
   const [approvalInfo, setApprovalInfo] = useState([])
-  const [approvalData, setApprovalData] = useState(location.state?.approvalData || null);
   const [formValues, setFormValues] = useState({});
   const [modal, setModal] = useState(false);
+  const [rejectModal, setRejectModal] = useState(false);
+  const {isLoading, error, modfiyApproval = {}} = useSelector((state) => state.approval);
+  const [approvalData, setApprovalData] = useState(null);
   const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
+  const data = {_id : id, type: "R"}
 
   useEffect(() => {
+    if(id){
+      dispatch(_getApprovalModifyDetail(data));
+    }
+
+    if (isLoading) {
+      return <div>로딩중....</div>;
+    }
+  
+    if (error) {
+        return <div>{error.message}</div>;
+    }
+  },[dispatch, id]);
+
+
+  useEffect(() => {
+    setApprovalData(modfiyApproval);
+  }, [modfiyApproval]);
+
+  useEffect(() => {
+    const approvers = modfiyApproval?.participantList?.slice(1) || [];
+    setApprovalInfo(approvers);
     // 입력 필드에 이벤트 리스너 추가
-    const inputs = contentRef.current.querySelectorAll('input, textarea, select');
+    const inputs = contentRef.current.querySelectorAll('input,textarea, select');
     inputs.forEach(input => {
       input.addEventListener('change', handleInputChange);
+      input.setAttribute('value', input.value);
     });
 
     //현재 날짜
     const today = new Date();
     const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+    //기안일
+    const draftDate = contentRef.current.querySelector('#draftDate');
+    if (draftDate) {
+      draftDate.textContent =formattedDate;
+    }
+
+    const draftDates = contentRef.current.querySelector('#draftDates');
+    if (draftDates) {
+      draftDates.textContent = "";
+    }
 
     //기안자
     const draftUser = contentRef.current.querySelector('#draftUser');
@@ -59,10 +100,10 @@ const ApprovalWrite = () => {
       draftDept.textContent = participant.department || "";
     }
 
-    //기안일
-    const draftDate = contentRef.current.querySelector('#draftDate');
-    if (draftDate) {
-      draftDate.textContent = formattedDate;
+    //도장
+    const draftImg = contentRef.current.querySelector('#draftImg');
+    if (draftImg) {
+      draftImg.removeAttribute('src');
     }
 
     return () => {
@@ -108,8 +149,8 @@ const ApprovalWrite = () => {
 
   const replaceInputTextareaWithSpan = (node) => {
     if (node.type === 'tag' && (node.name === 'input' || node.name === 'textarea' || node.name === 'select')) {
-      let value = formValues[node.attribs.name] || node.attribs.value || '';  
-  
+      let value = formValues[node.attribs.name] || node.attribs.value ||  '';  
+
       return (
         <span>
           {value}
@@ -186,6 +227,7 @@ const ApprovalWrite = () => {
       const tempHtml = await onChangeHtml(replaceInputValue);
       const data = {
         formData : {
+          approvalId : approvalData.approvalId,
           subject: approvalData.subject,
           formId: approvalData.formId,
           docBody: updatedHtml,
@@ -195,9 +237,9 @@ const ApprovalWrite = () => {
         },
         _navigate: navigate
       };
-      
+
       dispatch(_createApproval(data));
-    }
+    }    
   };
 
   //결재정보 모달창
@@ -205,10 +247,15 @@ const ApprovalWrite = () => {
     setModal(!modal);
   }
 
+  //반려 사유 확인 모달창
+  const onRejectModal = () => {
+    setRejectModal(!rejectModal);
+  }
+
   //취소 메서드
   const cancel = () => {
     if(window.confirm("취소 하시겠습니까?")){
-      navigate("/approval/draft/list/draft");
+      navigate(-1);
     }
   }
 
@@ -225,26 +272,31 @@ const ApprovalWrite = () => {
           <Button variant='h5' startIcon={<SaveIcon />} onClick={() => onSubmtEvent("T")}>임시저장</Button>
           <Button variant='h5' startIcon={<ArrowBackIcon />} onClick={cancel}>취소</Button>
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
+          <Button variant='h5' startIcon={<FeedbackIcon />} onClick={onRejectModal}>반려사유</Button>
         </Stack>
         <Stack direction="row" spacing={4}>
           <Box sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
-            <div ref={contentRef}>{parse(approvalData?.content || "")}</div>
+            <div ref={contentRef}>{parse(approvalData?.tempBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}
           <ApprovalDraftList type="W" participant={participant} participants={approvalInfo}/>  
         </Stack>
         <Stack direction="row" spacing={1}>
-          <Button variant='h5' startIcon={<SendIcon />}onClick={() => onSubmtEvent("C")}>결재요청</Button>
+          <Button variant='h5' startIcon={<SendIcon />} onClick={() => onSubmtEvent("C")}>결재요청</Button>
           <Button variant='h5' startIcon={<SaveIcon />} onClick={() => onSubmtEvent("T")}>임시저장</Button>
           <Button variant='h5' startIcon={<ArrowBackIcon />} onClick={cancel}>취소</Button>
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
+          <Button variant='h5' startIcon={<FeedbackIcon />} onClick={onRejectModal}>반려사유</Button>
         </Stack>
       </Stack>
       <ModalPortal>
         {modal && <ApprovalModal onModal={onModal} setApprovalInfo={setApprovalInfo} approvalInfo={approvalInfo} htmlApproveSetting={htmlApproveSetting}/>}
       </ModalPortal>
+      <ModalPortal>
+        {rejectModal && <RejectionModal onModal={onRejectModal} reason={approvalData?.reasonRejection}/>}
+      </ModalPortal>
     </Stack>
   )
 };
 
-export default ApprovalWrite;
+export default ApprovalReApply;

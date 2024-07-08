@@ -16,9 +16,13 @@ import Warning from './pages/warning/Warning';
 import Closing from './pages/closing/Closing';
 import Menu from './pages/menu/Menu';
 import ApprovalDetail from './pages/approval/ApprovalDetail';
+import ApprovalList from './pages/approval/ApprovalList';
+import ApprovalModify from './pages/approval/ApprovalModify';
+import ApprovalReApply from './pages/approval/ApprovalReApply';
 import Sales from './pages/sales/Sales';
 import Order from './pages/order/Order';
 import Chat from './components/chat/Chat';
+
 
 
 function App() {
@@ -60,9 +64,18 @@ function App() {
               <Route path='/warn' element={<Warning />} />
               <Route path='/close' element={<Closing />} />
               <Route path='/menu' element={<Menu />} />
+
+              <Route path='/sales' element={<SalesList />} />
               <Route path='/sales' element={<Sales />} />
-              <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
               <Route path='/order' element={<Order />} />
+
+              {/* 전자결재 */}                       
+              <Route path='/approval/draft/form' element={<ApprovalWrite />} />
+              <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
+              <Route path='/approval/draft/list/:category' element={<ApprovalList />} />
+              <Route path='/approval/draft/revise/:id' element={<ApprovalModify />} />
+              <Route path='/approval/draft/reapply/:id' element={<ApprovalReApply />} />
+
             </Route>
             <Route path="/login" element={<Login />} />
           </Routes>

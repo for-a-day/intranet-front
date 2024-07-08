@@ -1,0 +1,39 @@
+.pdf-content {
+  width: 210mm;
+  padding: 20mm;
+  border: 1px solid #ccc;
+  margin: 0 auto;
+  background: white;
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.info, .details, .shipment, .order, .summary {
+  margin-bottom: 20px;
+}
+
+.info-item, .details-item, .shipment-item, .summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.order table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order th, .order td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+@page {
+  size: A4;
+  margin: 10mm; /* 페이지의 모든 면에 여백을 추가 */
+}
