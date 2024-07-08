@@ -83,60 +83,64 @@ const TodaySchedule = () => {
   }, [departmentCode]);
 
   return (
-    <Card>
-      <CardContent sx={{ pb: "0 !important" }}>
-        <Box sx={{ display: "flex", alignItems: "flex-start", mb: 5 }}>
-          <Box>
-            <Typography
-              sx={{ fontWeight: "bold", fontSize: "h3.fontSize", marginBottom: "0" }}
-              gutterBottom
-            >
-              오늘의 일정
-            </Typography>
+    <>
+      <Box>
+        <Typography
+          sx={{ fontWeight: "bold", fontSize: "h3.fontSize", marginBottom: "0" }}
+          gutterBottom
+        >
+          오늘의 일정
+        </Typography>
+      </Box>
+      <Card>
+        <CardContent sx={{ pb: "0 !important" }}>
+          <Box sx={{ display: "flex", alignItems: "flex-start", mb: 5 }}>
+            <Box sx={{ marginLeft: "auto" }}>
+              <IconButton
+                aria-expanded={open ? "true" : undefined}
+                aria-haspopup="true"
+                onClick={handleClick}
+              >
+                <MoreVertOutlinedIcon />
+              </IconButton>
+              <Menu
+                id="long-menu"
+                MenuListProps={{ "aria-labelledby": "long-button" }}
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                {options.map((option) => (
+                  <MenuItem key={option} selected={option === "Pyxis"} onClick={handleClose}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
           </Box>
-          <Box sx={{ marginLeft: "auto" }}>
-            <IconButton
-              aria-expanded={open ? "true" : undefined}
-              aria-haspopup="true"
-              onClick={handleClick}
-            >
-              <MoreVertOutlinedIcon />
-            </IconButton>
-            <Menu
-              id="long-menu"
-              MenuListProps={{ "aria-labelledby": "long-button" }}
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              {options.map((option) => (
-                <MenuItem key={option} selected={option === "Pyxis"} onClick={handleClose}>
-                  {option}
-                </MenuItem>
+          <Box sx={{ maxHeight: 400, overflow: "auto" }}>
+            <Timeline sx={{ p: 0 }}>
+              {activities.map((activity, index) => (
+                <TimelineItem key={index}>
+                  <TimelineOppositeContent sx={{ fontSize: "12px", fontWeight: "700", flex: "0" }}>
+                    {activity.time}
+                  </TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineDot variant="outlined" sx={{ borderColor: activity.color }} />
+                    <TimelineConnector />
+                  </TimelineSeparator>
+                  <TimelineContent color="text.secondary" sx={{ fontSize: "14px" }}>
+                    {activity.text}
+                  </TimelineContent>
+                </TimelineItem>
               ))}
-            </Menu>
+            </Timeline>
           </Box>
-        </Box>
-        <Timeline sx={{ p: 0 }}>
-          {activities.map((activity, index) => (
-            <TimelineItem key={index}>
-              <TimelineOppositeContent sx={{ fontSize: "12px", fontWeight: "700", flex: "0" }}>
-                {activity.time}
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot variant="outlined" sx={{ borderColor: activity.color }} />
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent color="text.secondary" sx={{ fontSize: "14px" }}>
-                {activity.text}
-              </TimelineContent>
-            </TimelineItem>
-          ))}
-        </Timeline>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 

@@ -1,162 +1,196 @@
-import { Grid, Button, Box, AppBar, Toolbar, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent } from "@mui/material";
+import {
+  Grid,
+  Button,
+  Box,
+  AppBar,
+  Toolbar,
+  Typography,
+  Dialog,
+  DialogTitle,
+  TextField,
+  DialogActions,
+  DialogContent,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import FranchiseeList from "../../components/franchisee/FranchiseeList";
 import axios from "axios";
 import styles from "./FranchiseeStyle";
-import { Add as AddIcon, Store as StoreIcon, Warning as WarningIcon, Close as CloseIcon } from '@mui/icons-material';
+import {
+  Add as AddIcon,
+  Store as StoreIcon,
+  Warning as WarningIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
 import AddressSearch from "./AddressSearch";
 
 const Franchisee = () => {
-    const [franchisee, setFranchisee] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [addressOpen, setAddressOpen] = useState(false);
-    const [formData, setFormData] = useState({
-      franchiseeId: '',
-      franchiseeName: '',
-      employeeId: '',
-      owner: '',
-      address: '',
-      phoneNumber: '',
-      contractDate: '',
-      expirationDate: '',
-      warningCount: '',
+  const [franchisee, setFranchisee] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [addressOpen, setAddressOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    franchiseeId: "",
+    franchiseeName: "",
+    employeeId: "",
+    owner: "",
+    address: "",
+    phoneNumber: "",
+    contractDate: "",
+    expirationDate: "",
+    warningCount: "",
+  });
+
+  const fetchFranchisee = async () => {
+    try {
+      const response = await axios.get("http://localhost:9000/app/store");
+      const franchiseeMap = response.data.data;
+
+      // Convert the Map object to an array
+      const franchiseeArray = Object.values(franchiseeMap);
+      setFranchisee(franchiseeArray);
+    } catch (error) {
+      console.error("에러났슴둥", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFranchisee();
+  }, []);
+
+  // 모달 키기
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  // 모달 끄기
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  // 모달 꺼짐 방지
+  const handleDialogClick = (e) => {
+    e.stopPropagation();
+  };
+
+  const handleAddressSearchOpen = () => {
+    setAddressOpen(true);
+  };
+
+  const handleAddressSearchClose = () => {
+    setAddressOpen(false);
+  };
+
+  const handleAddressComplete = (address) => {
+    setFormData({
+      ...formData,
+      address,
     });
-    
-    const fetchFranchisee = async () => {
-      try {
-          const response = await axios.get('http://localhost:9000/app/store');
-          const franchiseeMap = response.data.data;
+    handleAddressSearchClose();
+  };
 
-          // Convert the Map object to an array
-          const franchiseeArray = Object.values(franchiseeMap);
-          setFranchisee(franchiseeArray);
-      } catch (error) {
-          console.error('에러났슴둥', error);
-      }
-    };
-
-    useEffect(() => {
+  //등록
+  const handleRegister = async () => {
+    console.log("등록버튼이 눌렸습니다");
+    try {
+      const url = `http://localhost:9000/app/store`;
+      const response = await axios.post(url, formData);
+      alert("새로운 가맹점 등록을 축하드립니다!");
+      console.log("api 담기 성공", response.data);
       fetchFranchisee();
-    }, []);
+    } catch (error) {
+      console.log("등록 중 에러 발생", error);
+    }
+  };
 
-    // 모달 키기
-    const handleOpen = () => {
-      setOpen(true);
-    };
+  // input요소 및 만료 계약일 생성
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
 
-    // 모달 끄기
-    const handleClose = () => {
-      setOpen(false);
-    };
+    // 만료계약일 자동 설정
+    if (name === "contractDate") {
+      const contractDate = new Date(value);
+      const expirationDate = new Date(
+        contractDate.getFullYear() + 2,
+        contractDate.getMonth(),
+        contractDate.getDate(),
+      );
+      setFormData((prevState) => ({
+        ...prevState,
+        expirationDate: expirationDate.toISOString().split("T")[0],
+      }));
+    }
+  };
 
-    // 모달 꺼짐 방지 
-    const handleDialogClick = (e) => {
-      e.stopPropagation();
-    };
+  // 등록 버튼
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("정상 등록 완료", formData);
+    // Close modal
+    setOpen(false);
+  };
 
-    const handleAddressSearchOpen = () => {
-      setAddressOpen(true);
-    };
-
-    const handleAddressSearchClose = () => {
-        setAddressOpen(false);
-    };
-
-    const handleAddressComplete = (address) => {
-        setFormData({
-            ...formData,
-            address
-        });
-        handleAddressSearchClose();
-    };
-
-    //등록
-    const handleRegister = async () => {
-        console.log('등록버튼이 눌렸습니다');
-        try {
-            const url = `http://localhost:9000/app/store`;
-            const response = await axios.post(url, formData);
-            alert('새로운 가맹점 등록을 축하드립니다!');
-            console.log('api 담기 성공', response.data);
-            fetchFranchisee();
-        } catch (error) {
-            console.log('등록 중 에러 발생', error);
-        }
-    }; 
-
-    // input요소 및 만료 계약일 생성
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-
-        // 만료계약일 자동 설정
-        if(name === 'contractDate'){
-            const contractDate = new Date(value);
-            const expirationDate = new Date(contractDate.getFullYear() + 2
-                                            , contractDate.getMonth(), contractDate.getDate());
-            setFormData(prevState => ({
-                ...prevState,
-                expirationDate: expirationDate.toISOString().split('T')[0]
-            }));
-        }
-    };
-
-    // 등록 버튼
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      console.log("정상 등록 완료", formData);
-      // Close modal
-      setOpen(false);
-    };
-
-    return (
-        <>
-        {/* Main Content */}
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Box sx={{ flexGrow: 1 }}>
-              <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)', minWidth:500 }}>
-                <Toolbar>
-                  <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-                    <Typography
-                      variant="h3"
-                      component="div"
-                      sx={{ color: 'black', fontWeight: 'bold', marginRight: '10px' }}
-                    >
-                      가맹점 관리
-                    </Typography>
-                    <button style={styles.register} onClick={handleOpen}>
-                    <AddIcon/> 등록
-                    </button>
-                  </Box>
-                  <Button color="inherit" href="/franchisee" sx={{ color: 'black', fontWeight: 'bold', backgroundColor: "#59bfcf", margin: '0 5px', borderRadius: '8px' }}>
+  return (
+    <>
+      {/* Main Content */}
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Box sx={{ flexGrow: 1 }}>
+            <AppBar position="static" sx={{ bgcolor: "rgb(186, 232, 250)", minWidth: 500 }}>
+              <Toolbar>
+                <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
+                  <Typography
+                    variant="h3"
+                    component="div"
+                    sx={{ color: "black", fontWeight: "bold", marginRight: "10px" }}
+                  >
+                    가맹점 관리
+                  </Typography>
+                  <button style={styles.register} onClick={handleOpen}>
+                    등록
+                  </button>
+                </Box>
+                <Button
+                  color="inherit"
+                  href="/franchisee"
+                  sx={{
+                    color: "black",
+                    fontWeight: "bold",
+                    backgroundColor: "#59bfcf",
+                    margin: "0 5px",
+                    borderRadius: "8px",
+                  }}
+                >
                   <StoreIcon /> 가맹점
-                  </Button>
-                  <Button color="inherit" href="/close" sx={{ color: 'black', fontWeight: 'bold', margin: '0 5px', borderRadius: '8px'  }}>
-                  <CloseIcon/> 폐점
-                  </Button>
-                  <Button color="inherit" href="/warn" sx={{ color: 'black', fontWeight: 'bold' }}>
-                  <WarningIcon/> 경고 가맹점
-                  </Button>
-                </Toolbar>
-              </AppBar>
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <FranchiseeList />
-          </Grid>
-          <Dialog open={open}>
-            <DialogContent onClick={handleDialogClick}>
+                </Button>
+                <Button
+                  color="inherit"
+                  href="/close"
+                  sx={{ color: "black", fontWeight: "bold", margin: "0 5px", borderRadius: "8px" }}
+                >
+                  <CloseIcon /> 폐점
+                </Button>
+                <Button color="inherit" href="/warn" sx={{ color: "black", fontWeight: "bold" }}>
+                  <WarningIcon /> 경고 가맹점
+                </Button>
+              </Toolbar>
+            </AppBar>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <FranchiseeList />
+        </Grid>
+        <Dialog open={open}>
+          <DialogContent onClick={handleDialogClick}>
             {open && (
               <div style={styles.modal}>
-                  <h2>가맹점 등록</h2>
-                  <hr style={{marginBottom:'25px'}}></hr>
-                  <form onSubmit={handleSubmit}>
+                <h2>가맹점 등록</h2>
+                <hr style={{ marginBottom: "25px" }}></hr>
+                <form onSubmit={handleSubmit}>
                   <Grid container spacing={3}>
-                  <Grid item xs={6}>
+                    <Grid item xs={6}>
                       <TextField
                         type="text"
                         name="franchiseeId"
@@ -166,8 +200,8 @@ const Franchisee = () => {
                         required
                         fullWidth
                       />
-                      </Grid>
-                      <Grid item xs={6}>
+                    </Grid>
+                    <Grid item xs={6}>
                       <TextField
                         type="text"
                         name="franchiseeName"
@@ -177,8 +211,8 @@ const Franchisee = () => {
                         required
                         fullWidth
                       />
-                      </Grid>
-                      <Grid item xs={12}>
+                    </Grid>
+                    <Grid item xs={12}>
                       <TextField
                         type="text"
                         name="owner"
@@ -188,9 +222,10 @@ const Franchisee = () => {
                         required
                         fullWidth
                       />
-                      </Grid>
-                      <Grid item xs={6}>
-                      <TextField sx={styles.paragraph}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        sx={styles.paragraph}
                         type="text"
                         name="address"
                         label="지점주소"
@@ -200,16 +235,13 @@ const Franchisee = () => {
                         fullWidth
                         InputProps={{
                           readOnly: true,
-                          endAdornment: (
-                              <Button onClick={handleAddressSearchOpen}>
-                                  검색
-                              </Button>
-                              )
-                            }}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                      <TextField sx={styles.paragraph}
+                          endAdornment: <Button onClick={handleAddressSearchOpen}>검색</Button>,
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        sx={styles.paragraph}
                         type="text"
                         name="phoneNumber"
                         label="연락처"
@@ -218,9 +250,10 @@ const Franchisee = () => {
                         required
                         fullWidth
                       />
-                      </Grid>
-                      <Grid item xs={6}>
-                      <TextField sx={styles.paragraph}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        sx={styles.paragraph}
                         type="date"
                         name="contractDate"
                         label="가맹계약일"
@@ -232,9 +265,10 @@ const Franchisee = () => {
                           shrink: true,
                         }}
                       />
-                      </Grid>
-                      <Grid item xs={6}>
-                      <TextField sx={styles.paragraph}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        sx={styles.paragraph}
                         type="date"
                         name="expirationDate"
                         label="만료계약일"
@@ -246,10 +280,12 @@ const Franchisee = () => {
                         }}
                         fullWidth
                       />
-                      </Grid>
-                      <Grid item xs={12}>
-                      <TextField sx={styles.paragraph}
-                        type="text"s
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        sx={styles.paragraph}
+                        type="text"
+                        s
                         name="employeeId"
                         label="담당자"
                         value={formData.employeeId}
@@ -257,38 +293,46 @@ const Franchisee = () => {
                         required
                         fullWidth
                       />
-                      </Grid>
-                      <input
-                        type="hidden"
-                        name="warningCount"
-                        value={formData.warningCount}
-                        onChange={handleInputChange}
-                        required
-                        readOnly
-                      />
-                      </Grid>
-                  </form>
+                    </Grid>
+                    <input
+                      type="hidden"
+                      name="warningCount"
+                      value={formData.warningCount}
+                      onChange={handleInputChange}
+                      required
+                      readOnly
+                    />
+                  </Grid>
+                </form>
               </div>
             )}
-            </DialogContent>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, mr:3, mb:3 }}>
-            <Button onClick={handleRegister} color="primary" sx={{backgroundColor:'#1a97f5', color:"white"}}>
-                등록
-              </Button>
-              <Button onClick={handleClose} color="primary" sx={{backgroundColor:'#dc3545' , color:"white", ml:1}}>
-                취소
-              </Button>         
-              </Box>
-          </Dialog>
-          <Dialog open={addressOpen} onClose={handleAddressSearchClose}>
-                    <DialogTitle>주소 검색</DialogTitle>
-                    <DialogContent>
-                        <AddressSearch onComplete={handleAddressComplete} />
-                    </DialogContent>
-          </Dialog>
-          </Grid>
-      </>  
-    );
-  };
+          </DialogContent>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3, mr: 3, mb: 3 }}>
+            <Button
+              onClick={handleRegister}
+              color="primary"
+              sx={{ backgroundColor: "#1a97f5", color: "white" }}
+            >
+              등록
+            </Button>
+            <Button
+              onClick={handleClose}
+              color="primary"
+              sx={{ backgroundColor: "#dc3545", color: "white", ml: 1 }}
+            >
+              취소
+            </Button>
+          </Box>
+        </Dialog>
+        <Dialog open={addressOpen} onClose={handleAddressSearchClose}>
+          <DialogTitle>주소 검색</DialogTitle>
+          <DialogContent>
+            <AddressSearch onComplete={handleAddressComplete} />
+          </DialogContent>
+        </Dialog>
+      </Grid>
+    </>
+  );
+};
 
 export default Franchisee;

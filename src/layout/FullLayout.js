@@ -19,7 +19,6 @@ import Header from "./header/Header";
 import Sidebar from "./sidebar/Sidebar";
 import Footer from "./footer/Footer";
 import { TopbarHeight } from "../assets/Theme-variable";
-
 const MainWrapper = experimentalStyled("div")(({ theme }) => ({
   display: "flex",
   minHeight: "100vh",
@@ -38,9 +37,7 @@ const PageWrapper = experimentalStyled("div")(({ theme }) => ({
     paddingTop: "64px",
   },
 }));
-
 const drawerWidth = 283; // 오른쪽 사이드바 너비 설정
-
 const FullLayout = () => {
   const theme = useTheme(); // useTheme 훅을 사용하여 테마 가져오기
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -49,26 +46,22 @@ const FullLayout = () => {
   const lgUp = useMediaQuery(theme.breakpoints.up("lg"));
   const location = useLocation();
   const pathsWithSidebar = ['/franchisee', '/close', '/warn'];
-
   return (
     <MainWrapper>
-      <CssBaseline />
+      {pathsWithSidebar.includes(location.pathname) && <CssBaseline />}
       <Header
         sx={{
           paddingLeft: isSidebarOpen && lgUp ? "265px" : "",
-          backgroundColor: "#ffffff",
+          backgroundColor: "#FFFFFF",
         }}
         toggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
         toggleMobileSidebar={() => setMobileSidebarOpen(true)}
       />
-
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         isMobileSidebarOpen={isMobileSidebarOpen}
         onSidebarClose={() => setMobileSidebarOpen(false)}
       />
-
-
       {pathsWithSidebar.includes(location.pathname) && (
         <Drawer
           sx={{
@@ -88,27 +81,17 @@ const FullLayout = () => {
           variant={ "permanent"}
           onClose={() => setMobileSidebarOpen(false)}
         >
-          <Box sx={{pl:2}} >
+          <Box>
+            <Box sx={{pl:2}}>
           <h2>가맹점 관리</h2>
+          </Box>
+          <hr></hr>
           <Box sx={{textAlign:'center', mb:4}}>
-          <Button
-          variant="contained"
-          sx={{
-            pr: 8,
-            pl: 8,
-            pt: 1.5,
-            pb: 1.5,
-            mr: 2,
-          }}
-        >
-          가맹점 등록
-        </Button>
         </Box>
           <List>
             {['가맹점', '폐점', '경고 가맹점'].map((text, index) => {
               const to = `/${text === '가맹점' ? 'franchisee' : text === '폐점' ? 'close' : 'warn'}`;
               const isActive = location.pathname === to;
-
               return (
                 <ListItem
                   button
@@ -131,7 +114,6 @@ const FullLayout = () => {
           <Divider />
         </Drawer>
       )}
-
       <PageWrapper>
         <Container
           maxWidth={false}
@@ -150,5 +132,4 @@ const FullLayout = () => {
     </MainWrapper>
   );
 };
-
 export default FullLayout;
