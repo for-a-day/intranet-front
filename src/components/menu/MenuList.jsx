@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { MenuItem, TextField, Typography,
     Grid,
     Box,
@@ -12,8 +11,10 @@ import { MenuItem, TextField, Typography,
     Chip,
     Paper, } from "@mui/material";
 import styles from './MenuListStyles';
+import instance from "../../axiosConfig";
 
 const MenuList = () => {
+    const token = localStorage.getItem('token');
     const [menu, setMenu] = useState([]);
     const [selectedMenu, setSelectedMenu] = useState(null); // 선택된 메뉴 정보를 저장할 상태
     const [showModal, setShowModal] = useState(false); // 상세 모달 표시 여부를 관리하는 상태
@@ -30,7 +31,7 @@ const MenuList = () => {
     // 목록
     const fetchMenu = async () => {
             try {
-                const response = await axios.get('http://localhost:9000/app/menu');
+                const response = await instance.get('/app/menu');
                 const menuMap = response.data.data;
 
                 const menuArray = Object.values(menuMap);
@@ -42,7 +43,7 @@ const MenuList = () => {
 
     useEffect(() => {
         fetchMenu();
-    }, []);
+    }, [token]);
 
     // 메뉴 삭제 함수
     const handleDeleteMenu = async () => {
@@ -56,7 +57,7 @@ const MenuList = () => {
         })
         try {
             // 삭제 API 호출
-            const delResponse = await axios.put(`http://localhost:9000/app/menu/delete/${selectedMenu.menu_id}`, delData);
+            const delResponse = await instance.put(`/app/menu/delete/${selectedMenu.menu_id}`, delData);
 
             alert('메뉴가 미판매 처리 되었습니다.');
             console.log('메뉴 삭제 완료');
@@ -79,7 +80,7 @@ const MenuList = () => {
         })
         try {
             // 수정 API 호출
-            const modResponse = await axios.put(`http://localhost:9000/app/menu/${selectedMenu.menu_id}`, modData);
+            const modResponse = await instance.put(`/app/menu/${selectedMenu.menu_id}`, modData);
             alert('메뉴가 성공적으로 수정되었습니다');
             handleCloseEditModal();
             console.log('수정 API 응답:', modResponse.data);

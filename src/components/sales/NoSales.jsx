@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import instance from "../../axiosConfig";
 import styles from './NoSalesStyle';
 
 const NoSales = () => {
+    const token = localStorage.getItem('token');
    const[noSales, SetNoSales] = useState([]);
 
     useEffect(() => {
       const fetchNoSales = async () => {
         try {
-          const response = await axios.get('http://localhost:9000/app/store/compare');
+          const response = await instance.get('/app/store/compare');
           const noSalesMap = response.data.franchiseeIdsNotInSales;
           SetNoSales(noSalesMap);
         } catch (error) {
@@ -17,7 +18,7 @@ const NoSales = () => {
       };
   
       fetchNoSales();
-    }, []);
+    }, [token]);
 
   return (
     <div style={styles.salesTableWrapper}>

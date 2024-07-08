@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody, Grid, Button, IconButton } from "@mui/material";
+import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody, Grid, Button, IconButton, Pagination } from "@mui/material";
 import styles from "./FranchiseeListStyle";
 import { Close as CloseIcon } from "@mui/icons-material";
+import instance from "../../axiosConfig";
 
 const FranchiseeList = () => {
+        const token = localStorage.getItem('token');
         const [franchisee, setFranchisee] = useState([]);
         const [selectedFranchisee, setSelectedFranchisee] = useState(null);
         const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,9 +32,18 @@ const FranchiseeList = () => {
             closing_id: null
         });
 
+        const [currentPage, setCurrentPage] = useState(1);
+        const [itemsPerPage] = useState(5);
+
+        const currentData = franchisee.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
         const fetchFranchisee = async () => {
             try {
-                const response = await axios.get('http://localhost:9000/app/store');
+                const response = await instance.get('/app/store', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const franchiseeMap = response.data.data;
 
                 // Convert the Map object to an array
@@ -47,7 +57,7 @@ const FranchiseeList = () => {
         // 목록 가져오기
         useEffect(() => {
             fetchFranchisee();
-        }, []);
+        }, [token]);
 
         // 화면 기능 - 행 클릭 시,
         const handleRowClick = (franchisee) => {
@@ -129,8 +139,12 @@ const FranchiseeList = () => {
             e.preventDefault();
 
             try {
-                const url = `http://localhost:9000/app/store/${selectedFranchisee.franchiseeId}`;
-                const response = await axios.put(url, formData);
+                const url = `/app/store/${selectedFranchisee.franchiseeId}`;
+                const response = await instance.put(url, formData,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 closeModal();
                 fetchFranchisee();
                 console.log('api 담기 성공', response.data);
@@ -186,11 +200,19 @@ const FranchiseeList = () => {
                 console.log('지금 담긴 closeData : ', closeData);        
 
                 // 폐점 API 호출
-                const closeResponse = await axios.post(`http://localhost:9000/app/close`, closeData);
+                const closeResponse = await instance.post(`/app/close`, closeData,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 console.log('폐점 API 응답:', closeResponse.data);
             
                 // 경고 API 호출 전에 franchisee_id가 경고 테이블에 존재하는지 확인
-                const checkWarningExists = await axios.get( `http://localhost:9000/app/warn/exist/${franchisee_id}`);
+                const checkWarningExists = await instance.get( `/app/warn/exist/${franchisee_id}`,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 console.log(checkWarningExists);
                 const warningExists = checkWarningExists.data;
                 console.log('존재하는가? ', warningExists);
@@ -206,7 +228,11 @@ const FranchiseeList = () => {
                     console.log('경고 API :', warnData); 
 
                     // 경고 API 호출
-                    const warnResponse = await axios.put(`http://localhost:9000/app/warn/${franchisee_id}`, warnData);
+                    const warnResponse = await instance.put(`/app/warn/${franchisee_id}`, warnData,{
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                    });
                     console.log('경고 DB 확인', warnResponse.data);
                 }else{
                     console.log(`franchisee_id ${franchisee_id}에 해당하는 경고가 없습니다. 경고 API 호출을 스킵합니다.`);
@@ -214,7 +240,11 @@ const FranchiseeList = () => {
 
         
                 // 가맹점 삭제 API 호출
-                const franResponse = await axios.delete(`http://localhost:9000/app/store/${franchisee_id}`);
+                const franResponse = await instance.delete(`/app/store/${franchisee_id}`,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 console.log('삭제 API 응답:', franResponse.data);
         
                 alert('모든 작업이 완료되었습니다.');
@@ -264,7 +294,7 @@ const FranchiseeList = () => {
 
                 if (canSubmit) {
                     console.log('경고 api 실행 간다');
-                    const url = `http://localhost:9000/app/warn`;
+                    const url = `/app/warn`;
                     const data = {
                         warningReason: warnData.warningReason,
                         franchisee_id: formData.franchiseeId,
@@ -274,7 +304,11 @@ const FranchiseeList = () => {
                     console.log('담긴 데이터 ->', data);
                     console.log('담긴 franchiseeId 데이터 ->', data.franchisee_id);
 
-                    const response = await axios.post(url, data);
+                    const response = await instance.post(url, data,{
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                    });
 
                     alert('가맹점 경고사항이 반영되었습니다');
 
