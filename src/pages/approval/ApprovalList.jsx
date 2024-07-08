@@ -31,6 +31,7 @@ const ApprovalList = () => {
   const title = location?.state?.title || "";
   const categoryList = ['todo', 'schedule', 'draft', 'temp', 'approval', 'department', 'complete'];
   const {isLoading, error, approvalList = []} = useSelector((state) => state.approval);
+
   useEffect(() => {
     dispatch(_getApprovalList(category));
 
@@ -44,7 +45,7 @@ const ApprovalList = () => {
   },[category]);
 
   if (!categoryList.includes(category)) {
-    return <Navigate to="/approval/draft/form" />;
+    return <Navigate to="/approval/draft" />;
   }
 
   const getStatus = (status) => {
@@ -71,34 +72,36 @@ const ApprovalList = () => {
           <Table size="small">
             <TableHead>
               <StyledTableRow>
-                  <TableCell padding="checkbox" sx={{width: "1% !important"}}><Checkbox /></TableCell>
-                  <TableCell sx={{width: "10%"}}>기안일</TableCell>
-                  <TableCell sx={{width: "20%"}}>결재양식</TableCell>
-                  <TableCell sx={{width: "5%"}}>긴급</TableCell>
-                  <TableCell sx={{width: "25%"}}>제목</TableCell>
-                  <TableCell sx={{width: "8%"}}>첨부</TableCell>
-                  <TableCell sx={{width: "15%"}}>문서번호</TableCell>
+                  <TableCell sx={{width: "15%"}}>기안일</TableCell>
+                  <TableCell sx={{width: "17%"}}>결재양식</TableCell>
+                  <TableCell sx={{width: "5%", textAlign:"center"}}>긴급</TableCell>
+                  <TableCell sx={{width: "34%"}}>제목</TableCell>
+                  {/* <TableCell sx={{width: "8%"}}>첨부</TableCell> */}
+                  <TableCell sx={{width: "17%"}}>문서번호</TableCell>
                   <TableCell sx={{width: "10%"}}>결재상태</TableCell>
               </StyledTableRow>
             </TableHead>
             <TableBody>
               {approvalList?.map((doc, index) => (
                 <StyledTableRow key={index}>
-                    <TableCell padding="checkbox"><Checkbox /></TableCell>
                     <TableCell>{doc?.creationDate?.split("T")[0]}</TableCell>
                     <TableCell>{doc.formName}</TableCell>
                     <TableCell>
-                      {doc.urgency && <Chip label="긴급" color="error" size="small" />}
+                      {doc?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}
                     </TableCell>
                     {doc.status === 'T' ? (
                       <SubjectTableCell onClick={() => navigate(`/approval/draft/revise/${doc.approvalId}`)}>{doc.subject}</SubjectTableCell>
                     ) : (
                       <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${doc.approvalId}`)}>{doc.subject}</SubjectTableCell>
                     )}
-                    <TableCell>
+                    {/* <TableCell>
                       {doc.fileCount > 0 && <AttachFile sx={{ fontSize: 20 }} />}
-                    </TableCell>
-                    <TableCell>{doc.formName}-{doc.approvalId}</TableCell>
+                    </TableCell> */}
+                    {doc?.docNo !== null && doc.docNo !== undefined? (
+                      <TableCell>NG-결재-2024-{String(doc?.docNo).padStart(4, '0')}</TableCell>
+                    ) : (
+                      <TableCell></TableCell>
+                    )}
                     <TableCell>
                       {getStatus(doc.status)}
                     </TableCell>
