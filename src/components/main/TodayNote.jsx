@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-
 const TodayNote = () => {
   const [note, setNote] = useState("");
-
   useEffect(() => {
     const savedNote = Cookies.get("note");
     if (savedNote) {
@@ -15,11 +13,9 @@ const TodayNote = () => {
       }
     }
   }, []);
-
   const handleChange = (e) => {
     setNote(e.target.value);
   };
-
   const handleSave = () => {
     const now = new Date();
     const item = {
@@ -29,27 +25,63 @@ const TodayNote = () => {
     Cookies.set("note", JSON.stringify(item), { expires: 1 }); // Expires in 1 day
     alert("Note saved!");
   };
-
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Note App</h1>
-      <textarea
-        value={note}
-        onChange={handleChange}
-        rows="10"
-        cols="50"
-        style={{ width: "100%", padding: "10px", fontSize: "16px" }}
-      />
-      <div style={{ marginTop: "10px" }}>
-        <button
-          onClick={handleSave}
-          style={{ padding: "10px 20px", fontSize: "16px" }}
-        >
+    <div style={styles.container}>
+      <div style={styles.headerContainer}>
+        <h1 style={styles.header}>MEMO</h1>
+        <button onClick={handleSave} style={styles.button}>
           Save
         </button>
+      </div>
+      <div style={styles.textareaContainer}>
+        <textarea
+          value={note}
+          onChange={handleChange}
+          rows="10"
+          style={styles.textarea}
+          placeholder="Write your note here..."
+        />
       </div>
     </div>
   );
 };
-
+const styles = {
+  container: {
+    padding: "20px",
+    maxWidth: "600px",
+    margin: "0 auto",
+    fontFamily: "Arial, sans-serif",
+  },
+  headerContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  header: {
+    fontSize: "24px",
+  },
+  button: {
+    padding: "10px 20px",
+    fontSize: "16px",
+    backgroundColor: "#007BFF",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  textareaContainer: {
+    marginBottom: "2px",
+  },
+  textarea: {
+    width: "100%",
+    fontSize: "16px",
+    lineHeight: "1.6",
+    border: "none",
+    borderRadius: "5px",
+    boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+    resize: "none",
+    minHeight: "200px",
+  },
+};
 export default TodayNote;
