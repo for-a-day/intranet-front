@@ -64,7 +64,7 @@ import { MenuItem, TextField } from '@mui/material';
     },
     button: {
         marginLeft: '10px',
-        padding: '8px 15px',
+        padding: '10px 15px',
         backgroundColor: '#007BFF',
         color: '#fff',
         border: 'none',
@@ -86,7 +86,7 @@ import { MenuItem, TextField } from '@mui/material';
     },
     delButton: {
         marginLeft: '10px',
-        padding: '8px 15px',
+        padding: '10px 15px',
         backgroundColor: '#dc3545',
         color: '#fff',
         border: 'none',
@@ -138,8 +138,16 @@ import { MenuItem, TextField } from '@mui/material';
     modalTitle: {
         fontSize: '1.5rem',  // 제목의 폰트 크기
         fontWeight: 'bold',  // 제목의 글꼴 두께
-        marginBottom: '20px',  // 제목 아래 여백
+        marginBottom: '1rem',  // 제목 아래 여백
         color: '#333',  // 제목의 글자 색상
+    },
+    highest: {
+        color: 'green',
+        fontWeight: 'bold',
+      },
+    lowest: {
+        color: 'red',
+        fontWeight: 'bold',
     }
 };
 

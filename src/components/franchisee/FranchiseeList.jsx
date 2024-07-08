@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { TextField } from "@mui/material";
+import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody, Grid, Button, IconButton } from "@mui/material";
+import styles from "./FranchiseeListStyle";
+import { Close as CloseIcon } from "@mui/icons-material";
 
 const FranchiseeList = () => {
         const [franchisee, setFranchisee] = useState([]);
@@ -29,20 +31,21 @@ const FranchiseeList = () => {
             closing_id: null
         });
 
+        const fetchFranchisee = async () => {
+            try {
+                const response = await axios.get('http://localhost:9000/app/store');
+                const franchiseeMap = response.data.data;
+
+                // Convert the Map object to an array
+                const franchiseeArray = Object.values(franchiseeMap);
+                setFranchisee(franchiseeArray);
+            } catch (error) {
+                console.error('에러났슴둥', error);
+            }
+        };
+
         // 목록 가져오기
         useEffect(() => {
-            const fetchFranchisee = async () => {
-                try {
-                    const response = await axios.get('http://localhost:9000/app/store');
-                    const franchiseeMap = response.data.data;
-
-                    // Convert the Map object to an array
-                    const franchiseeArray = Object.values(franchiseeMap);
-                    setFranchisee(franchiseeArray);
-                } catch (error) {
-                    console.error('에러났슴둥', error);
-                }
-            };
             fetchFranchisee();
         }, []);
 
@@ -126,7 +129,9 @@ const FranchiseeList = () => {
                 const url = `http://localhost:9000/app/store/${selectedFranchisee.franchiseeId}`;
                 const response = await axios.put(url, formData);
                 closeModal();
+                fetchFranchisee();
                 console.log('api 담기 성공', response.data);
+                //alert("수정이 완료되었습니다!");
             } catch (error) {
                 console.log('수정 중 에러 발생', error);
             }
@@ -171,7 +176,7 @@ const FranchiseeList = () => {
                     expirationDate: formatDateString(formData.expirationDate),
                     warningCount: formData.warningCount,
                     closingDate: new Date().toISOString().split('T')[0],
-                    employeeId: parseInt(selectedFranchisee.employeeId.employeeId, 10),
+                    employeeId: parseInt(formData.employeeId, 10),
                     closingReason: formData.closingReason
                 };
                 
@@ -180,10 +185,12 @@ const FranchiseeList = () => {
                 // 폐점 API 호출
                 const closeResponse = await axios.post(`http://localhost:9000/app/close`, closeData);
                 console.log('폐점 API 응답:', closeResponse.data);
-        
+            
                 // 경고 API 호출 전에 franchisee_id가 경고 테이블에 존재하는지 확인
                 const checkWarningExists = await axios.get( `http://localhost:9000/app/warn/exist/${franchisee_id}`);
-                const warningExists = checkWarningExists.data.exists;
+                console.log(checkWarningExists);
+                const warningExists = checkWarningExists.data;
+                console.log('존재하는가? ', warningExists);
                 
                 if(warningExists){
 
@@ -191,25 +198,14 @@ const FranchiseeList = () => {
                     const warnData = {
                         warningReason: formData.warningReason || '-',
                         franchisee_id: null,
-                        closing_id: {
-                            closingId: formData.franchiseeId,  
-                            closingName: 'Closing Name',
-                            owner: formData.owner,
-                            address: formData.address,
-                            phoneNumber: formData.phoneNumber,
-                            contractDate: formatDateString(formData.contractDate),
-                            expirationDate: formatDateString(formData.expirationDate),
-                            warningCount: formData.warningCount,
-                            closingDate: new Date().toISOString().split('T')[0],
-                            employeeId: parseInt(selectedFranchisee.employeeId.employeeId, 10),
-                            closingReason: formData.closingReason 
-                        }
+                        closing_id: formData.franchiseeId
                     };
+
+                    console.log('경고 API :', warnData); 
 
                     // 경고 API 호출
                     const warnResponse = await axios.put(`http://localhost:9000/app/warn/${franchisee_id}`, warnData);
-                    console.log('경고 API 응답:', warnResponse.data);   
-
+                    console.log('경고 DB 확인', warnResponse.data);
                 }else{
                     console.log(`franchisee_id ${franchisee_id}에 해당하는 경고가 없습니다. 경고 API 호출을 스킵합니다.`);
                 }
@@ -238,19 +234,16 @@ const FranchiseeList = () => {
                     console.log('오류 메시지:', error.message);
                 }
             }
+            fetchFranchisee();
         };
         
 
         // 경고 초기 횟수 값 설정
         useEffect(() => {
-            console.log('formData.warningCount', formData.warningCount);
-
             if (formData.warningCount !== initialWarningCount.warningCount && !isWarningReasonClicked) {
                 console.log('변경 : ', formData.warningCount, '기존 : ', initialWarningCount);
             }
-
             setInitialWarningCount(formData.warningCount);
-
         }, [formData.warningCount]);
 
         // 경고 등록
@@ -260,14 +253,19 @@ const FranchiseeList = () => {
                 const url = `http://localhost:9000/app/warn`;
                 const data = {
                     warningReason: warnData.warningReason,
-                    franchisee_id: { franchiseeId: formData.franchiseeId },
+                    franchisee_id: formData.franchiseeId,
                     closing_id: null
                 };
+
                 console.log('담긴 데이터 ->', data);
                 console.log('담긴 franchiseeId 데이터 ->', data.franchisee_id);
+
                 const response = await axios.post(url, data);
+
                 alert('가맹점 경고사항이 반영되었습니다');
+
                 console.log('api 담기 성공', response.data);
+
                 closeModal(); // 등록 성공 시 모달 닫기
                 await editSubmit();
             } catch (error) {
@@ -275,230 +273,110 @@ const FranchiseeList = () => {
             }
         };
 
-        // 스타일
-        const styles = {
-            container: {
-                margin: '20px auto',
-                maxWidth: '1000px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-            },
-            title: {
-                textAlign: 'center',
-                marginBottom: '20px',
-                fontSize: '24px',
-            },
-            table: {
-                width: '100%',
-                borderCollapse: 'collapse',
-            },
-            thead: {
-                backgroundColor: '#f2f2f2',
-            },
-            th: {
-                padding: '12px 15px',
-                textAlign: 'left',
-                border: '1px solid #ddd',
-                backgroundColor: '#f4f4f4',
-                fontWeight: 'bold',
-                whiteSpace: 'nowrap',
-            },
-            td: {
-                padding: '12px 15px',
-                textAlign: 'left',
-                border: '1px solid #ddd',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                cursor: 'pointer',
-            },
-            tr: {
-                nthChildEven: {
-                    backgroundColor: '#f9f9f9',
-                },
-                hover: {
-                    backgroundColor: '#f1f1f1',
-                },
-            },
-            editButton: {
-                backgroundColor: '#0080FF',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-            },
-            input: {
-                width: "100%", 
-                marginBottom: "10px",
-                height: "10%"
-            },     
-            saveButton: {
-                backgroundColor: '#0080FF',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-            },
-            delButton: {
-                backgroundColor: '#FF0040',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-                marginLeft: '10px'
-            },
-            confirmButton: {
-                backgroundColor: '#FF0040',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-                marginLeft: '10px'
-            },
-            modal: {
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                backgroundColor: 'white',
-                padding: '20px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                zIndex: 1000,
-                width: '40%',
-                maxWidth: '600px', // 최대 너비 설정
-                height: '45%',
-                maxHeight: '80vh', // 최대 높이 설정
-                overflow: 'auto',
-            },
-            delModal :{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                backgroundColor: 'white',
-                padding: '20px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                zIndex: 1000,
-                width: '55%',
-                maxWidth: '600px', // 최대 너비 설정
-                height: '55%',
-                maxHeight: '80vh', // 최대 높이 설정
-                overflow: 'auto',
-            },
-            paragraph: {
-                margin: '20px', 
-                marginLeft: '10px'
-            },
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 999,
-            },
-            closeButton: {
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                cursor: 'pointer',
-            },
-            cancelButton: {
-                backgroundColor: '#0080FF',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginTop: '20px',
-                marginLeft : '15px'
-            },
-            warnBtn: {
-                backgroundColor: '#FF0040',       
-                color: 'white',
-                padding: '20px 14px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginLeft: '5px'
-            },
-            warnInput: {
-                width: "84%", 
-                marginBottom: "10px",
-                height: "10%"
-            },
-            warnRegister: {
-                backgroundColor: '#0080FF',       
-                color: 'white',
-                padding: '20px 27px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginLeft: '5px'
-            },
-            closingOverlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: '-600px',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                zIndex: 999,
-            }
-        };
-
         return (
-            <div style={styles.container}>
-                <table style={styles.table}>
-                    <thead style={styles.thead}>
-                        <tr>
-                            <th style={styles.th}>가맹점 아이디</th>
-                            <th style={styles.th}>담당자</th>
-                            <th style={styles.th}>가맹점명</th>
-                            <th style={styles.th}>대표자명</th>
-                            <th style={styles.th}>지점주소</th>
-                            <th style={styles.th}>연락처</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <Box sx={{width:'95%', mx:'auto', mt:4}}>
+                 <Table
+                    aria-label="simple table"
+                    sx={{
+                    whiteSpace: "nowrap",
+                    }}
+                >
+                    <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+                    <TableRow>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            가맹점 아이디
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            담당자
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            가맹점명
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            대표자명
+                        </Typography>
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            지점주소
+                        </Typography>   
+                        </TableCell>
+                        <TableCell>
+                        <Typography color="textSecondary" variant="h6" align="center">
+                            연락처
+                        </Typography>
+                        </TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
                         {franchisee.map(franchisee => (
-                            <tr
+                            <TableRow
                                 key={franchisee.franchiseeId}
                                 style={franchisee.franchiseeId % 2 === 0 ? styles.tr.nthChildEven : null}
                                 onMouseOver={e => e.currentTarget.style.backgroundColor = styles.tr.hover.backgroundColor}
                                 onMouseOut={e => e.currentTarget.style.backgroundColor = franchisee.franchiseeId % 2 === 0 ? styles.tr.nthChildEven.backgroundColor : ''}
-                                onClick={() => handleRowClick(franchisee)}
+                                onClick={() => handleRowClick(franchisee)} 
+                                sx={{
+                                    cursor: "pointer",
+                                    "&:hover": { backgroundColor: "#f5f5f5" },
+                                }}
                             >
-                                <td style={styles.td}>{franchisee.franchiseeId}</td>
-                                <td style={styles.td}>{franchisee.employeeId.name}</td>
-                                <td style={{
-                                    ...styles.td,
-                                    color: franchisee.warningCount >= 5 ? 'red' : 'inherit'
-                                }}>
+                                 <TableCell>
+                                 <Typography variant="h6" align="center">
+                                    {franchisee.franchiseeId}
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.employeeId.name}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell
+                                    sx={{
+                                    color: franchisee.warningCount >= 5 ? "red" : "inherit",
+                                    }}
+                                >
+                                    <Typography variant="h6" align="center">
                                     {franchisee.franchiseeName}
-                                </td>
-                                <td style={styles.td}>{franchisee.owner}</td>
-                                <td style={styles.td}>{franchisee.address}</td>
-                                <td style={styles.td}>{franchisee.phoneNumber}</td>
-                            </tr>
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.owner}
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.address}
+                                </Typography>
+                                </TableCell>
+                                <TableCell>
+                                <Typography variant="h6" align="center">
+                                    {franchisee.phoneNumber}
+                                </Typography>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
                 {isModalOpen && (
                     <>
                         <div style={styles.overlay} onClick={closeModal}></div>
                         <div style={styles.modal}>
-                            <span style={styles.closeButton} onClick={closeModal}>
-                                X
-                            </span>
+
+                        <IconButton
+                            sx={{ position: "absolute", top: 10, right: 10 }}
+                            onClick={closeModal}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                             <h2>가맹점 상세 정보</h2>
                             <p style={styles.paragraph}>
                                 <strong>가맹점 아이디 : </strong>{' '}
@@ -545,13 +423,18 @@ const FranchiseeList = () => {
                 {isEditModalOpen && (
                     <>
                         <div style={styles.overlay} onClick={closeModal}></div>
-                        <div style={styles.modal}>
-                            <span style={styles.closeButton} onClick={closeModal}>
-                                X
-                            </span>
+                        <div style={styles.modalEdit}>
+                        <IconButton
+                            sx={{ position: "absolute", top: 10, right: 10 }}
+                            onClick={closeModal}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                             <h2>가맹점 수정</h2>
+                            <hr style={{marginBottom:'25px'}}></hr>
                             <form onSubmit={editSubmit}>
-                                <div style={styles.paragraph}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="franchiseeId"
@@ -560,8 +443,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         readOnly
                                         required
-                                    /></div>
-                                <div style={styles.paragraph}>
+                                    /></Grid>
+                                <Grid item xs={6}>
                                     <TextField 
                                         sx={styles.input}
                                         type="text"
@@ -571,8 +454,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={12}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="owner"
@@ -581,8 +464,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="address"
@@ -591,8 +474,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="phoneNumber"
@@ -601,8 +484,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField  sx={styles.input}
                                         type="date"
                                         name="contractDate"
@@ -611,8 +494,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField sx={styles.input}
                                         type="date"
                                         name="expirationDate"
@@ -621,8 +504,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         disabled
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <TextField 
                                         sx={styles.warnInput}
                                         type="number"
@@ -633,21 +516,23 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
+                                </Grid>
+                                    <Grid item xs={3}>
                                 <button type="button" style={styles.warnBtn} onClick={handleWarningReasonToggle}>경고사유</button>
-                                </div>
+                                </Grid>
                                 {isWarningReasonVisible && (
-                                    <div style={styles.paragraph}>
+                                    <><Grid item xs={10}>
                                             <TextField sx={styles.warnInput}
                                                 name="warningReason"
                                                 value={formData.warningReason}
                                                 label="경고사유"
                                                 onChange={handleInputChange}
-                                                rows="1"
-                                            />
-                                            <button style={styles.warnRegister} type="submit" onClick={warnSubmit}>저장</button>
-                                    </div>
+                                                rows="1" />
+                                        </Grid><Grid item xs={2}>
+                                                <button style={styles.warnRegister} type="submit" onClick={warnSubmit}>저장</button>
+                                            </Grid></>
                                 )}
-                                <div style={styles.paragraph}>
+                                <Grid item xs={12}>
                                     <TextField sx={styles.input}
                                         type="text"
                                         name="employeeId"
@@ -656,8 +541,8 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <div style={styles.paragraph}>
+                                </Grid>
+                                <Grid item xs={9}>
                                     <input sx={styles.input}
                                         type="hidden"
                                         name="employeeId"
@@ -666,16 +551,37 @@ const FranchiseeList = () => {
                                         onChange={handleInputChange}
                                         required
                                     />
-                                </div>
-                                <button style={styles.saveButton} onClick={editSubmit} type="submit">저장</button>
-                                <button style={styles.delButton} onClick={handleDeleteModalOpen}>삭제</button>
+                                </Grid>
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={editSubmit}
+                                    type="submit"
+                                    sx={{ marginRight: 2 }}
+                                    >
+                                    저장
+                                    </Button>
+                                    <Button
+                                    variant="contained"
+                                    onClick={handleDeleteModalOpen}
+                                    sx={{backgroundColor:'#FF0040'}}
+                                    >
+                                    삭제
+                                    </Button>
+                                    </Box>
                                 {isDeleteModalOpen && (
                                     <>
                                         <div style={styles.closingOverlay} onClick={closeModal}></div>
                                         <div style={styles.delModal}>
-                                            <span style={styles.closeButton} onClick={closeModal}>X</span>
+                                        <IconButton
+                                            sx={{ position: "absolute", top: 10, right: 10 }}
+                                            onClick={closeModal}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
                                             <h4>가맹점 폐점 사유를 입력해주세요</h4>
-                                            <div style={styles.paragraph}>
+                                            <Grid item xs={12}>
                                                     <TextField sx={styles.input}
                                                         type="text"
                                                         name="closingReason"
@@ -684,17 +590,33 @@ const FranchiseeList = () => {
                                                         onChange={handleInputChange}
                                                         required
                                                     />
-                                                </div>
-                                            <button style={styles.confirmButton} onClick={handleDelete}>삭제</button>
-                                            <button style={styles.cancelButton} onClick={closeModal}>취소</button>                                   
+                                                </Grid>
+                                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                                                <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    onClick={handleDelete}
+                                                    sx={{ marginRight: 1, backgroundColor:'#FF0040' }}
+                                                    >
+                                                    삭제
+                                                    </Button>
+                                                    <Button
+                                                    variant="contained"
+                                                    onClick={closeModal}
+                                                    sx={{ backgroundColor: '#6c757d', color: '#fff' }}
+                                                    >
+                                                    취소
+                                                    </Button>              
+                                                    </Box>                                               
                                         </div>
                                     </>
                                 )} 
+                                </Grid>
                             </form>
                         </div>
                     </>
                 )}
-            </div>
+            </Box>
         );
 };
 

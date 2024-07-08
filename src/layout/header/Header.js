@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect,useState } from "react";
 
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
@@ -19,9 +19,14 @@ import {
   Divider,
   ListItemIcon,
 } from "@mui/material";
+import axios from "axios";
 
 const Header = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [employeeName, setEmployeeName] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
+  const [levelName, setLevelName] = useState("");
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -53,6 +58,29 @@ const Header = (props) => {
     setAnchorEl5(null);
   };
 
+  useEffect(() => {
+    const userData = async () => {
+      const token = localStorage.getItem("token");
+      if(token) {
+        try {
+          const response = await axios.get("http://localhost:9000/app/employees/token", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          });
+          const employee = response.data.employee;
+          setEmployeeName(employee.name);
+          setDepartmentName(employee.department.departmentName);
+          setLevelName(employee.level.levelName);
+        } catch (error) {
+          console.error("유저 정보 못불러옴", error);
+        }
+      }
+    };
+
+    userData();
+  }, []);
+
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
       <Toolbar>
@@ -69,80 +97,13 @@ const Header = (props) => {
         >
           <MenuOutlinedIcon width="20" height="20" />
         </IconButton>
-        <IconButton
-          aria-label="menu"
-          color="inherit"
-          aria-controls="dd-menu"
-          aria-haspopup="true"
-          onClick={handleClick5}
-        >
-          <AddToPhotosOutlinedIcon />
-        </IconButton>
-        <Menu
-          id="dd-menu"
-          anchorEl={anchorEl5}
-          keepMounted
-          open={Boolean(anchorEl5)}
-          onClose={handleClose5}
-          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-          transformOrigin={{ horizontal: "left", vertical: "top" }}
-          sx={{
-            "& .MuiMenu-paper": {
-              width: "250px",
-              right: 0,
-              top: "70px !important",
-            },
-          }}
-        >
-          <MenuItem onClick={handleClose5}>
-            <Avatar
-              sx={{
-                width: "35px",
-                height: "35px",
-              }}
-            />
-            <Box
-              sx={{
-                ml: 2,
-              }}
-            >
-              New account
-            </Box>
-          </MenuItem>
-          <Divider />
-          <MenuItem onClick={handleClose5}>
-            <Avatar
-              sx={{
-                width: "35px",
-                height: "35px",
-              }}
-            />
-            <Box
-              sx={{
-                ml: 2,
-              }}
-            >
-              New Page
-            </Box>
-          </MenuItem>
-          <MenuItem onClick={handleClose5}>
-            <Avatar
-              sx={{
-                width: "35px",
-                height: "35px",
-              }}
-            />
-            <Box
-              sx={{
-                ml: 2,
-              }}
-            >
-              New Component
-            </Box>
-          </MenuItem>
-        </Menu>
+        
         <Box flexGrow={1} />
-
+        <span> 
+        <span>{departmentName} </span>
+         <span> {levelName} </span>
+         <span> {employeeName} </span>
+        </span>
         {/* ------------------------------------------- */}
         {/* Notifications Dropdown */}
         {/* ------------------------------------------- */}

@@ -11,11 +11,35 @@ const Calendar = () => {
   };
 
   return (
-    <Grid container spacing={0}>
-      <Grid item xs={3} lg={2.2}>
+    <Grid container spacing={0} sx={{
+      display: "flex",
+      flexDirection: { xs: "column", sm: "row" },
+      flexWrap: "nowrap",
+    }}>
+      <Grid
+        item
+        xs={12}
+        sm={3}
+        lg={2}
+        sx={{
+          minWidth: 220,
+          flexShrink: 0,
+          height: "100%", // 전체 높이 차지
+          overflowY: "auto", // 스크롤바 추가
+        }}
+      >
         <CalendarSide onSelectCalendar={selectCalendar} />
       </Grid>
-      <Grid xs={7} lg={9.8}>
+      <Grid
+        item
+        xs={12}
+        sm={9}
+        lg={9.7}
+        sx={{
+          flexGrow: 1,
+          minWidth:1000
+        }}
+      >
         <CalendarList calendarId={selectedCalendarId} />
       </Grid>
     </Grid>
