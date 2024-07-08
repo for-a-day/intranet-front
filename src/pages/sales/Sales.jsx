@@ -3,6 +3,7 @@ import { Grid, Box, AppBar, Toolbar, Typography, Dialog, DialogTitle, DialogCont
 import axios from "axios";
 import SalesList from "../../components/sales/SalesList";
 import {styles, GreenDot, RedDot } from "./SalesStyle";
+import NoSales from "../../components/sales/NoSales";
 
 const currentYear = new Date().getFullYear();
 
@@ -81,6 +82,7 @@ const Sales = () => {
         </Box>  
       </Grid>
       <Grid item xs={12}>
+        <NoSales />
         <SalesList />
       </Grid>
 
