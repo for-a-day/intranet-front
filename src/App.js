@@ -137,13 +137,13 @@ function App() {
 
               /> 
               <Route path='/approval/draft/form' element={<ApprovalWrite />} />
-              <Route path='/franchisee' element={<Franchisee />} />
-              <Route path='/warn' element={<Warning />} />
-              <Route path='/close' element={<Closing />} />
-              <Route path='/menu' element={<Menu />} />
 
-              <Route path='/sales' element={<Sales />} />
-              <Route path='/order' element={<Order />} />
+              <Route path='/app/franchisee' element={<Franchisee />} />
+              <Route path='/app/warn' element={<Warning />} />
+              <Route path='/app/close' element={<Closing />} />
+              <Route path='/app/menu' element={<Menu />} />
+              <Route path='/app/sales' element={<Sales />} />
+              <Route path='/app/order' element={<Order />} />
 
               {/* 전자결재 */}     
               <Route path='/approval/draft' element={<ApprovalMain />} />                   

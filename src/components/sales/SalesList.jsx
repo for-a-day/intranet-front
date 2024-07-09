@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styles from './SalesListStyle';
 import instance from "../../axiosConfig";
+import {
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Chip,
+  Button,
+} from "@mui/material";
 
 const SalesList = () => {
   const token = localStorage.getItem('token');
@@ -77,55 +88,90 @@ const SalesList = () => {
     
 
     return (
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>매출년/월</th>
-            <th style={styles.th}>가맹점ID</th>
-            <th style={styles.th}>가맹점명</th>
-            <th style={styles.th}>사업자명</th>
-            <th style={styles.th}>주소</th>
-            <th style={styles.th}>연락처</th>
-            <th style={styles.th}>월별 매출</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Box sx={{ width: '90%', mx:'auto'}}>
+       <Table aria-label="simple table" sx={{ whiteSpace: "nowrap" }}>
+        <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+          <TableRow>
+            <TableCell>
+              <Typography color="textSecondary" fontWeight='bold' variant="h6" align="center">매출년/월</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" fontWeight='bold' variant="h6" align="center">가맹점ID</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" fontWeight='bold' variant="h6" align="center">가맹점명</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" fontWeight='bold' variant="h6" align="center">사업자명</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" fontWeight='bold' variant="h6" align="center">주소</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" fontWeight='bold' variant="h6" align="center">연락처</Typography>
+            </TableCell>
+            <TableCell>
+              <Typography color="textSecondary" fontWeight='bold' variant="h6" align="center">월별 매출</Typography>
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {filteredSales.map(sale => {
               const monthlyInfo = monthlyData.find(data => data.year === sale.year && data.month === sale.month);
               return(
-                <tr key={sale.salesId}>
-                  <td style={styles.td}>{`${sale.year}년 ${sale.month}월`}</td>
-                  <td style={styles.td}>{sale.franchiseeId.franchiseeId}</td>
-                  <td style={{
-                    ...styles.td,
-                    ...(sale.monthlySales === monthlyData.find(data => data.year === sale.year && data.month === sale.month)?.highest ? styles.highest : {}),
-                    ...(sale.monthlySales === monthlyData.find(data => data.year === sale.year && data.month === sale.month)?.lowest ? styles.lowest : {}),
-                    ...(monthlyInfo && monthlyInfo.highest === monthlyInfo.lowest ? { color: 'black' } : {}),
-                  }}>
-                    {sale.franchiseeId.franchiseeName}
-                  </td>
-                  <td style={styles.td}>{sale.franchiseeId.owner}</td>
-                  <td style={styles.td}>{sale.franchiseeId.address}</td>
-                  <td style={styles.td}>{sale.franchiseeId.phoneNumber}</td>
-                  <td style={styles.td}>{`${sale.monthlySales.toLocaleString()} 원`}</td>
-                </tr>
+                <TableRow key={sale.salesId} sx={{ cursor: "pointer","&:hover": { backgroundColor: "#f5f5f5" }}} >
+                  <TableCell>
+                    <Typography variant="h6" align="center">{`${sale.year}년 ${sale.month}월`}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="#1C1C1C" fontWeight='bold' variant="h6" align="center">{sale.franchiseeId.franchiseeId}</Typography>
+                  </TableCell>
+                  <TableCell >
+                    <Typography variant="h6" align="center" style={{
+                      ...(sale.monthlySales === monthlyData.find(data => data.year === sale.year && data.month === sale.month)?.highest ? styles.highest : {}),
+                      ...(sale.monthlySales === monthlyData.find(data => data.year === sale.year && data.month === sale.month)?.lowest ? styles.lowest : {}),
+                      ...(monthlyInfo && monthlyInfo.highest === monthlyInfo.lowest ? { color: 'black' } : {}),
+                    }}>
+                      {sale.franchiseeId.franchiseeName}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary" variant="h6" align="center">{sale.franchiseeId.owner}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary" variant="h6" align="center">{sale.franchiseeId.address}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="textSecondary" variant="h6" align="center">{sale.franchiseeId.phoneNumber}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography color="#1C1C1C" fontWeight='bold' variant="h6" align="center">{`${sale.monthlySales.toLocaleString()} 원`}</Typography>
+                  </TableCell>
+                </TableRow>
               );
             }
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
+    </Box>  
     );
   };
 
   return (
-    <div style={styles.container}>
+    <Box sx={{ width: '90%', mx:'auto'}}>
       {monthlyData.map(monthly => (
-        <div key={`${monthly.year}-${monthly.month}`}>
-          <h3>{`${monthly.year}년 ${monthly.month}월`}</h3>
+        <Box key={`${monthly.year}-${monthly.month}`}>
+        <Box sx={{ pt: 4, pl: 8, pb: 1 }}>
+          <Typography color="textSecondary" variant="h3" align="left" fontWeight="bold" color='black'>
+            {`${monthly.year}년 ${monthly.month}월`}
+          </Typography>
+        </Box>
+        <Box>
           {renderSalesForYearMonth(monthly.year, monthly.month)}
-        </div>
+        </Box>  
+        </Box>
       ))}
-    </div>
+    </Box>
   );
 };
 

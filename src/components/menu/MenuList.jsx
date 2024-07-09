@@ -134,117 +134,70 @@ const MenuList = () => {
               whiteSpace: "nowrap",
             }}
           >
-                <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
-        <TableRow>
-          <TableCell>
-            <Typography color="textSecondary" variant="h6" align="center">
-              메뉴ID
-            </Typography>
-          </TableCell>
-          <TableCell>
-            <Typography color="textSecondary" variant="h6" align="center">
-              메뉴명
-            </Typography>
-          </TableCell>
-          <TableCell>
-            <Typography color="textSecondary" variant="h6" align="center">
-              판매가격
-            </Typography>
-          </TableCell>
-          <TableCell>
-            <Typography color="textSecondary" variant="h6" align="center">
-              레시피
-            </Typography>
-          </TableCell>
-          <TableCell>
-            <Typography color="textSecondary" variant="h6" align="center">
-              총 원가
-            </Typography>
-          </TableCell>
-          <TableCell>
-            <Typography color="textSecondary" variant="h6" align="center">
-              판매여부
-            </Typography>
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-                    {filteredMenu.map((menu) => (
-                        <TableRow key={menu.menu_id} onClick={() => handleOpenModal(menu)} sx={{
-                            cursor: "pointer",
-                            "&:hover": { backgroundColor: "#f5f5f5" },
-                          }}>
-                            <TableCell>
-              <Typography
-                sx={{
-                  fontSize: "15px",
-                  fontWeight: "500",
-                }}
-                align="center"
-              >
-                {menu.menu_id}
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography
-                sx={{
-                  fontSize: "15px",
-                  fontWeight: "500",
-                }}
-                align="center"
-              >
-                {menu.menu_name}
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography
-                sx={{
-                  fontSize: "15px",
-                  fontWeight: "500",
-                }}
-                align="center"
-              >
-                {menu.menu_price}
-              </Typography>
-            </TableCell>
-            <TableCell sx={{width:320}}>
-              <Typography
-                sx={{
-                  fontSize: "15px",
-                  fontWeight: "500",
-                }}
-                align="center"
-              >
-                {menu.menu_recipe}
-              </Typography>
-            </TableCell>
-            <TableCell>
-              <Typography
-                sx={{
-                  fontSize: "15px",
-                  fontWeight: "500",
-                }}
-                align="center"
-              >
-                {menu.menu_origin_price}
-              </Typography>
-            </TableCell>
-            <TableCell sx={{textAlign:'center'}}>
-              <Chip
-                sx={{
-                  pl: "4px",
-                  pr: "4px",
-                  backgroundColor: menu.menu_end === 1 ? "primary.main" : "error.main",
-                  color: "#fff",
-                }}
-                size="small"
-                label={menu.menu_end === 1 ? '판매' : '미판매'}
-              ></Chip>
-            </TableCell>
-          </TableRow>
+            <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+            <TableRow>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  메뉴ID
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  메뉴명
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  판매가격
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  레시피
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  총 원가
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography color="textSecondary" variant="h6" align="center">
+                  판매여부
+                </Typography>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredMenu.map((menu) => (
+              <TableRow key={menu.menu_id} onClick={() => handleOpenModal(menu)} sx={{
+                        cursor: "pointer",
+                        "&:hover": { backgroundColor: "#f5f5f5" },
+              }}>
+              <TableCell>
+                <Typography sx={{fontSize: "15px",fontWeight: "500",}} align="center">{menu.menu_id}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography sx={{ fontSize: "15px", fontWeight: "500",}} align="center">{menu.menu_name}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography sx={{ fontSize: "15px", fontWeight: "500" }} align="center">{menu.menu_price.toLocaleString()}원</Typography>
+              </TableCell>
+              <TableCell sx={{width:320}}>
+                <Typography sx={{ fontSize: "15px", fontWeight: "500", }} align="center">{menu.menu_recipe}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography sx={{ fontSize: "15px",fontWeight: "500"}} align="center">{menu.menu_origin_price.toLocaleString()}원</Typography>
+              </TableCell>
+              <TableCell sx={{textAlign:'center'}}>
+                <Chip sx={{pl: "4px", pr: "4px", backgroundColor: menu.menu_end === 1 ? "primary.main" : "error.main", color: "#fff",}}
+                      size="small" label={menu.menu_end === 1 ? '판매' : '미판매'}>
+                </Chip>
+              </TableCell>
+            </TableRow>
                     ))}
-                </TableBody>
-            </Table>
+            </TableBody>
+          </Table>
         );
     };
 
@@ -273,11 +226,11 @@ const MenuList = () => {
                                 <Grid item xs={3}><strong>메뉴명</strong></Grid>
                                 <Grid item xs={9}>{selectedMenu.menu_name}</Grid>
                                 <Grid item xs={3}><strong>판매가격</strong></Grid>
-                                <Grid item xs={9}>{selectedMenu.menu_price}</Grid>
+                                <Grid item xs={9}>{selectedMenu.menu_price.toLocaleString()}원</Grid>
                                 <Grid item xs={3}><strong>레시피</strong></Grid>
                                 <Grid item xs={9}>{selectedMenu.menu_recipe}</Grid>
                                 <Grid item xs={3}><strong>총 원가</strong></Grid>
-                                <Grid item xs={9}>{selectedMenu.menu_origin_price}</Grid>
+                                <Grid item xs={9}>{selectedMenu.menu_origin_price.toLocaleString()}원</Grid>
                                 <Grid item xs={3}><strong>판매여부</strong></Grid>
                                 <Grid item xs={9}>{selectedMenu.menu_end === 1 ? '판매' : '미판매'}</Grid>
                             </Grid>
@@ -292,7 +245,7 @@ const MenuList = () => {
                             <Button variant="contained" onClick={handleCloseModal} sx={{ ml: 1 }}>
                                 닫기
                             </Button>
-</Box>
+                        </Box>
                     </div>
                 </Paper>
             )}

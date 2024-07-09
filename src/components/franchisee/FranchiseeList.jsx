@@ -35,15 +35,13 @@ const FranchiseeList = () => {
         // 페이지네이션 상태
         const [currentPage, setCurrentPage] = useState(1);
         const [itemsPerPage] = useState(5);
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentItems = franchisee.slice(indexOfFirstItem, indexOfLastItem);
 
         const handlePageChange = (event, page) => {
             setCurrentPage(page);
         };
-        
-          // Calculate the data for the current page
-          const indexOfLastItem = currentPage * itemsPerPage;
-          const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-          const currentItems = franchisee.slice(indexOfFirstItem, indexOfLastItem);
        
         const fetchFranchisee = async () => {
             try {
@@ -195,14 +193,14 @@ const FranchiseeList = () => {
                     expirationDate: formatDateString(formData.expirationDate),
                     warningCount: formData.warningCount,
                     closingDate: new Date().toISOString().split('T')[0],
-                    employeeId: parseInt(formData.employeeId, 10),
+                    employeeId: formData.employeeId,
                     closingReason: formData.closingReason
                 };
                 
                 console.log('지금 담긴 closeData : ', closeData);        
 
                 // 폐점 API 호출
-                const closeResponse = await instance.post(`/app/close`, closeData,{
+                const closeResponse = await instance.post(`/app/close`, closeData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                       }
@@ -239,7 +237,6 @@ const FranchiseeList = () => {
                 }else{
                     console.log(`franchisee_id ${franchisee_id}에 해당하는 경고가 없습니다. 경고 API 호출을 스킵합니다.`);
                 }
-
         
                 // 가맹점 삭제 API 호출
                 const franResponse = await instance.delete(`/app/store/${franchisee_id}`,{
@@ -269,8 +266,7 @@ const FranchiseeList = () => {
                 }
             }
             fetchFranchisee();
-        };
-        
+        };        
 
         // 경고 횟수 변경을 감지
         useEffect(() => {
@@ -328,46 +324,29 @@ const FranchiseeList = () => {
 
         return (
             <Box sx={{width:'95%', mx:'auto', mt:4}}>
-                 <Table
-                    aria-label="simple table"
-                    sx={{
-                    whiteSpace: "nowrap",
-                    }}
-                >
+                 <Table aria-label="simple table" sx={{ whiteSpace: "nowrap"}}>
                     <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
-                    <TableRow>
-                        <TableCell></TableCell>
-                        <TableCell>
-                        <Typography color="textSecondary" variant="h6" align="center">
-                            가맹점 아이디
-                        </Typography>
-                        </TableCell>
-                        <TableCell>
-                        <Typography color="textSecondary" variant="h6" align="center">
-                            담당자
-                        </Typography>
-                        </TableCell>
-                        <TableCell>
-                        <Typography color="textSecondary" variant="h6" align="center">
-                            가맹점명
-                        </Typography>
-                        </TableCell>
-                        <TableCell>
-                        <Typography color="textSecondary" variant="h6" align="center">
-                            대표자명
-                        </Typography>
-                        </TableCell>
-                        <TableCell>
-                        <Typography color="textSecondary" variant="h6" align="center">
-                            지점주소
-                        </Typography>   
-                        </TableCell>
-                        <TableCell>
-                        <Typography color="textSecondary" variant="h6" align="center">
-                            연락처
-                        </Typography>
-                        </TableCell>
-                    </TableRow>
+                        <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>
+                                <Typography color="textSecondary" variant="h6" align="center">가맹점 아이디</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography color="textSecondary" variant="h6" align="center">담당자</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography color="textSecondary" variant="h6" align="center">가맹점명</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography color="textSecondary" variant="h6" align="center">대표자명</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography color="textSecondary" variant="h6" align="center">지점주소</Typography>   
+                            </TableCell>
+                            <TableCell>
+                                <Typography color="textSecondary" variant="h6" align="center">연락처</Typography>
+                            </TableCell>
+                        </TableRow>
                     </TableHead>
                     <TableBody>
                         {currentItems.map((franchisee, index) => (
@@ -382,18 +361,14 @@ const FranchiseeList = () => {
                                     "&:hover": { backgroundColor: "#f5f5f5" },
                                 }}
                             >
-                                 <TableCell align="center">{indexOfFirstItem + index + 1}</TableCell>
-                                 <TableCell>
+                                <TableCell align="center">{indexOfFirstItem + index + 1}</TableCell>
+                                <TableCell>
                                     <Typography variant="h6" align="center">{franchisee.franchiseeId}</Typography>
-                                 </TableCell>
+                                </TableCell>
                                 <TableCell>
                                     <Typography variant="h6" align="center">{franchisee.employeeId.name}</Typography>
                                 </TableCell>
-                                <TableCell
-                                    sx={{
-                                    color: franchisee.warningCount >= 5 ? "red" : "inherit",
-                                    }}
-                                >
+                                <TableCell sx={{color: franchisee.warningCount >= 5 ? "red" : "inherit", }}>
                                     <Typography variant="h6" align="center">{franchisee.franchiseeName}</Typography>
                                 </TableCell>
                                 <TableCell>
@@ -413,11 +388,7 @@ const FranchiseeList = () => {
                     <>
                         <div style={styles.overlay} onClick={closeModal}></div>
                         <div style={styles.modal}>
-
-                        <IconButton
-                            sx={{ position: "absolute", top: 10, right: 10 }}
-                            onClick={closeModal}
-                        >
+                        <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={closeModal}>
                             <CloseIcon />
                         </IconButton>
                             <h2>가맹점 상세 정보</h2>
@@ -548,7 +519,7 @@ const FranchiseeList = () => {
                                         disabled
                                     />
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={12}>
                                     <TextField 
                                         sx={styles.warnInput}
                                         type="number"
@@ -561,16 +532,17 @@ const FranchiseeList = () => {
                                     />
                                 </Grid>
                                 {isWarningReasonVisible && (
-                                    <><Grid item xs={10}>
+                                    <>  <Grid item xs={10}>
                                             <TextField sx={styles.warnInput}
                                                 name="warningReason"
                                                 value={formData.warningReason}
                                                 label="경고사유"
                                                 onChange={handleInputChange}
                                                 rows="1" />
-                                        </Grid><Grid item xs={2}>
-                                                <button style={styles.warnRegister} type="submit" onClick={warnSubmit}>저장</button>
-                                            </Grid></>
+                                        </Grid>
+                                        <Grid item xs={2}>
+                                            <button style={styles.warnRegister} type="submit" onClick={warnSubmit}>저장</button>
+                                        </Grid>  </>
                                 )}
                                 <Grid item xs={12}>
                                     <TextField sx={styles.input}
@@ -593,23 +565,13 @@ const FranchiseeList = () => {
                                     />
                                 </Grid>
                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={editSubmit}
-                                    type="submit"
-                                    sx={{ marginRight: 2 }}
-                                    >
-                                    저장
+                                    <Button variant="contained" color="primary" onClick={editSubmit} type="submit" sx={{ marginRight: 2 }} >
+                                        저장
                                     </Button>
-                                    <Button
-                                    variant="contained"
-                                    onClick={handleDeleteModalOpen}
-                                    sx={{backgroundColor:'#FF0040'}}
-                                    >
-                                    삭제
+                                    <Button variant="contained" onClick={handleDeleteModalOpen} sx={{backgroundColor:'#FF0040'}} >
+                                        삭제
                                     </Button>
-                                    </Box>
+                                </Box>
                                 {isDeleteModalOpen && (
                                     <>
                                         <div style={styles.closingOverlay} onClick={closeModal}></div>
@@ -618,7 +580,7 @@ const FranchiseeList = () => {
                                             sx={{ position: "absolute", top: 10, right: 10 }}
                                             onClick={closeModal}
                                         >
-                                            <CloseIcon />
+                                        <CloseIcon />
                                         </IconButton>
                                             <h4>가맹점 폐점 사유를 입력해주세요</h4>
                                             <Grid item xs={12}>
@@ -632,22 +594,13 @@ const FranchiseeList = () => {
                                                     />
                                                 </Grid>
                                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                                                <Button
-                                                    variant="contained"
-                                                    color="error"
-                                                    onClick={handleDelete}
-                                                    sx={{ marginRight: 1, backgroundColor:'#FF0040' }}
-                                                    >
-                                                    삭제
+                                                    <Button variant="contained" color="error" onClick={handleDelete} sx={{ marginRight: 1, backgroundColor:'#FF0040' }}>
+                                                        삭제
                                                     </Button>
-                                                    <Button
-                                                    variant="contained"
-                                                    onClick={closeModal}
-                                                    sx={{ backgroundColor: '#6c757d', color: '#fff' }}
-                                                    >
-                                                    취소
+                                                    <Button variant="contained" onClick={closeModal} sx={{ backgroundColor: '#6c757d', color: '#fff' }}>
+                                                        취소
                                                     </Button>              
-                                                    </Box>                                               
+                                                </Box>                                               
                                         </div>
                                     </>
                                 )} 
@@ -658,15 +611,14 @@ const FranchiseeList = () => {
                 )}
                 <Box display="flex" justifyContent="center" mt={2}>
                     <Pagination
-                    count={Math.ceil(franchisee.length / itemsPerPage)}
-                    page={currentPage}
-                    onChange={handlePageChange}
-                    color="primary"
+                        count={Math.ceil(franchisee.length / itemsPerPage)}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        color="primary"
                     />
                 </Box>
             </Box>
         );
 };
-
 
 export default FranchiseeList;
