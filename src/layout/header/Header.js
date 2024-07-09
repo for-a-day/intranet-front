@@ -22,7 +22,6 @@ import {
   Typography,
   Stack,
 } from "@mui/material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import instance from "../../axiosConfig";
 
@@ -46,13 +45,17 @@ const Header = (props) => {
 
   // 서버로부터 받아온 데이터를 저장
   const getNotice = async () => {
-    const res = await instance.post("/app/auth/notice");
+    const token = localStorage.getItem("token");
+    const res = await instance.post("/api/auth/notice");
+
     setData(res.data.data.notificationResponses);
   };
 
   // 읽음 버튼을 클릭했을 때 서버로 보냄
   const readHandler = async (id) => {
-    await instance.put(`/app/auth/notice/${id}`);
+    const token = localStorage.getItem("token");
+    await instance.put(`/api/auth/notice/${id}`);
+
   };
 
   const handleClick = (event) => {
@@ -98,6 +101,7 @@ const Header = (props) => {
     setAnchorEl5(null);
   };
 
+
   // useEffect(() => {
   //   const userData = async () => {
   //     const token = localStorage.getItem("token");
@@ -113,7 +117,6 @@ const Header = (props) => {
   //       }
   //     }
   //   };
-
   //   userData();
   // }, []);
 

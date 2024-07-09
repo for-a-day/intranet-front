@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
 import { Link } from 'react-router-dom';
 import {
   Typography,
@@ -21,25 +20,18 @@ const EmployeeList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [isEditMode, setIsEditMode] = useState(false); // 수정 모드 상태
   const [isDeleteMode, setIsDeleteMode] = useState(false); // 삭제 모드 상태
+  const [levels, setLevels] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [authorities, setAuthorities] = useState([]);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
     console.log(token);
-    instance.get('/app/employees/list', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    instance.get('/app/employees/list')
     .then(response => {
-      let employeesData = response.data.employees;
+      const { employees, levels, departments, authorities } = response.data;
 
-      // employeesData가 배열인지 확인하고 배열이 아니면 배열로 변환
-      if (!Array.isArray(employeesData)) {
-        employeesData = [employeesData];
-      }
-
-      const formattedEmployees = employeesData.map((employee, index) => {
-        console.log(`Employee ID: ${employee.employeeId}`); // 로그 추가
+      const formattedEmployees = employees.map((employee, index) => {
         return {
           ...employee,
           birth: formatDate(employee.birth), // 날짜 데이터 포맷 변경
@@ -49,6 +41,9 @@ const EmployeeList = () => {
       });
 
       setEmployees(formattedEmployees);
+      setLevels(levels);
+      setDepartments(departments);
+      setAuthorities(authorities);
     })
     .catch(error => {
       console.error('Error fetching employees:', error);
@@ -271,17 +266,21 @@ const EmployeeList = () => {
       </Table>
       {isModalOpen && (
         <EmployeeModal
-          employee={selectedEmployee}
-          isEditMode={isEditMode}
-          isDeleteMode={isDeleteMode}
-          onClose={() => setIsModalOpen(false)}
-          onEdit={handleEditClick}
-          onDelete={handleDeleteClick}
-          onSave={(updatedEmployee) => {
-            setEmployees(employees.map(emp => (emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp)));
-            setIsModalOpen(false);
-          }}
-        />
+        employee={selectedEmployee}
+        isEditMode={isEditMode}
+        isDeleteMode={isDeleteMode}
+        onClose={() => setIsModalOpen(false)}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
+        onSave={(updatedEmployee) => {
+          setEmployees(employees.map(emp => (emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp)));
+          setIsModalOpen(false);
+        }}
+        levels={levels}
+        departments={departments}
+        authorities={authorities}
+      />
+      
       )}
     </Box>
   );
