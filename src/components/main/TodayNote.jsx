@@ -53,7 +53,7 @@ const ChatNote = () => {
     <>
       <Box>
         <Typography
-          sx={{ fontWeight: "bold", fontSize: "h3.fontSize", marginBottom: "0", pl: 5, pt: 4 }}
+          sx={{ fontWeight: "bold", fontSize: "h3.fontSize", marginBottom: "0", pl: 5, pt: 1 }}
           gutterBottom
         >
           MEMO
@@ -63,7 +63,7 @@ const ChatNote = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "325px",
+          height: "344px",
           p: 1,
         }}
       >
@@ -74,7 +74,7 @@ const ChatNote = () => {
             mb: 2,
             p: 2,
             position: "relative",
-            backgroundColor: "#fffaae",
+            backgroundColor: "#f2f2f2",
           }}
         >
           <CardContent>

@@ -15,6 +15,8 @@ import Timer from "./Timer";
 import TodayNote from "./TodayNote";
 import UserCard from "./UserCard";
 import MiniCalendar from "./MiniCalendar";
+import PhoneBook from "./PhoneBook";
+
 const MainContent = () => {
   return (
     <Grid container spacing={2}>
@@ -29,26 +31,23 @@ const MainContent = () => {
         </Box>
       </Grid>
       <Grid item xs={3}>
-        <TodayNote />
+        <Box className="box">
+          <TodayNote />
+        </Box>
       </Grid>
       <Grid item xs={2.5}>
         <Box className="box">
           <Timer />
         </Box>
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={2.15}>
         <Box className="box">
-          <TodayNote />
+          <PhoneBook />
         </Box>
       </Grid>
       <Grid item xs={3}>
         <Box className="box">
           <TodaySchedule />
-        </Box>
-      </Grid>
-      <Grid item xs={4}>
-        <Box className="box" sx={{ height: 300 }}>
-          <MiniCalendar />
         </Box>
       </Grid>
     </Grid>
