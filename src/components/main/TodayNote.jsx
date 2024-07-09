@@ -91,16 +91,16 @@ const ChatNote = () => {
                 <Typography
                   variant="body1"
                   sx={{
-                    textAlign: "right",
+                    textAlign: "left",
                     left: 0,
                     zIndex: 1,
-                    mb: 4,
+                    mb: 3.5,
                     width: "100%",
                   }}
                 >
                   {messages[index] || ""}
                   {messages[index] && (
-                    <IconButton onClick={() => handleDelete(index)} sx={{ ml: 1 }}>
+                    <IconButton onClick={() => handleDelete(index)} sx={{ ml: 0, mb:1 }}>
                       <DeleteIcon />
                     </IconButton>
                   )}

@@ -73,11 +73,11 @@ const Sales = () => {
           <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)' }}>
             <Toolbar>
             <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="h3" component="div" sx={{ color: 'black', fontWeight: 'bold' }}>
+              <Typography variant="h3" component="div" sx={{ color: 'black'}}>
                 매출 관리(기획부)
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" component="div" sx={{ color: 'black', fontWeight: 'bold', mr: 1 }}>
+                <Typography variant="body1" component="div" sx={{ color: 'black', fontWeight: 'bold', mr: 2 }}>
                   <GreenDot /> 월별 최고매출
                 </Typography>
                 <Typography variant="body1" component="div" sx={{ color: 'black', fontWeight: 'bold', mr: 1 }}>

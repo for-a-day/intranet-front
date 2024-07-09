@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Box, Card, CardContent, Grid } from "@mui/material";
+import { Typography, Box, Card, CardContent, Grid, Avatar, IconButton} from "@mui/material";
 import instance from "../../axiosConfig";
 import PhoneIcon from "@mui/icons-material/Phone";
+import { deepPurple } from "@mui/material/colors";
+
 const PhoneBook = () => {
   const [employees, setEmployees] = useState([]);
   const token = localStorage.getItem("token");
@@ -25,30 +27,28 @@ const PhoneBook = () => {
       });
   }, []);
   return (
-    <Box sx={{ width: "300px", overflowY: "auto", height: "355px" }}>
-      <Box>
+    <Box sx={{ width: "300px", overflowY: "auto", height: "350px" }}>
         <Typography variant="h4" component="div" sx={{ mb: 3, mt: 3.5, ml: 3, fontWeight: "600" }}>
           전화번호부
         </Typography>
-      </Box>
       <Grid>
         {employees.map((employee, index) => (
-          <Grid item key={index} xs={10} md={12}>
-            <Box sx={{ height: "100%" }}>
-              <Box sx={{ display: "flex" }}>
-                <Box sx={{ minWidth: "130px", pl: 3 }}>
-                  <Typography variant="h6" gutterBottom sx={{ pr: 3, pb: 1 }}>
-                    {employee.name} {employee.level}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="body1" color="textSecondary" gutterBottom>
-                    {employee.contact}
-                  </Typography>
-                </Box>
-              </Box>
+          <Grid item key={index} xs={11} sx={{mx:'auto'}}>
+          <Box sx={{ display: "flex", alignItems: "center", p: 1.5, backgroundColor: "#fff", borderRadius: "8px", boxShadow: 5, mb:1 }}>
+            <Avatar sx={{ bgcolor: deepPurple[500], mr: 2 }}>{employee.name.charAt(0)}</Avatar>
+            <Box sx={{ flexGrow: 1 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                {employee.name} {employee.level}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {employee.contact}
+              </Typography>
             </Box>
-          </Grid>
+            <IconButton>
+            <PhoneIcon sx={{ color: deepPurple[500] }} />
+            </IconButton>
+          </Box>
+        </Grid>
         ))}
       </Grid>
     </Box>

@@ -10,6 +10,7 @@ import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
 import instance from "../../axiosConfig";
+import SearchOffIcon from '@mui/icons-material/SearchOff';
 
 const options = ["Action", "Another Action", "Something else here"];
 
@@ -91,7 +92,7 @@ const TodaySchedule = ({ onScheduleClick, selectedScheduleId }) => {
 
         setActivities(todayActivities);
       } catch (error) {
-        console.error("Error fetching schedules:", error);
+        console.error("오늘의 일정을 불러오지 못했습니다", error);
       }
     };
 
@@ -104,15 +105,20 @@ const TodaySchedule = ({ onScheduleClick, selectedScheduleId }) => {
 
   return (
     <Box>
-      <Box>
         <Typography
           sx={{ fontWeight: "bold", fontSize: "h4.fontSize", marginBottom: "0", pl: 3, pt: 3 }}
           gutterBottom
         >
           오늘의 일정
         </Typography>
-      </Box>
-
+        {activities.length === 0 ? (
+        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" height="100%" pt={12}>
+          <SearchOffIcon sx={{ fontSize: 80, color: "#BDBDBD" }} />
+          <Typography variant="h6" color="textSecondary" align="center" gutterBottom>
+            오늘의 일정이 없습니다.
+          </Typography>
+        </Box>
+       ) : (
       <Box>
         <Box sx={{ pb: "0 !important" }}>
           <Box sx={{ maxHeight: 300, overflowY: "auto" }}>
@@ -146,6 +152,7 @@ const TodaySchedule = ({ onScheduleClick, selectedScheduleId }) => {
           </Box>
         </Box>
       </Box>
+       )}
     </Box>
   );
 };

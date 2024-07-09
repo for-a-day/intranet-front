@@ -23,7 +23,7 @@ const UserCard = () => {
             },
           });
 
-          console.log("user", response.data);
+          console.log("유저 불러오기 성공");
           setUserInfo(response?.data);
         } catch (error) {
           setError(error.message);
@@ -50,7 +50,7 @@ const UserCard = () => {
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Avatar
             alt={employeeName}
-            sx={{ width: 100, height: 100, marginBottom: "20px", backgroundColor: "#ddd" }}
+            sx={{ width: 120, height: 120, marginBottom: "20px", backgroundColor: "#ddd" }}
           />
           <Typography variant="h5" component="div">
             <span style={{ fontSize: "19px" }}>
@@ -62,7 +62,9 @@ const UserCard = () => {
             </span>
           </Typography>
           <Box>
-            <Typography variant="h5" sx={{ mt: 1, fontWeight: "bold" }}></Typography>
+            <Typography variant="h5" sx={{ mt: 1, fontWeight: "bold" }}>
+              {userInfo?.department}
+            </Typography>
           </Box>
           <Box sx={{ marginTop: "20px", textAlign: "center" }}>
             <Typography variant="body2" sx={{ margin: "10px 0" }}>

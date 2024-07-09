@@ -131,7 +131,7 @@ const Franchisee = () => {
                   <Typography
                     variant="h3"
                     component="div"
-                    sx={{ color: "black", fontWeight: "bold", marginRight: "10px" }}
+                    sx={{ color: "black", marginRight: "10px" }}
                   >
                     가맹점 관리
                   </Typography>
