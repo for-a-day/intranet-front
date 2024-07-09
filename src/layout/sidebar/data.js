@@ -28,11 +28,6 @@ const Menuitems = [
     href: "/approval/draft",
   },
   {
-    title: "메신저",
-    icon: Chat,
-    href: "/app/form-elements/button",
-  },
-  {
     title: "일정 관리",
     icon: CalendarMonth,
     href: "/app/calendar",
@@ -40,7 +35,7 @@ const Menuitems = [
   {
     title: "가맹점 관리",
     icon: Storefront,
-    href: "/franchisee",
+    href: "/app/franchisee",
   },
   {
     title: "인사 관리",
@@ -50,19 +45,19 @@ const Menuitems = [
   {
     title: "매출 관리",
     icon: BarChart,
-    href: "/sales",
+    href: "/app/sales",
   },
   {
     title: "메뉴 관리",
     icon: LocalDiningOutlinedIcon,
 
-    href: "/menu",
+    href: "/app/menu",
   },
   {
     title: "주문 관리",
     icon: DescriptionOutlinedIcon,
 
-    href: "/order",
+    href: "/app/order",
   },
 ];
 

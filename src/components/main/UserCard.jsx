@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent, Typography, Avatar, Box } from "@mui/material";
+import instance from "../../axiosConfig";
 
 const UserCard = () => {
   const [employeeName, setEmployeeName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [levelName, setLevelName] = useState("");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const userData = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:9000/app/employees/token", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await instance.get("/app/employees/token");
+          console.log("유저정보", response);
           const employee = response.data.employee;
           setEmployeeName(employee.name);
           setDepartmentName(employee.department.departmentName);

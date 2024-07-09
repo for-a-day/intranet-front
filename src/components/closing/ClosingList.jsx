@@ -14,20 +14,22 @@ import {
 } from "@mui/material";
 import styles from "./ClosingListStyle";
 import { Close as CloseIcon } from "@mui/icons-material";
+import instance from "../../axiosConfig";
 
 const ClosingList = () => {
-  const [close, setClose] = useState([]);
-  const [selectedClose, setSelectedClose] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    const token = localStorage.getItem('token');
+    const [close, setClose] = useState([]);
+    const [selectedClose, setSelectedClose] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 페이지네이션 상태
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
+    // 페이지네이션 상태
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5);
 
-  const handlePageChange = (event, page) => {
-      setCurrentPage(page);
-  };
-  
+    const handlePageChange = (event, page) => {
+        setCurrentPage(page);
+    };
+    
     // Calculate the data for the current page
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -36,7 +38,7 @@ const ClosingList = () => {
   useEffect(() => {
     const fetchClose = async () => {
       try {
-        const response = await axios.get("http://localhost:9000/app/close");
+        const response = await instance.get("/app/close");
         const closeMap = response.data.data;
 
         const closeArray = Object.values(closeMap);
@@ -46,7 +48,7 @@ const ClosingList = () => {
       }
     };
     fetchClose();
-  }, []);
+  }, [token]);
 
   // 화면 기능 - 행 클릭 시,
   const handleRowClick = (close) => {

@@ -67,7 +67,7 @@ const CalendarList = ({ calendarId }) => {
 
   const scheduleList = async (calendarId) => {
     try {
-      const response = await instance.post(`/app/schedule/${calendarId}`, {
+      const response = await instance.get(`/app/schedule/${calendarId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
