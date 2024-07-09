@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Box,
   TextField,
@@ -17,6 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate, Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import "./Calendar.css";
+import instance from "../../axiosConfig";
 
 const customStyles = {
   content: {
@@ -48,20 +48,14 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [calendarId, setCalendarId] = useState(null);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const userDataAndListCalendar = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get(
-            "http://localhost:9000/app/employees/token",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await instance.post("app/employees/token");
           const employee = response.data.employee;
           const deptCode = employee.department?.departmentCode;
           const deptName = employee.department?.departmentName;
@@ -81,13 +75,8 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
 
   const listCalendar = async (departmentCode) => {
     try {
-      const response = await axios.get(
-        `http://localhost:9000/app/calendar/department/${departmentCode}`
-      );
-      if (
-        response.data.status === "success" &&
-        Array.isArray(response.data.data)
-      ) {
+      const response = await instance.get(`app/calendar/department/${departmentCode}`);
+      if (response.data.status === "success" && Array.isArray(response.data.data)) {
         setCalendars(response.data.data);
       } else {
         console.error("Expected an array but got:", response.data);
@@ -105,21 +94,24 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
     try {
       if (isEditMode) {
         // 수정 모드
-        await axios.put(
-          `http://localhost:9000/app/calendar/${calendarId}`,
-          calendarData
-        );
+        await instance.put(`/app/calendar/${calendarId}`, calendarData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
         // 등록 모드
-        await axios.post("http://localhost:9000/app/calendar", calendarData);
+        await instance.post("/app/cdalendar", calendarData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
       listCalendar(departmentCode); // 리스트 갱신
       closeModal(); // 모달 닫기
     } catch (error) {
       console.error("등록 실패");
-      setMessage(
-        `등록 실패: ${error.response?.data?.message || error.message}`
-      );
+      setMessage(`등록 실패: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -149,7 +141,11 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const calendarDelete = async (calendarId) => {
     if (window.confirm("캘린더를 삭제하시겠습니까?")) {
       try {
-        await axios.delete(`http://localhost:9000/app/calendar/${calendarId}`);
+        await instance.delete(`/app/calendar/${calendarId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setMessage("캘린더 삭제");
         listCalendar(departmentCode); // 리스트 갱신
       } catch (error) {
@@ -175,10 +171,7 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
 
   return (
     <Box>
-      <Link
-        to="/app/calendar"
-        style={{ textDecoration: "none", color: "black" }}
-      >
+      <Link to="/app/calendar" style={{ textDecoration: "none", color: "black" }}>
         <h2>캘린더</h2>
       </Link>
       <Box sx={{ textAlign: "center" }}>
@@ -236,18 +229,12 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
                 paddingTop: 6,
                 paddingBottom: 6,
                 backgroundColor:
-                  selectCalendar?.calendarId === calendar.calendarId
-                    ? "#ddd"
-                    : "transparent",
+                  selectCalendar?.calendarId === calendar.calendarId ? "#ddd" : "transparent",
               }}
               onClick={() => selectedCalendar(calendar)}
             >
               <ListItemText primary={calendar.calendarName} />
-              <IconButton
-                edge="end"
-                aria-label="edit"
-                onClick={() => openModal(true, calendar)}
-              >
+              <IconButton edge="end" aria-label="edit" onClick={() => openModal(true, calendar)}>
                 <EditIcon />
               </IconButton>
               <IconButton
