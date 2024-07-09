@@ -39,7 +39,7 @@ const ApprovalSideBar = ({setApprovalData = null, _category = ""}) => {
   const menuItems = [
     { type: "todo", label: "결대 대기 문서", category: "todo" },
     { type: "schedule", label: "결재 예정 문서", category: "schedule" },
-    { type: "approval", label: "결재 완료 문서", category: "approval" },
+    { type: "approval", label: "결재 진행 문서", category: "approval" },
     { type: "mydraft", label: "기안 문서", category: "mydraft" },
     { type: "temp", label: "임시 저장 문서", category: "temp" },
     { type: "complete", label: "결재 문서", category: "complete" }

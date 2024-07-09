@@ -30,7 +30,7 @@ const ApprovalList = () => {
   const location = useLocation();
   const [title, setTitle] = useState("");
   const categoryList = ['todo', 'schedule', 'mydraft', 'temp', 'approval', 'department', 'complete'];
-  const titleList = {todo: '결대 대기 문서', schedule: '결재 예정 문서', approval: '결재 완료 문서', mydraft: '기안 문서', temp: '임시 저장 문서', complete: '결재 문서'} 
+  const titleList = {todo: '결대 대기 문서', schedule: '결재 예정 문서', approval: '결재 진행 문서', mydraft: '기안 문서', temp: '임시 저장 문서', complete: '결재 문서'} 
   const [selectedItem, setSelectedItem] = useState(null);
   const {isLoading, error, approvalList = []} = useSelector((state) => state.approval);
 
