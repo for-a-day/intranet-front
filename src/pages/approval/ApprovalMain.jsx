@@ -29,7 +29,7 @@ const ApprovalMain = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {isLoading, error, main = {}} = useSelector((state) => state?.approval);
-  console.log(main);
+
   useEffect(() => {
     dispatch(_getMainList());
 

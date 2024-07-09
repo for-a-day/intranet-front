@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, Typography, Chip, IconButton, Box, Stack } from '@mui/material';
 import { AttachFile} from '@mui/icons-material';
 import { styled } from '@mui/system';
@@ -28,8 +28,10 @@ const ApprovalList = () => {
   const navigate = useNavigate();
   const {category} = useParams();
   const location = useLocation();
-  const title = location?.state?.title || "";
-  const categoryList = ['todo', 'schedule', 'draft', 'temp', 'approval', 'department', 'complete'];
+  const [title, setTitle] = useState("");
+  const categoryList = ['todo', 'schedule', 'mydraft', 'temp', 'approval', 'department', 'complete'];
+  const titleList = {todo: '결대 대기 문서', schedule: '결재 예정 문서', approval: '결재 진행 문서', mydraft: '기안 문서', temp: '임시 저장 문서', complete: '결재 문서'} 
+  const [selectedItem, setSelectedItem] = useState(null);
   const {isLoading, error, approvalList = []} = useSelector((state) => state.approval);
 
   useEffect(() => {
@@ -43,6 +45,13 @@ const ApprovalList = () => {
         return <div>{error.message}</div>;
     }
   },[category]);
+
+  useEffect(() => {
+    const pathParts = location.pathname.split('/');
+    const category = pathParts[pathParts.length - 1];
+    setSelectedItem(category);
+    setTitle(titleList[category]);
+  }, [location]);
 
   if (!categoryList.includes(category)) {
     return <Navigate to="/approval/draft" />;
@@ -59,7 +68,7 @@ const ApprovalList = () => {
         default:
             return <Chip label="진행중" color="primary" size="small" />;
     }
-  }
+  };
 
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0", maxWidth: "none", width: "100% !important"}}>
@@ -90,9 +99,9 @@ const ApprovalList = () => {
                       {doc?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}
                     </TableCell>
                     {doc.status === 'T' ? (
-                      <SubjectTableCell onClick={() => navigate(`/approval/draft/revise/${doc.approvalId}`)}>{doc.subject}</SubjectTableCell>
+                      <SubjectTableCell onClick={() => navigate(`/approval/draft/revise/${doc.approvalId}`,{state : {category : selectedItem}})}>{doc.subject}</SubjectTableCell>
                     ) : (
-                      <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${doc.approvalId}`)}>{doc.subject}</SubjectTableCell>
+                      <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${doc.approvalId}`,{state : {category : selectedItem}})}>{doc.subject}</SubjectTableCell>
                     )}
                     {/* <TableCell>
                       {doc.fileCount > 0 && <AttachFile sx={{ fontSize: 20 }} />}

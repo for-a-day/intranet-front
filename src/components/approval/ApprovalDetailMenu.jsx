@@ -26,6 +26,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 
 
 const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants, cancelApprove, onChangeHtml, approveDicision, backHistory = null}) => {
+  console.log(approval);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
@@ -147,7 +148,7 @@ const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants,
         </Stack>
       ) : type === "기안" ? (
         <Stack direction="row" spacing={1}>
-          <Button variant='h5' startIcon={<UndoIcon />} onClick={() => approvalCancel("T")}>상신취소</Button>
+          {approval?.status === '1' ? <Button variant='h5' startIcon={<UndoIcon />} onClick={() => approvalCancel("T")}>상신취소</Button> : null } 
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
           <Button variant='h5' startIcon={<ListIcon />} onClick={backHistoryClick}>목록</Button>
           <Button variant='h5' startIcon={<PrintIcon />} onClick={handlePrint}>인쇄</Button>

@@ -5,7 +5,7 @@ import ModalPortal from '../../config/ModalPortal';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useDispatch } from 'react-redux';
 import { _getApprovalModifyDetail, _updateApproval } from '../../modules/redux/approval';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ApprovalSideBar from '../../components/approval/ApprovalSideBar';
 import ApprovalModal from '../../components/approval/ApprovalModal';
 import { useSelector } from 'react-redux';
@@ -30,6 +30,7 @@ sessionStorage.setItem('employee', JSON.stringify(employee));
 const ApprovalModify = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const {id} = useParams();
   const contentRef = useRef(null);
   const [approvalInfo, setApprovalInfo] = useState([])
@@ -38,10 +39,14 @@ const ApprovalModify = () => {
   const {isLoading, error, modfiyApproval = {}} = useSelector((state) => state.approval);
   const [approvalData, setApprovalData] = useState(null);
   const [urgency, setUrgency] = useState(modfiyApproval?.urgency ||0);
+  const [docTitle, setDocTitle] = useState("");
+  console.log(location?.state?.category);
+  const category = location?.state?.category || "";
   const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
   const data = {
     _id : id
   }
+
   useEffect(() => {
     if(id){
       dispatch(_getApprovalModifyDetail(data));
@@ -59,12 +64,12 @@ const ApprovalModify = () => {
 
   useEffect(() => {
     if (modfiyApproval && Object.keys(modfiyApproval).length !== 0) {
-      console.log(modfiyApproval);
       if (modfiyApproval.approvalType !== "기안") {
         alert("해당 문서는 상신 취소 되었습니다");
         navigate('/approval/draft');
       }
       setApprovalData(modfiyApproval);
+      setDocTitle(modfiyApproval?.subject);
     }
   }, [modfiyApproval,navigate]);
 
@@ -156,6 +161,9 @@ const ApprovalModify = () => {
       ...prevValues,
       [name]: value
     }));
+    if(name === 'subject'){
+      setDocTitle(value.trim());
+    };
   };
 
   const replaceInputTextareaWithSpan = (node) => {
@@ -239,7 +247,7 @@ const ApprovalModify = () => {
       const data = {
         formData : {
           approvalId : approvalData.approvalId,
-          subject: approvalData.subject,
+          subject: docTitle !== "" ? docTitle : approvalData.subject,
           formId: approvalData.formId,
           docBody: updatedHtml,
           tempBody: tempHtml,
@@ -262,7 +270,7 @@ const ApprovalModify = () => {
   //취소 메서드
   const cancel = () => {
     if(window.confirm("취소 하시겠습니까?")){
-      navigate("/approval/draft/list/draft");
+      navigate("/approval/draft/list/mydraft");
     }
   }
 
@@ -273,7 +281,7 @@ const ApprovalModify = () => {
 
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
-      <ApprovalSideBar setApprovalData={setApprovalData}/>
+      <ApprovalSideBar setApprovalData={setApprovalData} _category={category}/>
       <Stack>
         <Box sx={{ marginBottom: "15px", display: "flex", alignItems: "flex-start" }}>
             <Typography variant='h2'>{approvalData?.subject}</Typography>

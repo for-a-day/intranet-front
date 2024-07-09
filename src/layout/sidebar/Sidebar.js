@@ -28,6 +28,8 @@ const Sidebar = (props) => {
     }
   };
 
+  const normalizedPathDirect = pathDirect.replace(/^\//, '');
+
   const SidebarContent = (
     <Box sx={{ p: 3, height: "calc(100vh - 40px)" }}>
       <Link to="/">
@@ -45,6 +47,8 @@ const Sidebar = (props) => {
           {Menuitems.map((item, index) => {
             //{/********SubHeader**********/}
 
+            const normalizedHref = item.href.replace(/^\//, '');
+            const isActive = pathDirect === item.href ? (pathDirect === item.href) : (item.href !== '/' && normalizedPathDirect.startsWith(normalizedHref));
             return (
               <List component="li" disablePadding key={item.title}>
                 <ListItem
@@ -55,7 +59,7 @@ const Sidebar = (props) => {
                   selected={pathDirect === item.href}
                   sx={{
                     mb: 1,
-                    ...(pathDirect === item.href && {
+                    ...(isActive  && {
                       color: "white",
                       backgroundColor: (theme) =>
                         `${theme.palette.primary.main}!important`,
@@ -64,7 +68,7 @@ const Sidebar = (props) => {
                 >
                   <ListItemIcon
                     sx={{
-                      ...(pathDirect === item.href && { color: "white" }),
+                      ...(isActive && { color: "white" }),
                     }}
                   >
                     <item.icon width="20" height="20" />
