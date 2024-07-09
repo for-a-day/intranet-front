@@ -19,6 +19,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import "./Calendar.css";
 import axios from "axios";
 import Modal from "react-modal";
+import instance from "../../axiosConfig";
 
 const modalStyle = {
   content: {
@@ -54,6 +55,7 @@ const CalendarList = ({ calendarId }) => {
   const locations = useLocation();
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
   var calendarIds = locations?.state?.calendarId || null;
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (calendarId) {
@@ -65,13 +67,12 @@ const CalendarList = ({ calendarId }) => {
 
   const scheduleList = async (calendarId) => {
     try {
-      const response = await axios.get(
-        `http://localhost:9000/app/schedule/${calendarId}`
-      );
-      if (
-        response.data.status === "success" &&
-        Array.isArray(response.data.schedule)
-      ) {
+      const response = await instance.post(`/app/schedule/${calendarId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.status === "success" && Array.isArray(response.data.schedule)) {
         // 이벤트 데이터 변환
         const formattedEvents = response.data.schedule.map((schedule) => {
           return {
@@ -170,17 +171,20 @@ const CalendarList = ({ calendarId }) => {
     };
     console.log(calendarIds);
     try {
-      await axios.post("http://localhost:9000/app/schedule", newSchedule);
+      await instance.post("/app/schedule", newSchedule, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log("일정 추가 성공");
 
-      const response = await axios.get(
-        `http://localhost:9000/app/schedule/${calendarIds}`
-      );
+      const response = await instance.get(`/app/schedule/${calendarIds}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      if (
-        response.data.status === "success" &&
-        Array.isArray(response.data.schedule)
-      ) {
+      if (response.data.status === "success" && Array.isArray(response.data.schedule)) {
         const formattedEvents = response.data.schedule.map((schedule) => ({
           scheduleId: schedule.scheduleId,
           title: schedule.subject,
@@ -248,9 +252,7 @@ const CalendarList = ({ calendarId }) => {
             marginRight: "5px",
           }}
         ></span>
-        <div style={{ paddingRight: 5 }}>
-          {schedule.extendedProps.startTime}
-        </div>{" "}
+        <div style={{ paddingRight: 5 }}>{schedule.extendedProps.startTime}</div>{" "}
         {/* 시간 텍스트를 추가 */}
         <b
           style={{
@@ -307,13 +309,10 @@ const CalendarList = ({ calendarId }) => {
         style={modalStyle}
         shouldCloseOnOverlayClick={false}
       >
-         <IconButton
-            sx={{ position: "absolute", top: 10, right: 10 }}
-            onClick={modalClose}
-          >
-            <CloseIcon />
-          </IconButton>
-        <h2 style={{fontSize:'1.5rem', color: '#333'}}>일정 간편 등록</h2>
+        <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={modalClose}>
+          <CloseIcon />
+        </IconButton>
+        <h2 style={{ fontSize: "1.5rem", color: "#333" }}>일정 간편 등록</h2>
         <hr></hr>
         <TextField
           label="일정 제목"
@@ -399,9 +398,7 @@ const CalendarList = ({ calendarId }) => {
               },
             }}
           >
-            <MenuItem value="본사 1층 공용 회의실">
-              본사 1층 공용 회의실
-            </MenuItem>
+            <MenuItem value="본사 1층 공용 회의실">본사 1층 공용 회의실</MenuItem>
             <MenuItem value="4층 회의실">4층 회의실</MenuItem>
             <MenuItem value="5층 스튜디오">5층 스튜디오</MenuItem>
             <MenuItem value="3층 회의실">3층 회의실</MenuItem>
@@ -415,7 +412,7 @@ const CalendarList = ({ calendarId }) => {
           <Button
             variant="contained"
             onClick={modalClose}
-            sx={{ ml: 2, backgroundColor:'#dc3545', color:"white"}}
+            sx={{ ml: 2, backgroundColor: "#dc3545", color: "white" }}
           >
             취소
           </Button>

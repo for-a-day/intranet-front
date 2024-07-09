@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import FranchiseeList from "../../components/franchisee/FranchiseeList";
-import axios from "axios";
 import styles from "./FranchiseeStyle";
 import {
   Add as AddIcon,
@@ -21,12 +20,12 @@ import {
   Warning as WarningIcon,
   Close as CloseIcon,
 } from "@mui/icons-material";
-import AddressSearch from "./AddressSearch";
+import instance from "../../axiosConfig";
 
 const Franchisee = () => {
+  const token = localStorage.getItem('token');
   const [franchisee, setFranchisee] = useState([]);
   const [open, setOpen] = useState(false);
-  const [addressOpen, setAddressOpen] = useState(false);
   const [formData, setFormData] = useState({
     franchiseeId: "",
     franchiseeName: "",
@@ -41,7 +40,7 @@ const Franchisee = () => {
 
   const fetchFranchisee = async () => {
     try {
-      const response = await axios.get("http://localhost:9000/app/store");
+      const response = await instance.get("/app/store");
       const franchiseeMap = response.data.data;
 
       // Convert the Map object to an array
@@ -54,7 +53,7 @@ const Franchisee = () => {
 
   useEffect(() => {
     fetchFranchisee();
-  }, []);
+  }, [token]);
 
   // 모달 키기
   const handleOpen = () => {
@@ -71,30 +70,20 @@ const Franchisee = () => {
     e.stopPropagation();
   };
 
-  const handleAddressSearchOpen = () => {
-    setAddressOpen(true);
-  };
-
-  const handleAddressSearchClose = () => {
-    setAddressOpen(false);
-  };
-
-  const handleAddressComplete = (address) => {
-    setFormData({
-      ...formData,
-      address,
-    });
-    handleAddressSearchClose();
-  };
 
   //등록
   const handleRegister = async () => {
     console.log("등록버튼이 눌렸습니다");
     try {
-      const url = `http://localhost:9000/app/store`;
-      const response = await axios.post(url, formData);
+      const url = `/app/store`;
+      const response = await instance.post(url, formData,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       alert("새로운 가맹점 등록을 축하드립니다!");
       console.log("api 담기 성공", response.data);
+      handleClose();
       fetchFranchisee();
     } catch (error) {
       console.log("등록 중 에러 발생", error);
@@ -223,7 +212,7 @@ const Franchisee = () => {
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                       <TextField
                         sx={styles.paragraph}
                         type="text"
@@ -233,13 +222,9 @@ const Franchisee = () => {
                         onChange={handleInputChange}
                         required
                         fullWidth
-                        InputProps={{
-                          readOnly: true,
-                          endAdornment: <Button onClick={handleAddressSearchOpen}>검색</Button>,
-                        }}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                       <TextField
                         sx={styles.paragraph}
                         type="text"
@@ -275,6 +260,7 @@ const Franchisee = () => {
                         value={formData.expirationDate}
                         onChange={handleInputChange}
                         required
+                        disabled
                         InputLabelProps={{
                           shrink: true,
                         }}
@@ -323,12 +309,6 @@ const Franchisee = () => {
               취소
             </Button>
           </Box>
-        </Dialog>
-        <Dialog open={addressOpen} onClose={handleAddressSearchClose}>
-          <DialogTitle>주소 검색</DialogTitle>
-          <DialogContent>
-            <AddressSearch onComplete={handleAddressComplete} />
-          </DialogContent>
         </Dialog>
       </Grid>
     </>

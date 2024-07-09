@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import styles from './SalesListStyle';
+import instance from "../../axiosConfig";
 
 const SalesList = () => {
+  const token = localStorage.getItem('token');
   const [sales, setSales] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
 
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const response = await axios.get('http://localhost:9000/app/sales');
+        const response = await instance.get('/app/sales');
         const salesMap = response.data.data;
         const saleArray = Object.values(salesMap);
         setSales(saleArray);
@@ -18,7 +19,7 @@ const SalesList = () => {
       }
     };
     fetchSales();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     // Function to calculate monthly sales data

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const instance = axios.create({
   baseURL: 'http://localhost:9000', // 기본 API URL 설정
+  headers: { "Content-type": "application/json" }
 });
 
 // 요청 인터셉터 설정
@@ -20,15 +21,25 @@ instance.interceptors.request.use(
 
 // 응답 인터셉터 설정
 instance.interceptors.response.use(
-  response => response,
-  error => {
-    const originalRequest = error.config;
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+  function (response) {
+    return response;
+  },
+  async (error) => {
+    if(error.response.status === 401) {
+      const originalRequest = error;
+      const headers = {
+          Authorization: localStorage.getItem("token"),
+          RefreshToken: localStorage.getItem("refreshtoken")
+      };
+      const data = await axios.post('http://localhost:9000/auth/refresh', {refreshToken: localStorage.getItem("refreshToken")}, { headers });
+      localStorage.setItem('token', data.data.accessToken);
+      if(data.headers.refreshtoken) {
+          localStorage.setItem("refreshtoken", data.data.refreshToken);
+      }
+      originalRequest.config.headers.authorization = "Bearer " + localStorage.getItem("token");
+      return await axios(originalRequest.config);
+      }
     }
-    return Promise.reject(error);
-  }
 );
 
 export default instance;

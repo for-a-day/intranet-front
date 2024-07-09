@@ -13,13 +13,9 @@ import {
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import instance from "../../axiosConfig";
 
-const CalendarForm = ({
-  isCreate,
-  scheduleId,
-  selectedCalendarId,
-  onComplete,
-}) => {
+const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) => {
   const navigate = useNavigate();
   const calendarLocation = useLocation();
   const [loading, setLoading] = useState(!isCreate);
@@ -36,20 +32,18 @@ const CalendarForm = ({
   const [calendars, setCalendars] = useState([]);
   const [events, setEvents] = useState([]);
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const userDataAndListCalendar = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get(
-            "http://localhost:9000/app/employees/token",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const response = await instance.get("/app/employees/token", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           const employee = response.data.employee;
           const deptCode = employee.department?.departmentCode;
           const deptName = employee.department?.departmentName;
@@ -69,13 +63,12 @@ const CalendarForm = ({
 
   const listCalendar = async (departmentCode) => {
     try {
-      const response = await axios.get(
-        `http://localhost:9000/app/calendar/department/${departmentCode}`
-      );
-      if (
-        response.data.status === "success" &&
-        Array.isArray(response.data.data)
-      ) {
+      const response = await instance.get(`/app/calendar/department/${departmentCode}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.status === "success" && Array.isArray(response.data.data)) {
         setCalendars(response.data.data);
       } else {
         console.error("Expected an array but got:", response.data);
@@ -96,9 +89,11 @@ const CalendarForm = ({
     if (!isCreate && scheduleId) {
       const detailSchedule = async () => {
         try {
-          const response = await axios.get(
-            `http://localhost:9000/app/schedule/detail/${scheduleId}`
-          );
+          const response = await instance.get(`/app/schedule/detail/${scheduleId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           if (response.data.status === "success") {
             const event = response.data.schedule[0];
             setCalendarId(event.calendarId);
@@ -127,9 +122,11 @@ const CalendarForm = ({
     if (selectedCalendarId) {
       const listEvent = async () => {
         try {
-          const response = await axios.get(
-            `http://localhost:9000/app/schedule/calendar/${selectedCalendarId}`
-          );
+          const response = await instance.get(`/app/schedule/calendar/${selectedCalendarId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           if (response.data.status === "success") {
             const listEvent = response.data.schedule.map((event) => ({
               id: event.scheduleId,
@@ -199,13 +196,18 @@ const CalendarForm = ({
 
     try {
       if (isCreate) {
-        await axios.post("http://localhost:9000/app/schedule", schedule);
+        await instance.post("/app/schedule", schedule, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         alert("등록이 완료되었습니다.");
       } else {
-        await axios.put(
-          `http://localhost:9000/app/schedule/${scheduleId}`,
-          schedule
-        );
+        await instance.put(`/app/schedule/${scheduleId}`, schedule, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         alert("수정이 완료되었습니다.");
       }
       onComplete(calendarId);
@@ -222,7 +224,11 @@ const CalendarForm = ({
   const scheduleDelete = async () => {
     if (window.confirm("일정을 삭제하시겠습니까?")) {
       try {
-        await axios.delete(`http://localhost:9000/app/schedule/${scheduleId}`);
+        await instance.delete(`/app/schedule/${scheduleId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         onComplete(calendarId);
         navigate("/app/calendar", { state: { calendarId: calendarId } });
       } catch (error) {
@@ -235,9 +241,7 @@ const CalendarForm = ({
     return <CircularProgress />;
   }
 
-  const currentCalendar = calendars.find(
-    (cal) => cal.calendarId === calendarId
-  );
+  const currentCalendar = calendars.find((cal) => cal.calendarId === calendarId);
 
   const resetForm = () => {
     const today = new Date().toISOString().split("T")[0];
@@ -342,10 +346,7 @@ const CalendarForm = ({
                   }}
                 >
                   {calendars.map((calendar) => (
-                    <MenuItem
-                      key={calendar.calendarId}
-                      value={calendar.calendarId}
-                    >
+                    <MenuItem key={calendar.calendarId} value={calendar.calendarId}>
                       {calendar.calendarName}
                     </MenuItem>
                   ))}
@@ -383,9 +384,7 @@ const CalendarForm = ({
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               >
-                <MenuItem value="본사 1층 공용 회의실">
-                  본사 1층 공용 회의실
-                </MenuItem>
+                <MenuItem value="본사 1층 공용 회의실">본사 1층 공용 회의실</MenuItem>
                 <MenuItem value="4층 회의실">4층 회의실</MenuItem>
                 <MenuItem value="5층 스튜디오">5층 스튜디오</MenuItem>
                 <MenuItem value="3층 회의실">3층 회의실</MenuItem>
@@ -402,7 +401,7 @@ const CalendarForm = ({
             <Button
               variant="contained"
               onClick={scheduleDelete}
-              sx={{ ml: 2, backgroundColor:'#dc3545'}}
+              sx={{ ml: 2, backgroundColor: "#dc3545" }}
             >
               삭제
             </Button>

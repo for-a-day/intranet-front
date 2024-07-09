@@ -1,26 +1,35 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { AppBar, Box, Button, Grid, Toolbar, Typography } from "@mui/material";
 import OrderList from "../../components/order/OrderList";
 import styles from "./OrderStyle";
+import instance from "../../axiosConfig";
 
 const Order = () => {
+    const token = localStorage.getItem('token');
     const [order, setOrder] = useState([]);
     const data = { data: 1 };
 
     const fetchOrder = async () => {
       try {
-          const response = await axios.get('http://localhost:9000/app/order');
+          const response = await instance.get('/app/order');
           const orderMap = response.data.data;
           const orderArray = Object.values(orderMap);
           setOrder(orderArray);
       } catch (error) {
           console.error('주문 목록 : 에러', error);
       }
-  };
+    };
+
+    useEffect(() => {
+      fetchOrder();
+    }, [token]); 
 
     const fetchOrderCall = () => {       
-        axios.post('http://localhost:9000/api/go/order', data)
+        instance.post('/api/go/order', data,{
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
           .then(response => {
             alert("주문 정보를 가져옵니다. 잠시만 기다려주십시오.");
             console.log('데이터가 성공적으로 저장되었습니다:', response.data);

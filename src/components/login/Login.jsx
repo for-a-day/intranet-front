@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -12,8 +12,8 @@ import {
   Button,
   Checkbox,
   TextField,
-  Paper
-} from '@mui/material';
+  Paper,
+} from "@mui/material";
 import LogoIcon from "../../layout/Logo/LogoIcon";
 
 const Login = () => {
@@ -23,39 +23,41 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:9000/login', {
-        employeeId,
-        employeePassword
-      });
-      console.log(response.data);
-      // JWT 토큰을 로컬 스토리지에 저장
-      localStorage.setItem('token', response.data.token); // 여기를 수정했습니다.
-      // 로그인 성공 후 처리 (예: 리디렉션)
-      alert('로그인 성공');
-      window.location.href = 'http://localhost:3000';
-    } catch (error) {
-      console.error("There was an error logging in!", error);
-    }
-  };
+        const response = await axios.post('http://localhost:9000/login', {
+            employeeId,
+            employeePassword
+        });
+        console.log(response.data);
+        // JWT 토큰을 로컬 스토리지에 저장
+        localStorage.setItem('token', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+        // 로그인 성공 후 처리 (예: 리디렉션)
+        alert('로그인 성공');
+        // window.open("http://localhost:3005", "_blank", "width=800,height=1000,top=0,left=0,toolbar=no,location=no");
+        window.location.href = 'http://localhost:3000/app/home';
+      }catch (error) {
+          console.error("There was an error logging in!", error);
+        }
+      };
 
   return (
     <Paper title="Login" description="this is Login page">
       <Box
         sx={{
-          position: 'relative',
-          '&:before': {
+          position: "relative",
+          "&:before": {
             content: '""',
-            background: 'radial-gradient(#d2f1df, #d3d7fa, #bad8f4)',
-            backgroundSize: '400% 400%',
-            animation: 'gradient 15s ease infinite',
-            position: 'absolute',
-            height: '100%',
-            width: '100%',
-            opacity: '0.3',
+            background: "radial-gradient(#d2f1df, #d3d7fa, #bad8f4)",
+            backgroundSize: "400% 400%",
+            animation: "gradient 15s ease infinite",
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            opacity: "0.3",
           },
         }}
       >
-        <Grid container spacing={0} justifyContent="center" sx={{ height: '100vh' }}>
+        <Grid container spacing={0} justifyContent="center" sx={{ height: "100vh" }}>
           <Grid
             item
             xs={12}
@@ -85,9 +87,11 @@ const Login = () => {
                     >
                       Username
                     </Typography>
+
                     <TextField id="username" variant="outlined" fullWidth
                       value={employeeId}
                       onChange={(e) => setEmployeeId(e.target.value)} />
+
                   </Box>
                   <Box mt="20px">
                     <Typography

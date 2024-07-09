@@ -47,6 +47,7 @@ const Header = (props) => {
   const getNotice = async () => {
     const token = localStorage.getItem("token");
     const res = await instance.post("/api/auth/notice");
+
     setData(res.data.data.notificationResponses);
   };
 
@@ -54,6 +55,7 @@ const Header = (props) => {
   const readHandler = async (id) => {
     const token = localStorage.getItem("token");
     await instance.put(`/api/auth/notice/${id}`);
+
   };
 
   const handleClick = (event) => {
@@ -99,24 +101,24 @@ const Header = (props) => {
     setAnchorEl5(null);
   };
 
-  useEffect(() => {
-    const userData = async () => {
-      const token = localStorage.getItem("token");
-      if(token) {
-        try {
-          const response = await instance.get("/app/employees/token");
-          const employee = response.data.employee;
-          setEmployeeName(employee.name);
-          setDepartmentName(employee.department.departmentName);
-          setLevelName(employee.level.levelName);
-        } catch (error) {
-          console.error("유저 정보 못불러옴", error);
-        }
-      }
-    };
 
-    userData();
-  }, []);
+  // useEffect(() => {
+  //   const userData = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if(token) {
+  //       try {
+  //         const response = instance.get("/app/employees/token");
+  //         const employee = response.data.employee;
+  //         setEmployeeName(employee.name);
+  //         setDepartmentName(employee.department.departmentName);
+  //         setLevelName(employee.level.levelName);
+  //       } catch (error) {
+  //         console.error("유저 정보 못불러옴", error);
+  //       }
+  //     }
+  //   };
+  //   userData();
+  // }, []);
 
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>

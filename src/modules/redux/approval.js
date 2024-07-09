@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axios from "axios"
+import instance from "../../axiosConfig";
 
-const token = localStorage.getItem("token");
 const initialState = {
     main: {},
     data: {},
@@ -14,19 +14,12 @@ const initialState = {
     error: null
 }
 
-const BASE_URL = "http://localhost:9090"
-
 //전자결재 메인 조회
 export const _getMainList = createAsyncThunk(
   "approval/getMainList",
     async (payload, thunkAPI) => {
         try{
-            const data = await axios.get(`${BASE_URL}/app/approval`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`
-                }
-              });
+            const data = await instance.get(`/app/approval`);
             return thunkAPI.fulfillWithValue(data.data.data);
         } catch(e){
             return thunkAPI.rejectWithValue(e);
@@ -39,12 +32,7 @@ export const _getFormList = createAsyncThunk(
     "approval/getFormList",
     async (payload, thunkAPI) => {
         try{
-            const data = await axios.get(`${BASE_URL}/app/approval/form`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`
-                }
-              });
+            const data = await instance.get(`/app/approval/form`);
             return thunkAPI.fulfillWithValue(data.data.data);
         } catch(e){
             return thunkAPI.rejectWithValue(e);
@@ -57,12 +45,7 @@ export const _createApproval = createAsyncThunk(
   "approval/createApproval",
   async (payload, thunkAPI) => {
     try {
-      const data = await axios.post(`${BASE_URL}/app/approval/draft`, payload.formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      const data = await instance.post(`/app/approval/draft`, payload.formData);
       if(payload.formData.saveType === 'T'){
         payload._navigate(`/approval/draft/revise/${data.data.data.approvalId}`, { state: {history: "/approval/draft"}});
       } else {
@@ -80,13 +63,7 @@ export const _updateApproval = createAsyncThunk(
   "approval/updateApproval",
   async (payload, thunkAPI) => {
     try {
-      const data = await axios.post(`${BASE_URL}/app/approval/draft/doc`, payload.formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
+      const data = await instance.post(`/app/approval/draft/doc`, payload.formData);
       if(payload.formData.saveType === 'T'){
         payload._navigate(`/approval/draft/revise/${data.data.data.approvalId}`, { state: {history: "/approval/draft"}});
       } else {
@@ -104,12 +81,7 @@ export const _getEmployeeList = createAsyncThunk(
   "approval/getEmployeeList",
   async (payload, thunkAPI) => {
     try {
-      const data = await axios.get(`${BASE_URL}/app/employees/list`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      const data = await instance.get(`/app/employees/list`);
       return thunkAPI.fulfillWithValue(data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
@@ -122,12 +94,7 @@ export const _getApprovalList = createAsyncThunk(
   "approval/getApprovalList",
   async (payload, thunkAPI) => {
     try {
-      const data = await axios.get(`${BASE_URL}/app/approval/draft/${payload}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      const data = await instance.get(`/app/approval/draft/${payload}`);
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
@@ -140,12 +107,7 @@ export const _getApprovalDetail = createAsyncThunk(
   "approval/getApprovalDetail",
   async (payload, thunkAPI) => {
     try{
-      const data = await axios.get(`${BASE_URL}/app/approval/draft/doc/${payload}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      const data = await instance.get(`/app/approval/draft/doc/${payload}`);
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
@@ -158,12 +120,7 @@ export const _getApprovalModifyDetail = createAsyncThunk(
   "approval/getApprovalModifyDetail",
   async (payload, thunkAPI) => {
     try{
-      const data = await axios.get(`${BASE_URL}/app/approval/draft/doc/${payload._id}?type=${payload.type}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      const data = await instance.get(`/app/approval/draft/doc/${payload._id}?type=${payload.type}`);
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
@@ -176,12 +133,7 @@ export const _updateApprovalCancel = createAsyncThunk(
   "approval/updateApprovalCancel",
   async (payload, thunkAPI) => {
     try{
-      const data = await axios.put(`${BASE_URL}/app/approval/draft/doc`,payload.formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      const data = await instance.put(`/app/approval/draft/doc`,payload.formData);
       if(payload.formData.saveType === 'T'){
         payload._navigate(`/approval/draft/revise/${data.data.data}`, { state: {history: "/approval/draft"}});
       } 
@@ -197,12 +149,7 @@ export const _updateApprovalOrRejection = createAsyncThunk(
   "approval/updateApprovalOrRejection",
   async (payload, thunkAPI) => {
     try{
-      const data = await axios.put(`${BASE_URL}/app/approval/draft`,payload.formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+      const data = await instance.put(`/app/approval/draft`,payload.formData);
       payload._navigate(`/approval/draft/detail/${data.data.data}?c=c`, { state: {history: "/approval/draft"}});
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){

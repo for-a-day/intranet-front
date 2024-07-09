@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody, Grid, Button, IconButton } from "@mui/material";
+import { Box, TextField, Table, TableHead, TableRow, TableCell, Typography, TableBody, Grid, Button, IconButton, Pagination } from "@mui/material";
 import styles from "./FranchiseeListStyle";
 import { Close as CloseIcon } from "@mui/icons-material";
+import instance from "../../axiosConfig";
 
 const FranchiseeList = () => {
+        const token = localStorage.getItem('token');
         const [franchisee, setFranchisee] = useState([]);
         const [selectedFranchisee, setSelectedFranchisee] = useState(null);
         const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,9 +32,26 @@ const FranchiseeList = () => {
             closing_id: null
         });
 
+        // 페이지네이션 상태
+        const [currentPage, setCurrentPage] = useState(1);
+        const [itemsPerPage] = useState(5);
+
+        const handlePageChange = (event, page) => {
+            setCurrentPage(page);
+        };
+        
+          // Calculate the data for the current page
+          const indexOfLastItem = currentPage * itemsPerPage;
+          const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+          const currentItems = franchisee.slice(indexOfFirstItem, indexOfLastItem);
+       
         const fetchFranchisee = async () => {
             try {
-                const response = await axios.get('http://localhost:9000/app/store');
+                const response = await instance.get('/app/store', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const franchiseeMap = response.data.data;
 
                 // Convert the Map object to an array
@@ -47,7 +65,7 @@ const FranchiseeList = () => {
         // 목록 가져오기
         useEffect(() => {
             fetchFranchisee();
-        }, []);
+        }, [token]);
 
         // 화면 기능 - 행 클릭 시,
         const handleRowClick = (franchisee) => {
@@ -91,12 +109,6 @@ const FranchiseeList = () => {
             }
         };
 
-        // 화면 기능 - 경고사유 작성 토글
-        //const handleWarningReasonToggle = () => {
-            //setIsWarningReasonVisible(!isWarningReasonVisible);
-            //setIsWarningReasonClicked(true);
-        //};
-
         // input요소 변동 시, 반영기능
         const handleInputChange = (e) => {
             const { name, value } = e.target;
@@ -129,8 +141,12 @@ const FranchiseeList = () => {
             e.preventDefault();
 
             try {
-                const url = `http://localhost:9000/app/store/${selectedFranchisee.franchiseeId}`;
-                const response = await axios.put(url, formData);
+                const url = `/app/store/${selectedFranchisee.franchiseeId}`;
+                const response = await instance.put(url, formData,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 closeModal();
                 fetchFranchisee();
                 console.log('api 담기 성공', response.data);
@@ -186,11 +202,19 @@ const FranchiseeList = () => {
                 console.log('지금 담긴 closeData : ', closeData);        
 
                 // 폐점 API 호출
-                const closeResponse = await axios.post(`http://localhost:9000/app/close`, closeData);
+                const closeResponse = await instance.post(`/app/close`, closeData,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 console.log('폐점 API 응답:', closeResponse.data);
             
                 // 경고 API 호출 전에 franchisee_id가 경고 테이블에 존재하는지 확인
-                const checkWarningExists = await axios.get( `http://localhost:9000/app/warn/exist/${franchisee_id}`);
+                const checkWarningExists = await instance.get( `/app/warn/exist/${franchisee_id}`,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 console.log(checkWarningExists);
                 const warningExists = checkWarningExists.data;
                 console.log('존재하는가? ', warningExists);
@@ -206,7 +230,11 @@ const FranchiseeList = () => {
                     console.log('경고 API :', warnData); 
 
                     // 경고 API 호출
-                    const warnResponse = await axios.put(`http://localhost:9000/app/warn/${franchisee_id}`, warnData);
+                    const warnResponse = await instance.put(`/app/warn/${franchisee_id}`, warnData,{
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                    });
                     console.log('경고 DB 확인', warnResponse.data);
                 }else{
                     console.log(`franchisee_id ${franchisee_id}에 해당하는 경고가 없습니다. 경고 API 호출을 스킵합니다.`);
@@ -214,7 +242,11 @@ const FranchiseeList = () => {
 
         
                 // 가맹점 삭제 API 호출
-                const franResponse = await axios.delete(`http://localhost:9000/app/store/${franchisee_id}`);
+                const franResponse = await instance.delete(`/app/store/${franchisee_id}`,{
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                });
                 console.log('삭제 API 응답:', franResponse.data);
         
                 alert('모든 작업이 완료되었습니다.');
@@ -264,7 +296,7 @@ const FranchiseeList = () => {
 
                 if (canSubmit) {
                     console.log('경고 api 실행 간다');
-                    const url = `http://localhost:9000/app/warn`;
+                    const url = `/app/warn`;
                     const data = {
                         warningReason: warnData.warningReason,
                         franchisee_id: formData.franchiseeId,
@@ -274,7 +306,11 @@ const FranchiseeList = () => {
                     console.log('담긴 데이터 ->', data);
                     console.log('담긴 franchiseeId 데이터 ->', data.franchisee_id);
 
-                    const response = await axios.post(url, data);
+                    const response = await instance.post(url, data,{
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                          }
+                    });
 
                     alert('가맹점 경고사항이 반영되었습니다');
 
@@ -300,6 +336,7 @@ const FranchiseeList = () => {
                 >
                     <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
                     <TableRow>
+                        <TableCell></TableCell>
                         <TableCell>
                         <Typography color="textSecondary" variant="h6" align="center">
                             가맹점 아이디
@@ -333,7 +370,7 @@ const FranchiseeList = () => {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                        {franchisee.map(franchisee => (
+                        {currentItems.map((franchisee, index) => (
                             <TableRow
                                 key={franchisee.franchiseeId}
                                 style={franchisee.franchiseeId % 2 === 0 ? styles.tr.nthChildEven : null}
@@ -345,39 +382,28 @@ const FranchiseeList = () => {
                                     "&:hover": { backgroundColor: "#f5f5f5" },
                                 }}
                             >
+                                 <TableCell align="center">{indexOfFirstItem + index + 1}</TableCell>
                                  <TableCell>
-                                 <Typography variant="h6" align="center">
-                                    {franchisee.franchiseeId}
-                                </Typography>
-                                </TableCell>
+                                    <Typography variant="h6" align="center">{franchisee.franchiseeId}</Typography>
+                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.employeeId.name}
-                                    </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.employeeId.name}</Typography>
                                 </TableCell>
                                 <TableCell
                                     sx={{
                                     color: franchisee.warningCount >= 5 ? "red" : "inherit",
                                     }}
                                 >
-                                    <Typography variant="h6" align="center">
-                                    {franchisee.franchiseeName}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.franchiseeName}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.owner}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.owner}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.address}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.address}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.phoneNumber}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.phoneNumber}</Typography>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -630,6 +656,14 @@ const FranchiseeList = () => {
                         </div>
                     </>
                 )}
+                <Box display="flex" justifyContent="center" mt={2}>
+                    <Pagination
+                    count={Math.ceil(franchisee.length / itemsPerPage)}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    />
+                </Box>
             </Box>
         );
 };

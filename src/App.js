@@ -26,12 +26,13 @@ import ApprovalMain from './pages/approval/ApprovalMain';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import instance from './axiosConfig';
 
 
 
 function App() {
   const theme = baseTheme;
-  const [count, setCount] = useState();
+  const [count, setCount] = useState(0);
   const token = localStorage.getItem("token");
 
   // SSE
@@ -96,14 +97,10 @@ function App() {
   // 서버로부터 받아온 알림 갯수를 state에 저장
   const getNotice = async () => {
     setCount(0);
-    const res = await axios.post("http://localhost:9000/app/auth/notice","",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-    setCount(res.data.data.unreadCount);
+    const res = await instance.post("/app/auth/notice");
+    if(res !== undefined){
+      setCount(res.data.data.unreadCount);
+    }
   }
 
   return (
@@ -111,7 +108,7 @@ function App() {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            <Route path='/' element={<FullLayout />} >
+            <Route path='/' element={<FullLayout count={count}/>} >
               <Route path='/' element={<Main />} />
               <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
@@ -135,8 +132,10 @@ function App() {
                     <EmployeeRegister />
                   </PrivateRoute>
                 }
+
+              /> */}
+              <Route path='/approval/draft/form' element={<ApprovalWrite />} />
               />
-              <Route path='/' element={<FullLayout />} ></Route>
               <Route path='/franchisee' element={<Franchisee />} />
               <Route path='/warn' element={<Warning />} />
               <Route path='/close' element={<Closing />} />

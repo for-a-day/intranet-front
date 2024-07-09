@@ -1,9 +1,10 @@
 import { Grid, Button, Box, AppBar, Toolbar, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import MenuList from "../../components/menu/MenuList";
-import axios from "axios";
+import instance from "../../axiosConfig";
 
 const Menu = () => {
+    const token = localStorage.getItem('token');
     const [menu, setMenu] = useState([]);
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const Menu = () => {
     // 목록
     const fetchMenu = async () => {
         try {
-            const response = await axios.get('http://localhost:9000/app/menu');
+            const response = await instance.get('/app/menu');
             const menuMap = response.data.data;
 
             const menuArray = Object.values(menuMap);
@@ -30,7 +31,7 @@ const Menu = () => {
 
     useEffect(() => {
         fetchMenu();
-    }, []);  
+    }, [token]);  
 
     // 스타일
     const styles = {
@@ -87,8 +88,12 @@ const Menu = () => {
     const handleRegister = async () => {
         console.log('등록버튼이 눌렸습니다');
         try {
-            const url = `http://localhost:9000/app/menu`;
-            const response = await axios.post(url, formData);
+            const url = `/app/menu`;
+            const response = await instance.post(url, formData,{
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                  }
+            });
             alert('신메뉴가 정상적으로 등록되었습니다');
             console.log('api 담기 성공', response.data);
             handleClose();

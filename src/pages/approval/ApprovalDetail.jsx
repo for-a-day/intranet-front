@@ -24,7 +24,7 @@ const ApprovalDetail = () => {
   const {isLoading, error, approval = {}} = useSelector((state) => state.approval);
   const [participant, setParticipant] = useState({});
   const [participantList, setParticipantList] = useState([]);
-  console.log(approval);
+
   useEffect(() => {
     dispatch(_getApprovalDetail(id));
 
@@ -121,7 +121,7 @@ const ApprovalDetail = () => {
       <ApprovalSideBar />
       <Stack>
         <Box sx={{marginBottom:"15px"}}>
-          <Typography variant='h2'>{approval.subject} {approval?.urgency && <Chip label="긴급" color="error" size="small" />}</Typography>
+          <Typography variant='h2'>{approval.subject} {approval?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}</Typography>
         </Box>
         <ApprovalDetailMenu contentRef={contentRef} type={approval.approvalType} backHistory={backHistory} approval={approval} participants={approval.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
         <Stack direction="row" spacing={4}>
