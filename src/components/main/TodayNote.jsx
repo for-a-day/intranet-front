@@ -81,7 +81,13 @@ const ChatNote = () => {
             {Array.from({ length: 15 }).map((_, index) => (
               <Box
                 key={index}
-                sx={{ display: "flex", alignItems: "center", position: "relative", height: "40px" }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  position: "relative",
+                  height: "40px",
+                  lineHeight: "40px",
+                }}
               >
                 <Divider sx={{ position: "absolute", width: "100%" }} />
                 <Typography
@@ -113,6 +119,7 @@ const ChatNote = () => {
             fullWidth
             onKeyPress={handleKeyPress}
             placeholder="메모를 입력하세요"
+            size="small"
           />
           <Button onClick={handleSend} variant="contained" color="primary" sx={{ ml: 2 }}>
             Send
