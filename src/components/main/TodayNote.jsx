@@ -11,6 +11,7 @@ import {
   Divider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ModeIcon from "@mui/icons-material/Mode";
 
 const ChatNote = () => {
   const [message, setMessage] = useState("");
@@ -50,20 +51,17 @@ const ChatNote = () => {
   };
 
   return (
-    <>
+    <Box>
       <Box>
-        <Typography
-          sx={{ fontWeight: "bold", fontSize: "h3.fontSize", marginBottom: "0", pl: 5, pt: 1 }}
-          gutterBottom
-        >
-          MEMO
+        <Typography variant="h4" component="div" sx={{ mb: 1, mt: 3, ml: 3, fontWeight: "600" }}>
+          오늘의 메모
         </Typography>
       </Box>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "344px",
+          height: "331px",
           p: 1,
         }}
       >
@@ -71,8 +69,8 @@ const ChatNote = () => {
           sx={{
             flexGrow: 1,
             overflow: "auto",
-            mb: 2,
-            p: 2,
+            mb: 1,
+            p: 1,
             position: "relative",
             backgroundColor: "#f2f2f2",
           }}
@@ -122,11 +120,11 @@ const ChatNote = () => {
             size="small"
           />
           <Button onClick={handleSend} variant="contained" color="primary" sx={{ ml: 2 }}>
-            Send
+            <ModeIcon />
           </Button>
         </Box>
       </Box>
-    </>
+    </Box>
   );
 };
 

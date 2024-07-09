@@ -7,21 +7,28 @@ const UserCard = () => {
   const [employeeName, setEmployeeName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [levelName, setLevelName] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
   const token = localStorage.getItem("token");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userData = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await instance.get("/app/employees/token");
-          console.log("유저정보", response);
-          const employee = response.data.employee;
-          setEmployeeName(employee.name);
-          setDepartmentName(employee.department.departmentName);
-          setLevelName(employee.level.levelName);
+          const response = await instance.get("/app/employees/current", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          console.log("user", response.data);
+          setUserInfo(response?.data);
         } catch (error) {
-          console.error("유저 정보 못불러옴", error);
+          setError(error.message);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -50,14 +57,12 @@ const UserCard = () => {
               {" "}
               <strong>
                 {" "}
-                {employeeName} {levelName}{" "}
+                {userInfo?.name} {userInfo?.level}
               </strong>
             </span>
           </Typography>
           <Box>
-            <Typography variant="h5" sx={{ mt: 1, fontWeight: "bold" }}>
-              {departmentName}
-            </Typography>
+            <Typography variant="h5" sx={{ mt: 1, fontWeight: "bold" }}></Typography>
           </Box>
           <Box sx={{ marginTop: "20px", textAlign: "center" }}>
             <Typography variant="body2" sx={{ margin: "10px 0" }}>
