@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Typography,
   Box,
@@ -11,8 +11,8 @@ import {
   Chip,
   Button,
 } from "@mui/material";
-import EmployeeModal from './EmployeeModal'; // 모달 컴포넌트 import
-import instance from '../../axiosConfig';
+import EmployeeModal from "./EmployeeModal"; // 모달 컴포넌트 import
+import instance from "../../axiosConfig";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -23,20 +23,19 @@ const EmployeeList = () => {
   const [levels, setLevels] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [authorities, setAuthorities] = useState([]);
-  const [currentUserDepartment, setCurrentUserDepartment] = useState(''); // 현재 사용자 부서 정보
-  const token = localStorage.getItem('token');
+  const [currentUserDepartment, setCurrentUserDepartment] = useState(""); // 현재 사용자 부서 정보
+  const token = localStorage.getItem("token");
   const navigate = useNavigate(); // useNavigate 훅 사용
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
-
 
   useEffect(() => {
     const fetchCurrentUserDepartment = async () => {
       try {
-        const response = await instance.get('/app/employees/current');
-        console.log('Current User Response:', response.data);
+        const response = await instance.get("/app/employees/current");
+        console.log("Current User Response:", response.data);
         setCurrentUserDepartment(response.data.department); // 현재 사용자 부서 정보 설정
       } catch (error) {
-        console.error('Error fetching current user:', error);
+        console.error("Error fetching current user:", error);
       } finally {
         setIsLoading(false); // 로딩 상태 해제
       }
@@ -46,33 +45,34 @@ const EmployeeList = () => {
   }, [token]);
 
   useEffect(() => {
-    instance.get('/app/employees/list')
-    .then(response => {
-      const { employees, levels, departments, authorities } = response.data;
+    instance
+      .get("/app/employees/list")
+      .then((response) => {
+        const { employees, levels, departments, authorities } = response.data;
 
-      const formattedEmployees = employees.map((employee, index) => {
-        return {
-          ...employee,
-          birth: formatDate(employee.birth), // 날짜 데이터 포맷 변경
-          dateEmployment: formatDate(employee.dateEmployment), // 날짜 데이터 포맷 변경
-          key: `employee-${employee.employeeId}-${index}` // 고유한 키 설정
-        };
+        const formattedEmployees = employees.map((employee, index) => {
+          return {
+            ...employee,
+            birth: formatDate(employee.birth), // 날짜 데이터 포맷 변경
+            dateEmployment: formatDate(employee.dateEmployment), // 날짜 데이터 포맷 변경
+            key: `employee-${employee.employeeId}-${index}`, // 고유한 키 설정
+          };
+        });
+
+        setEmployees(formattedEmployees);
+        setLevels(levels);
+        setDepartments(departments);
+        setAuthorities(authorities);
+      })
+      .catch((error) => {
+        console.error("Error fetching employees:", error);
       });
-
-      setEmployees(formattedEmployees);
-      setLevels(levels);
-      setDepartments(departments);
-      setAuthorities(authorities);
-    })
-    .catch(error => {
-      console.error('Error fetching employees:', error);
-    });
   }, [token]);
 
   useEffect(() => {
-    if (!isLoading && currentUserDepartment !== '인사부') {
-      alert('인사부 소속만 접근 가능합니다.');
-      navigate('/'); // 홈화면으로 리디렉션
+    if (!isLoading && currentUserDepartment !== "인사부") {
+      alert("인사부 소속만 접근 가능합니다.");
+      navigate("/"); // 홈화면으로 리디렉션
     }
   }, [isLoading, currentUserDepartment, navigate]);
 
@@ -108,21 +108,36 @@ const EmployeeList = () => {
   };
 
   return (
-    <Box 
-      sx={{ 
-        width: '95%', 
+    <Box
+      sx={{
+        width: "95%",
       }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-      <h2>사원 리스트</h2>
+        <Typography variant="h2" sx={{ paddingBottom: 1 }}>
+          사원 리스트
+        </Typography>
       </Box>
-      <Box sx={{backgroundColor:'#F5F5F5', height:80, borderRadius:1, alignItems: 'center', display:'flex', paddingLeft: 3}}>
-      <Typography variant="h5" sx={{fontWeight:600}}>현재 사원 수</Typography>
-      <Typography variant="h5" sx={{fontWeight:600, marginLeft:10}}>{employees.length}명</Typography>
+      <Box
+        sx={{
+          backgroundColor: "#F5F5F5",
+          height: 80,
+          borderRadius: 1,
+          alignItems: "center",
+          display: "flex",
+          paddingLeft: 3,
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+          현재 사원 수
+        </Typography>
+        <Typography variant="h5" sx={{ fontWeight: 600, marginLeft: 10 }}>
+          {employees.length}명
+        </Typography>
       </Box>
       <Box>
-      <Button
-          sx={{mt:3, ml:2, mb:1}}
+        <Button
+          sx={{ mt: 3, ml: 2, mb: 1 }}
           component={Link}
           to="/app/employees/register"
           variant="contained"
@@ -137,7 +152,7 @@ const EmployeeList = () => {
           whiteSpace: "nowrap",
         }}
       >
-        <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
+        <TableHead sx={{ borderBottom: "2px solid #d1cfcf" }}>
           <TableRow>
             <TableCell>
               <Typography color="textSecondary" variant="h6" align="center">
@@ -202,12 +217,16 @@ const EmployeeList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {employees.map(employee => (
-            <TableRow key={employee.key} onClick={() => handleRowClick(employee)} sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "#f5f5f5" },
-            }} >
-               <TableCell>
+          {employees.map((employee) => (
+            <TableRow
+              key={employee.key}
+              onClick={() => handleRowClick(employee)}
+              sx={{
+                cursor: "pointer",
+                "&:hover": { backgroundColor: "#f5f5f5" },
+              }}
+            >
+              <TableCell>
                 <Typography
                   sx={{
                     fontSize: "15px",
@@ -219,15 +238,15 @@ const EmployeeList = () => {
                 </Typography>
               </TableCell>
               <TableCell>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: "600",
-                      }}
-                      align="center"
-                    >
-                      {employee.name}
-                    </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: "600",
+                  }}
+                  align="center"
+                >
+                  {employee.name}
+                </Typography>
               </TableCell>
               <TableCell>
                 <Typography color="textSecondary" variant="h6" align="center">
@@ -274,7 +293,7 @@ const EmployeeList = () => {
                   {employee.department}
                 </Typography>
               </TableCell>
-              <TableCell sx={{textAlign:'center'}}>
+              <TableCell sx={{ textAlign: "center" }}>
                 <Chip
                   sx={{
                     pl: "4px",
@@ -286,27 +305,30 @@ const EmployeeList = () => {
                   label={employee.authority}
                 ></Chip>
               </TableCell>
-              </TableRow>
+            </TableRow>
           ))}
         </TableBody>
       </Table>
       {isModalOpen && (
         <EmployeeModal
-        employee={selectedEmployee}
-        isEditMode={isEditMode}
-        isDeleteMode={isDeleteMode}
-        onClose={() => setIsModalOpen(false)}
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
-        onSave={(updatedEmployee) => {
-          setEmployees(employees.map(emp => (emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp)));
-          setIsModalOpen(false);
-        }}
-        levels={levels}
-        departments={departments}
-        authorities={authorities}
-      />
-      
+          employee={selectedEmployee}
+          isEditMode={isEditMode}
+          isDeleteMode={isDeleteMode}
+          onClose={() => setIsModalOpen(false)}
+          onEdit={handleEditClick}
+          onDelete={handleDeleteClick}
+          onSave={(updatedEmployee) => {
+            setEmployees(
+              employees.map((emp) =>
+                emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp,
+              ),
+            );
+            setIsModalOpen(false);
+          }}
+          levels={levels}
+          departments={departments}
+          authorities={authorities}
+        />
       )}
     </Box>
   );
