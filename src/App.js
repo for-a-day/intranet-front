@@ -144,7 +144,7 @@ function App() {
                     <EmployeeRegister />
                   </PrivateRoute>
                 }
-
+              />
               <Route path='/app/franchisee' element={<Franchisee />} />
               <Route path='/app/warn' element={<Warning />} />
               <Route path='/app/close' element={<Closing />} />
