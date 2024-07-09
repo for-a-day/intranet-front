@@ -34,7 +34,7 @@ const Login = () => {
         // 로그인 성공 후 처리 (예: 리디렉션)
         alert('로그인 성공');
         // window.open("http://localhost:3005", "_blank", "width=800,height=1000,top=0,left=0,toolbar=no,location=no");
-        window.location.href = 'http://localhost:3000/app/home';
+        window.location.href = 'http://localhost:3000/';
       }catch (error) {
           console.error("There was an error logging in!", error);
         }

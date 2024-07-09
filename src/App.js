@@ -33,6 +33,7 @@ import instance from './axiosConfig';
 function App() {
   const theme = baseTheme;
   const [count, setCount] = useState(0);
+  const [notice, setNotice] = useState({});
   const token = localStorage.getItem("token");
 
   // SSE
@@ -100,6 +101,15 @@ function App() {
     const res = await instance.post("/app/auth/notice");
     if(res !== undefined){
       setCount(res.data.data.unreadCount);
+      const _notice = res?.data?.data?.notificationResponses;
+      if (_notice && _notice.length > 0) {
+        const viewNotice = _notice[_notice.length-1];
+        console.log(viewNotice);
+        if(viewNotice.view === false){
+          setNotice(viewNotice);
+          await instance.patch(`/app/auth/notice/${viewNotice.id}`);
+        }
+      }
     }
   }
 
@@ -108,7 +118,7 @@ function App() {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            <Route path='/' element={<FullLayout count={count}/>} >
+            <Route path='/' element={<FullLayout count={count} notice={notice}/>} >
               <Route path='/' element={<Main />} />
               <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
@@ -133,8 +143,6 @@ function App() {
                   </PrivateRoute>
                 }
 
-              /> */}
-              <Route path='/approval/draft/form' element={<ApprovalWrite />} />
               />
               <Route path='/franchisee' element={<Franchisee />} />
               <Route path='/warn' element={<Warning />} />

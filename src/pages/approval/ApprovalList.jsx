@@ -30,7 +30,7 @@ const ApprovalList = () => {
   const location = useLocation();
   const [title, setTitle] = useState("");
   const categoryList = ['todo', 'schedule', 'mydraft', 'temp', 'approval', 'department', 'complete'];
-  const titleList = {todo: '결대 대기 문서', schedule: '결재 예정 문서', approval: '결재 진행 문서', mydraft: '기안 문서', temp: '임시 저장 문서', complete: '결재 문서'} 
+  const titleList = {todo: '결재 대기 문서', schedule: '결재 예정 문서', approval: '결재 진행 문서', mydraft: '기안 문서', temp: '임시 저장 문서', complete: '결재 문서'} 
   const [selectedItem, setSelectedItem] = useState(null);
   const {isLoading, error, approvalList = []} = useSelector((state) => state.approval);
 
@@ -90,33 +90,42 @@ const ApprovalList = () => {
                   <TableCell sx={{width: "10%"}}>결재상태</TableCell>
               </StyledTableRow>
             </TableHead>
-            <TableBody>
-              {approvalList?.map((doc, index) => (
-                <StyledTableRow key={index}>
-                    <TableCell>{doc?.creationDate?.split("T")[0]}</TableCell>
-                    <TableCell>{doc.formName}</TableCell>
-                    <TableCell>
-                      {doc?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}
-                    </TableCell>
-                    {doc.status === 'T' ? (
-                      <SubjectTableCell onClick={() => navigate(`/approval/draft/revise/${doc.approvalId}`,{state : {category : selectedItem}})}>{doc.subject}</SubjectTableCell>
-                    ) : (
-                      <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${doc.approvalId}`,{state : {category : selectedItem}})}>{doc.subject}</SubjectTableCell>
-                    )}
-                    {/* <TableCell>
-                      {doc.fileCount > 0 && <AttachFile sx={{ fontSize: 20 }} />}
-                    </TableCell> */}
-                    {doc?.docNo !== null && doc.docNo !== undefined? (
-                      <TableCell>NG-결재-2024-{String(doc?.docNo).padStart(4, '0')}</TableCell>
-                    ) : (
-                      <TableCell></TableCell>
-                    )}
-                    <TableCell>
-                      {getStatus(doc.status)}
-                    </TableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
+            {approvalList?.length !== 0 ? (
+              <TableBody>
+                {approvalList?.map((doc, index) => (
+                  <StyledTableRow key={index}>
+                      <TableCell>{doc?.creationDate?.split("T")[0]}</TableCell>
+                      <TableCell>{doc.formName}</TableCell>
+                      <TableCell>
+                        {doc?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}
+                      </TableCell>
+                      {doc.status === 'T' ? (
+                        <SubjectTableCell onClick={() => navigate(`/approval/draft/revise/${doc.approvalId}`,{state : {category : selectedItem}})}>{doc.subject}</SubjectTableCell>
+                      ) : (
+                        <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${doc.approvalId}`,{state : {category : selectedItem}})}>{doc.subject}</SubjectTableCell>
+                      )}
+                      {/* <TableCell>
+                        {doc.fileCount > 0 && <AttachFile sx={{ fontSize: 20 }} />}
+                      </TableCell> */}
+                      {doc?.docNo !== null && doc.docNo !== undefined? (
+                        <TableCell>NG-결재-2024-{String(doc?.docNo).padStart(4, '0')}</TableCell>
+                      ) : (
+                        <TableCell></TableCell>
+                      )}
+                      <TableCell>
+                        {getStatus(doc.status)}
+                      </TableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            ) : (
+              <TableBody>
+                <TableRow>
+                  <TableCell colSpan={6} sx={{textAlign: 'center', padding:'20px', borderBottom: 'none', fontSize: '16px'}}>결재 문서가 없습니다</TableCell>
+                </TableRow>
+              </TableBody>
+            )}
+            
           </Table>
         </TableContainer>
       </Box>

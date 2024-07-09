@@ -24,6 +24,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import instance from "../../axiosConfig";
+import ModalPortal from "../../config/ModalPortal";
+import SseModal from "../../components/approval/SseModal";
 
 const Header = (props) => {
   const navigate = useNavigate();
@@ -35,26 +37,52 @@ const Header = (props) => {
   //SSE
   const [data, setData] = useState();
   const [count, setCount] = useState(props.count || 0);
+  const [notice, setNotice] = useState({});
+  const [modal, setModal] = useState(false);
+  const isEmpty = (obj) => {
+    if (obj == null) return true;
+  
+    return Object.values(obj).length === 0;
+  };
 
+  console.log(props?.notice);
   useEffect(() =>{
     setCount(props.count);
   },[props.count])
+
+  useEffect(() => {
+    if(!isEmpty(props.notice)){
+      setNotice(props.notice);
+    }
+  },[props.notice]);
+
+  useEffect(() => {
+    if (!isEmpty(notice)) {
+      setModal(true);
+      const timer = setTimeout(() => {
+        setModal(false);
+        setNotice({});
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+  },[notice])
+  console.log(notice);
 
   // 안 읽은 알람만 출력
   const notReadData = data && data.filter((data) => data.read === false).reverse();
 
   // 서버로부터 받아온 데이터를 저장
   const getNotice = async () => {
-    const token = localStorage.getItem("token");
-    const res = await instance.post("/api/auth/notice");
-
+    const res = await instance.post("/app/auth/notice");
     setData(res.data.data.notificationResponses);
   };
 
   // 읽음 버튼을 클릭했을 때 서버로 보냄
   const readHandler = async (id) => {
     const token = localStorage.getItem("token");
-    await instance.put(`/api/auth/notice/${id}`);
+    await instance.put(`/app/auth/notice/${id}`);
 
   };
 
@@ -119,6 +147,10 @@ const Header = (props) => {
   //   };
   //   userData();
   // }, []);
+
+  const closeModal = () => {
+    setModal(false);
+  }
 
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
@@ -190,6 +222,9 @@ const Header = (props) => {
               </MenuItem>
             ))
           )}
+          <ModalPortal>
+            {modal && <SseModal modal={modal} notice={notice} readClick={readClick}/>}
+          </ModalPortal>
         </Menu>
         {/* ------------------------------------------- */}
         {/* End Notifications Dropdown */}
