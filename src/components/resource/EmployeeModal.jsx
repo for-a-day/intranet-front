@@ -48,6 +48,7 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
         onSave(response.data);
         alert('수정하였습니다.');
         onClose();
+        window.location.href = 'http://localhost:3000/app/employees';
       })
       .catch(error => {
         console.error('Error updating employee:', error);
@@ -67,11 +68,7 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
     }
 
     if (window.confirm('정말 퇴직처리하시겠습니까?')) {
-      instance.post('/app/employees/exit', editEmployee, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      instance.post('/app/employees/exit', editEmployee)
         .then(response => {
           instance.delete(`/app/employees/${editEmployee.employeeId}`)
             .then(response => {
