@@ -27,7 +27,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import instance from './axiosConfig';
-
+import MyAccount from './components/myaccount/MyAccount';
 
 
 function App() {
@@ -115,7 +115,7 @@ function App() {
               <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
               <Route path='/app/schedule/create' element={<CalendarDetail isCreate={true}/>} />
-              <Route path='/' element={<Main />} />
+              <Route path="/app/my-account" element={<MyAccount />} />
               {/* <Route path='/app/employees' element={<EmployeeList />} />
               <Route path='/app/employees/register' element={<EmployeeRegister />} /> */}
 

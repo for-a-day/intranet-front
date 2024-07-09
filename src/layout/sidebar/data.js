@@ -28,11 +28,6 @@ const Menuitems = [
     href: "/approval/draft",
   },
   {
-    title: "메신저",
-    icon: Chat,
-    href: "/app/form-elements/button",
-  },
-  {
     title: "일정 관리",
     icon: CalendarMonth,
     href: "/app/calendar",
