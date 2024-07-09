@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './EmployeeRegister.css'; // 등록 폼 CSS 파일을 import
 import {
   Paper,
@@ -40,11 +39,7 @@ const EmployeeRegister = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    instance.get('/app/employees/register', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    instance.get('/app/employees/register')
     .then(response => {
       setLevels(response.data.levels);
       setDepartments(response.data.departments);
@@ -133,11 +128,7 @@ const EmployeeRegister = () => {
       return;
     }
 
-    instance.post('/app/employees/register', requestData, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
+    instance.post('/app/employees/register', requestData)
     .then(response => {
       console.log('Employee registered successfully:', response.data);
       alert('등록되었습니다.');
