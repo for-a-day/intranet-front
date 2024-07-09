@@ -101,6 +101,14 @@ const Header = (props) => {
     setAnchorEl5(null);
   };
 
+  
+    const handleLogout = () => {
+      alert("로그아웃되었습니다.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      navigate("/login");
+    };
+
 
   // useEffect(() => {
   //   const userData = async () => {
@@ -270,7 +278,7 @@ const Header = (props) => {
             </ListItemIcon>
             Settings
           </MenuItem>
-          <MenuItem onClick={handleClose4}>
+          <MenuItem onClick={handleLogout}>
             <ListItemIcon>
               <LogoutOutlinedIcon fontSize="small" />
             </ListItemIcon>

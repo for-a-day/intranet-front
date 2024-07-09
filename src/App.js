@@ -110,6 +110,8 @@ function App() {
           <Routes>
             <Route path='/' element={<FullLayout count={count}/>} >
               <Route path='/' element={<Main />} />
+              <Route path='/app/home' element={<Main />} />
+              <Route path='/app' element={<Main />} />
               <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
               <Route path='/app/schedule/create' element={<CalendarDetail isCreate={true}/>} />
@@ -133,9 +135,8 @@ function App() {
                   </PrivateRoute>
                 }
 
-              /> */}
+              /> 
               <Route path='/approval/draft/form' element={<ApprovalWrite />} />
-              />
               <Route path='/franchisee' element={<Franchisee />} />
               <Route path='/warn' element={<Warning />} />
               <Route path='/close' element={<Closing />} />

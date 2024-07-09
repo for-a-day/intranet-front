@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Typography,
   Box,
@@ -23,10 +23,29 @@ const EmployeeList = () => {
   const [levels, setLevels] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [authorities, setAuthorities] = useState([]);
+  const [currentUserDepartment, setCurrentUserDepartment] = useState(''); // 현재 사용자 부서 정보
   const token = localStorage.getItem('token');
+  const navigate = useNavigate(); // useNavigate 훅 사용
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+
 
   useEffect(() => {
-    console.log(token);
+    const fetchCurrentUserDepartment = async () => {
+      try {
+        const response = await instance.get('/app/employees/current');
+        console.log('Current User Response:', response.data);
+        setCurrentUserDepartment(response.data.department); // 현재 사용자 부서 정보 설정
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      } finally {
+        setIsLoading(false); // 로딩 상태 해제
+      }
+    };
+
+    fetchCurrentUserDepartment();
+  }, [token]);
+
+  useEffect(() => {
     instance.get('/app/employees/list')
     .then(response => {
       const { employees, levels, departments, authorities } = response.data;
@@ -48,7 +67,14 @@ const EmployeeList = () => {
     .catch(error => {
       console.error('Error fetching employees:', error);
     });
-  }, [token]); // token을 useEffect의 의존성 배열에 추가하여 토큰이 변경될 때마다 재요청
+  }, [token]);
+
+  useEffect(() => {
+    if (!isLoading && currentUserDepartment !== '인사부') {
+      alert('인사부 소속만 접근 가능합니다.');
+      navigate('/'); // 홈화면으로 리디렉션
+    }
+  }, [isLoading, currentUserDepartment, navigate]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
