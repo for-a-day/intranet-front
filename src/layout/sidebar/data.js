@@ -40,7 +40,7 @@ const Menuitems = [
   {
     title: "가맹점 관리",
     icon: Storefront,
-    href: "/franchisee",
+    href: "/app/franchisee",
   },
   {
     title: "인사 관리",
@@ -50,19 +50,19 @@ const Menuitems = [
   {
     title: "매출 관리",
     icon: BarChart,
-    href: "/sales",
+    href: "/app/sales",
   },
   {
     title: "메뉴 관리",
     icon: LocalDiningOutlinedIcon,
 
-    href: "/menu",
+    href: "/app/menu",
   },
   {
     title: "주문 관리",
     icon: DescriptionOutlinedIcon,
 
-    href: "/order",
+    href: "/app/order",
   },
 ];
 
