@@ -25,7 +25,7 @@ const Menuitems = [
   {
     title: "전자결재",
     icon: Approval,
-    href: "/app/form-elements/autocomplete",
+    href: "/approval/draft",
   },
   {
     title: "메신저",
