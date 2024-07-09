@@ -32,11 +32,19 @@ const FranchiseeList = () => {
             closing_id: null
         });
 
+        // 페이지네이션 상태
         const [currentPage, setCurrentPage] = useState(1);
         const [itemsPerPage] = useState(5);
 
-        const currentData = franchisee.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
+        const handlePageChange = (event, page) => {
+            setCurrentPage(page);
+        };
+        
+          // Calculate the data for the current page
+          const indexOfLastItem = currentPage * itemsPerPage;
+          const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+          const currentItems = franchisee.slice(indexOfFirstItem, indexOfLastItem);
+       
         const fetchFranchisee = async () => {
             try {
                 const response = await instance.get('/app/store', {
@@ -100,12 +108,6 @@ const FranchiseeList = () => {
                 setIsWarningReasonVisible(false);
             }
         };
-
-        // 화면 기능 - 경고사유 작성 토글
-        //const handleWarningReasonToggle = () => {
-            //setIsWarningReasonVisible(!isWarningReasonVisible);
-            //setIsWarningReasonClicked(true);
-        //};
 
         // input요소 변동 시, 반영기능
         const handleInputChange = (e) => {
@@ -334,6 +336,7 @@ const FranchiseeList = () => {
                 >
                     <TableHead sx={{borderBottom:'2px solid #d1cfcf'}}>
                     <TableRow>
+                        <TableCell></TableCell>
                         <TableCell>
                         <Typography color="textSecondary" variant="h6" align="center">
                             가맹점 아이디
@@ -367,7 +370,7 @@ const FranchiseeList = () => {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                        {franchisee.map(franchisee => (
+                        {currentItems.map((franchisee, index) => (
                             <TableRow
                                 key={franchisee.franchiseeId}
                                 style={franchisee.franchiseeId % 2 === 0 ? styles.tr.nthChildEven : null}
@@ -379,39 +382,28 @@ const FranchiseeList = () => {
                                     "&:hover": { backgroundColor: "#f5f5f5" },
                                 }}
                             >
+                                 <TableCell align="center">{indexOfFirstItem + index + 1}</TableCell>
                                  <TableCell>
-                                 <Typography variant="h6" align="center">
-                                    {franchisee.franchiseeId}
-                                </Typography>
-                                </TableCell>
+                                    <Typography variant="h6" align="center">{franchisee.franchiseeId}</Typography>
+                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.employeeId.name}
-                                    </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.employeeId.name}</Typography>
                                 </TableCell>
                                 <TableCell
                                     sx={{
                                     color: franchisee.warningCount >= 5 ? "red" : "inherit",
                                     }}
                                 >
-                                    <Typography variant="h6" align="center">
-                                    {franchisee.franchiseeName}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.franchiseeName}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.owner}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.owner}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.address}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.address}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                <Typography variant="h6" align="center">
-                                    {franchisee.phoneNumber}
-                                </Typography>
+                                    <Typography variant="h6" align="center">{franchisee.phoneNumber}</Typography>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -664,6 +656,14 @@ const FranchiseeList = () => {
                         </div>
                     </>
                 )}
+                <Box display="flex" justifyContent="center" mt={2}>
+                    <Pagination
+                    count={Math.ceil(franchisee.length / itemsPerPage)}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    />
+                </Box>
             </Box>
         );
 };
