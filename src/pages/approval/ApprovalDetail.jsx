@@ -20,6 +20,7 @@ const ApprovalDetail = () => {
   const location = useLocation();
   const queryString = location.search;
   const [backHistory, setBackHistory] = useState(location.state?.history || null);
+  const category = location.state.category || "";
   const {id} = useParams();
   const {isLoading, error, approval = {}} = useSelector((state) => state.approval);
   const [participant, setParticipant] = useState({});
@@ -118,7 +119,7 @@ const ApprovalDetail = () => {
 
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
-      <ApprovalSideBar />
+      <ApprovalSideBar _category={category}/>
       <Stack>
         <Box sx={{marginBottom:"15px"}}>
           <Typography variant='h2'>{approval.subject} {approval?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}</Typography>

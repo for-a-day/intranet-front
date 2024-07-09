@@ -34,6 +34,7 @@ const ApprovalWrite = () => {
   const [approvalData, setApprovalData] = useState(location.state?.approvalData || null);
   const [formValues, setFormValues] = useState({});
   const [modal, setModal] = useState(false);
+  const [docTitle, setDocTitle] = useState("");
   const [urgency, setUrgency] = useState(0);
   const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
 
@@ -105,6 +106,9 @@ const ApprovalWrite = () => {
       ...prevValues,
       [name]: value
     }));
+    if(name === 'subject'){
+      setDocTitle(value.trim());
+    }
   };
 
   const replaceInputTextareaWithSpan = (node) => {
@@ -187,7 +191,7 @@ const ApprovalWrite = () => {
       const tempHtml = await onChangeHtml(replaceInputValue);
       const data = {
         formData : {
-          subject: approvalData.subject,
+          subject: docTitle !== "" ? docTitle : approvalData.subject,
           formId: approvalData.formId,
           docBody: updatedHtml,
           tempBody: tempHtml,
@@ -210,7 +214,7 @@ const ApprovalWrite = () => {
   //취소 메서드
   const cancel = () => {
     if(window.confirm("취소 하시겠습니까?")){
-      navigate("/approval/draft/list/draft");
+      navigate("/approval/draft/list/mydraft");
     }
   }
 

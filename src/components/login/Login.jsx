@@ -36,6 +36,7 @@ const Login = () => {
         // window.open("http://localhost:3005", "_blank", "width=800,height=1000,top=0,left=0,toolbar=no,location=no");
         window.location.href = 'http://localhost:3000/app/home';
       }catch (error) {
+        alert("사번과 비밀번호를 확인해주세요.");
           console.error("There was an error logging in!", error);
         }
       };

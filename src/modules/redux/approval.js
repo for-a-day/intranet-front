@@ -47,9 +47,9 @@ export const _createApproval = createAsyncThunk(
     try {
       const data = await instance.post(`/app/approval/draft`, payload.formData);
       if(payload.formData.saveType === 'T'){
-        payload._navigate(`/approval/draft/revise/${data.data.data.approvalId}`, { state: {history: "/approval/draft"}});
+        payload._navigate(`/approval/draft/revise/${data.data.data.approvalId}`, { state: {history: "/approval/draft", category: "temp"}});
       } else {
-        payload._navigate(`/approval/draft/detail/${data.data.data.approvalId}`, { state: {history: "/approval/draft"}});
+        payload._navigate(`/approval/draft/detail/${data.data.data.approvalId}`, { state: {history: "/approval/draft", category: "mydraft"}});
       }
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
@@ -65,9 +65,9 @@ export const _updateApproval = createAsyncThunk(
     try {
       const data = await instance.post(`/app/approval/draft/doc`, payload.formData);
       if(payload.formData.saveType === 'T'){
-        payload._navigate(`/approval/draft/revise/${data.data.data.approvalId}`, { state: {history: "/approval/draft"}});
+        payload._navigate(`/approval/draft/revise/${data.data.data.approvalId}`, { state: {history: "/approval/draft" , category: "temp"}});
       } else {
-        payload._navigate(`/approval/draft/detail/${data.data.data.approvalId}`, { state: {history: "/approval/draft"}});
+        payload._navigate(`/approval/draft/detail/${data.data.data.approvalId}`, { state: {history: "/approval/draft", category: "mydraft"}});
       }
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
@@ -135,7 +135,7 @@ export const _updateApprovalCancel = createAsyncThunk(
     try{
       const data = await instance.put(`/app/approval/draft/doc`,payload.formData);
       if(payload.formData.saveType === 'T'){
-        payload._navigate(`/approval/draft/revise/${data.data.data}`, { state: {history: "/approval/draft"}});
+        payload._navigate(`/approval/draft/revise/${data.data.data}`, { state: {history: "/approval/draft", category: "temp"}});
       } 
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){

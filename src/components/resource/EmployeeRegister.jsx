@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './EmployeeRegister.css'; // 등록 폼 CSS 파일을 import
 import {
   Paper,
@@ -16,6 +15,7 @@ import {
   Box,
   InputLabel
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import instance from '../../axiosConfig';
 
 const EmployeeRegister = () => {
@@ -37,22 +37,44 @@ const EmployeeRegister = () => {
   const [levels, setLevels] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [authorities, setAuthorities] = useState([]);
+  const [currentUserDepartment, setCurrentUserDepartment] = useState(''); // 현재 사용자 부서 정보
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    instance.get('/app/employees/register', {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    const fetchCurrentUserDepartment = async () => {
+      try {
+        const response = await instance.get('/app/employees/current');
+        console.log('Current User Response:', response.data);
+        setCurrentUserDepartment(response.data.department); // 현재 사용자 부서 정보 설정
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      } finally {
+        setIsLoading(false); // 로딩 상태 해제
       }
-    })
-    .then(response => {
-      setLevels(response.data.levels);
-      setDepartments(response.data.departments);
-      setAuthorities(response.data.authorities);
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
+    };
+
+    fetchCurrentUserDepartment();
+  }, [token]);
+
+  useEffect(() => {
+    if (!isLoading && currentUserDepartment !== '인사부') {
+      alert('인사부 소속만 접근 가능합니다.');
+      navigate('/'); // 홈화면으로 리디렉션
+    }
+  }, [isLoading, currentUserDepartment, navigate]);
+
+  useEffect(() => {
+    instance.get('/app/employees/register')
+      .then(response => {
+        setLevels(response.data.levels);
+        setDepartments(response.data.departments);
+        setAuthorities(response.data.authorities);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
   }, [token]); // token을 useEffect의 의존성 배열에 추가하여 토큰이 변경될 때마다 재요청
 
   // 전화번호 형식 변환 함수
@@ -133,30 +155,30 @@ const EmployeeRegister = () => {
       return;
     }
 
-    instance.post('/app/employees/register', requestData, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    .then(response => {
-      console.log('Employee registered successfully:', response.data);
-      alert('등록되었습니다.');
+    instance.post('/app/employees/register', requestData)
+      .then(response => {
+        console.log('Employee registered successfully:', response.data);
+        alert('등록되었습니다.');
 
-      // 페이지 이동
-      window.location.href = 'http://localhost:3000/app/employees';
-    })
-    .catch(error => {
-      console.error('Error registering employee:', error);
-      alert('등록에 실패하였습니다.');
-    });
+        // 페이지 이동
+        window.location.href = 'http://localhost:3000/app/employees';
+      })
+      .catch(error => {
+        console.error('Error registering employee:', error);
+        alert('등록에 실패하였습니다.');
+      });
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>; // 로딩 중일 때 표시할 내용
+  }
 
   return (
     <Paper sx={{ padding: 4, maxWidth: 600, mx: 'auto' }}>
       <h2>사원 등록</h2>
       <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off">
-      <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="사번"
@@ -242,7 +264,7 @@ const EmployeeRegister = () => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth>
-            <InputLabel id="level-label">직급선택</InputLabel>
+              <InputLabel id="level-label">직급선택</InputLabel>
               <Select
                 label="직급"
                 name="level"
@@ -259,7 +281,7 @@ const EmployeeRegister = () => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth>
-            <InputLabel id="department-label">부서선택</InputLabel>
+              <InputLabel id="department-label">부서선택</InputLabel>
               <Select
                 label="부서"
                 name="department"
@@ -276,7 +298,7 @@ const EmployeeRegister = () => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth>
-            <InputLabel id="authority-label">권한선택</InputLabel>
+              <InputLabel id="authority-label">권한선택</InputLabel>
               <Select
                 label="권한"
                 name="authority"
@@ -292,23 +314,17 @@ const EmployeeRegister = () => {
               </Select>
             </FormControl>
           </Grid>
-      </Grid>
-      <Box sx={{textAlign:'right'}}>
-      <Button
-  variant="contained"
-  color="primary"
-  onClick={handleSubmit}
-  sx={{ marginTop: 2 }}
->
-  사원 등록
-</Button>
-
-
-
-
-</Box>
-
-
+        </Grid>
+        <Box sx={{ textAlign: 'right' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            sx={{ marginTop: 2 }}
+          >
+            사원 등록
+          </Button>
+        </Box>
       </Box>
     </Paper>
   );

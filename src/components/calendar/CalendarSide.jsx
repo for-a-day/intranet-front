@@ -55,7 +55,7 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await instance.post("app/employees/token");
+          const response = await instance.get("app/employees/token");
           const employee = response.data.employee;
           const deptCode = employee.department?.departmentCode;
           const deptName = employee.department?.departmentName;
@@ -101,7 +101,7 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
         });
       } else {
         // 등록 모드
-        await instance.post("/app/cdalendar", calendarData, {
+        await instance.post("/app/calendar", calendarData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

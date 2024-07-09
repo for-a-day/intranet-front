@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Typography,
   Box,
@@ -21,25 +20,37 @@ const EmployeeList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const [isEditMode, setIsEditMode] = useState(false); // 수정 모드 상태
   const [isDeleteMode, setIsDeleteMode] = useState(false); // 삭제 모드 상태
+  const [levels, setLevels] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [authorities, setAuthorities] = useState([]);
+  const [currentUserDepartment, setCurrentUserDepartment] = useState(''); // 현재 사용자 부서 정보
   const token = localStorage.getItem('token');
+  const navigate = useNavigate(); // useNavigate 훅 사용
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태
+
 
   useEffect(() => {
-    console.log(token);
-    instance.get('/app/employees/list', {
-      headers: {
-        'Authorization': `Bearer ${token}`
+    const fetchCurrentUserDepartment = async () => {
+      try {
+        const response = await instance.get('/app/employees/current');
+        console.log('Current User Response:', response.data);
+        setCurrentUserDepartment(response.data.department); // 현재 사용자 부서 정보 설정
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      } finally {
+        setIsLoading(false); // 로딩 상태 해제
       }
-    })
+    };
+
+    fetchCurrentUserDepartment();
+  }, [token]);
+
+  useEffect(() => {
+    instance.get('/app/employees/list')
     .then(response => {
-      let employeesData = response.data.employees;
+      const { employees, levels, departments, authorities } = response.data;
 
-      // employeesData가 배열인지 확인하고 배열이 아니면 배열로 변환
-      if (!Array.isArray(employeesData)) {
-        employeesData = [employeesData];
-      }
-
-      const formattedEmployees = employeesData.map((employee, index) => {
-        console.log(`Employee ID: ${employee.employeeId}`); // 로그 추가
+      const formattedEmployees = employees.map((employee, index) => {
         return {
           ...employee,
           birth: formatDate(employee.birth), // 날짜 데이터 포맷 변경
@@ -49,11 +60,21 @@ const EmployeeList = () => {
       });
 
       setEmployees(formattedEmployees);
+      setLevels(levels);
+      setDepartments(departments);
+      setAuthorities(authorities);
     })
     .catch(error => {
       console.error('Error fetching employees:', error);
     });
-  }, [token]); // token을 useEffect의 의존성 배열에 추가하여 토큰이 변경될 때마다 재요청
+  }, [token]);
+
+  useEffect(() => {
+    if (!isLoading && currentUserDepartment !== '인사부') {
+      alert('인사부 소속만 접근 가능합니다.');
+      navigate('/'); // 홈화면으로 리디렉션
+    }
+  }, [isLoading, currentUserDepartment, navigate]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -271,17 +292,21 @@ const EmployeeList = () => {
       </Table>
       {isModalOpen && (
         <EmployeeModal
-          employee={selectedEmployee}
-          isEditMode={isEditMode}
-          isDeleteMode={isDeleteMode}
-          onClose={() => setIsModalOpen(false)}
-          onEdit={handleEditClick}
-          onDelete={handleDeleteClick}
-          onSave={(updatedEmployee) => {
-            setEmployees(employees.map(emp => (emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp)));
-            setIsModalOpen(false);
-          }}
-        />
+        employee={selectedEmployee}
+        isEditMode={isEditMode}
+        isDeleteMode={isDeleteMode}
+        onClose={() => setIsModalOpen(false)}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
+        onSave={(updatedEmployee) => {
+          setEmployees(employees.map(emp => (emp.employeeId === updatedEmployee.employeeId ? updatedEmployee : emp)));
+          setIsModalOpen(false);
+        }}
+        levels={levels}
+        departments={departments}
+        authorities={authorities}
+      />
+      
       )}
     </Box>
   );
