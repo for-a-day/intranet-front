@@ -46,7 +46,7 @@ const Order = () => {
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)' }}>
             <Toolbar>
-              <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black', fontWeight: 'bold' }}>
+              <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black'}}>
                 주문 관리(물류부)
               </Typography>
               <button onClick={fetchOrderCall} style={styles.register}>주문 정보 불러오기</button>
