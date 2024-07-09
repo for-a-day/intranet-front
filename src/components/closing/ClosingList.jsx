@@ -10,6 +10,7 @@ import {
   Typography,
   TableBody,
   IconButton,
+  Pagination
 } from "@mui/material";
 import styles from "./ClosingListStyle";
 import { Close as CloseIcon } from "@mui/icons-material";
@@ -18,6 +19,19 @@ const ClosingList = () => {
   const [close, setClose] = useState([]);
   const [selectedClose, setSelectedClose] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+
+  const handlePageChange = (event, page) => {
+      setCurrentPage(page);
+  };
+  
+    // Calculate the data for the current page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = close.slice(indexOfFirstItem, indexOfLastItem); 
 
   useEffect(() => {
     const fetchClose = async () => {
@@ -55,6 +69,7 @@ const ClosingList = () => {
       >
         <TableHead sx={{ borderBottom: "2px solid #d1cfcf" }}>
           <TableRow>
+            <TableCell></TableCell>
             <TableCell>
               <Typography color="textSecondary" variant="h6" align="center">
                 폐점 아이디
@@ -93,7 +108,7 @@ const ClosingList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {close.map((close) => (
+          {currentItems.map((close, index) => (
             <TableRow
               key={close.closingId}
               style={close.closingId % 2 === 0 ? styles.tr.nthChildEven : null}
@@ -110,6 +125,7 @@ const ClosingList = () => {
                 "&:hover": { backgroundColor: "#f5f5f5" },
               }}
             >
+              <TableCell align="center">{indexOfFirstItem + index + 1}</TableCell>
               <TableCell>
                 <Typography variant="h6" align="center">
                   {close.closingId}
@@ -188,6 +204,14 @@ const ClosingList = () => {
           </div>
         </>
       )}
+      <Box display="flex" justifyContent="center" mt={2}>
+           <Pagination
+              count={Math.ceil(close.length / itemsPerPage)}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+           />
+      </Box>
     </Box>
   );
 };
