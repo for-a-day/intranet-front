@@ -207,21 +207,23 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   return (
     <Box>
       <Link to="/app/calendar" style={{ textDecoration: "none", color: "black" }}>
-        <h2>캘린더</h2>
+        <Typography variant="h2" sx={{ pb: 3 }}>
+          캘린더
+        </Typography>
       </Link>
       <Box sx={{ textAlign: "center" }}>
         <Button
           variant="contained"
           onClick={scheduleCreate}
           sx={{
-            pr: 8,
-            pl: 8,
+            pr: 10,
+            pl: 10,
             pt: 1.5,
             pb: 1.5,
             mr: 2,
           }}
         >
-          일정등록
+          일정 등록
         </Button>
       </Box>
       <Modal
@@ -254,8 +256,9 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
           </Box>
         </form>
       </Modal>
-
-      <h3 style={{ paddingTop: 6 }}>{userInfo?.department} 캘린더</h3>
+      <Typography variant="h3" sx={{ paddingTop: 3.5, paddingBottom: 1 }}>
+        {userInfo?.department} 캘린더
+      </Typography>
       <List>
         {calendars.map((calendar) => (
           <ListItem key={calendar.calendarId} disablePadding>
@@ -284,9 +287,9 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
         ))}
       </List>
       <Box sx={{ textAlign: "center", paddingRight: 3 }}>
-        <span onClick={() => openModal(false)} className="createCalendar">
+        <Typography variant="h5" onClick={() => openModal(false)} className="createCalendar">
           <AddIcon style={{ marginRight: "8px" }} /> 캘린더 등록
-        </span>
+        </Typography>
       </Box>
     </Box>
   );

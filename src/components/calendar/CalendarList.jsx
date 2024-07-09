@@ -312,7 +312,9 @@ const CalendarList = ({ calendarId }) => {
         <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={modalClose}>
           <CloseIcon />
         </IconButton>
-        <h2 style={{ fontSize: "1.5rem", color: "#333" }}>일정 간편 등록</h2>
+        <Typography variant="h2" mb={2}>
+          일정 간편 등록
+        </Typography>
         <hr></hr>
         <TextField
           label="일정 제목"

@@ -313,7 +313,7 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
 
   return (
     <Box p={3}>
-      <Typography variant="h4" mb={3}>
+      <Typography variant="h3" mb={3}>
         {isCreate ? "일정 등록" : "일정 상세보기"}
       </Typography>
       <form onSubmit={scheduleSubmit}>
