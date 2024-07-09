@@ -17,14 +17,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ApprovalDraftList from '../../components/approval/ApprovalDraftList';
 
-//JWT토큰 이후에 삭제 예정
-const employee = {
-  department: '영업부',
-  level: '사원',
-  name: '김다우',
-};
-sessionStorage.setItem('employee', JSON.stringify(employee));
-
 const ApprovalWrite = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,7 +28,7 @@ const ApprovalWrite = () => {
   const [modal, setModal] = useState(false);
   const [docTitle, setDocTitle] = useState("");
   const [urgency, setUrgency] = useState(0);
-  const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
+  const [employee, setEmployee] = useState(location.state?.employee || null); //사원 정보
 
   useEffect(() => {
     // 입력 필드에 이벤트 리스너 추가
@@ -52,13 +44,25 @@ const ApprovalWrite = () => {
     //기안자
     const draftUser = contentRef.current.querySelector('#draftUser');
     if (draftUser) {
-      draftUser.textContent = participant.name || "";   //추후 데이터가 없을 때 다시 받아오는 로직 필요할듯
+      draftUser.textContent = employee.name || "";   //추후 데이터가 없을 때 다시 받아오는 로직 필요할듯
+    }
+
+    //도장 직급
+    const draftLevel = contentRef.current.querySelector('#draftLevel');
+    if (draftLevel) {
+      draftLevel.textContent = employee.level || "";
+    }
+
+    //도장 이름
+    const draftName = contentRef.current.querySelector('#draftName');
+    if (draftName) {
+      draftName.textContent = employee.name || "";
     }
 
     //소속
     const draftDept = contentRef.current.querySelector('#draftDept');
     if (draftDept) {
-      draftDept.textContent = participant.department || "";
+      draftDept.textContent = employee.department || "";
     }
 
     //기안일
@@ -245,11 +249,11 @@ const ApprovalWrite = () => {
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
         </Stack>
         <Stack direction="row" spacing={4}>
-          <Box sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
+          <Box sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
             <div ref={contentRef}>{parse(approvalData?.content || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}
-          <ApprovalDraftList type="W" participant={participant} participants={approvalInfo}/>  
+          <ApprovalDraftList type="W" participant={employee} participants={approvalInfo}/>  
         </Stack>
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<SendIcon />}onClick={() => onSubmtEvent("C")}>결재요청</Button>

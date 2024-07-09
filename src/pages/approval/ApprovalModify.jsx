@@ -19,14 +19,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ApprovalDraftList from '../../components/approval/ApprovalDraftList';
 
 
-//JWT토큰 이후에 삭제 예정
-const employee = {
-  department: '영업부',
-  level: '사원',
-  name: '김다우',
-};
-sessionStorage.setItem('employee', JSON.stringify(employee));
-
 const ApprovalModify = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,13 +28,14 @@ const ApprovalModify = () => {
   const [approvalInfo, setApprovalInfo] = useState([])
   const [formValues, setFormValues] = useState({});
   const [modal, setModal] = useState(false);
-  const {isLoading, error, modfiyApproval = {}} = useSelector((state) => state.approval);
+  const {isLoading, error, modfiyApproval = {}} = useSelector((state) => state?.approval);
   const [approvalData, setApprovalData] = useState(null);
   const [urgency, setUrgency] = useState(modfiyApproval?.urgency ||0);
   const [docTitle, setDocTitle] = useState("");
+  const [employee, setEmployee] = useState({});
   console.log(location?.state?.category);
   const category = location?.state?.category || "";
-  const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
+
   const data = {
     _id : id
   }
@@ -63,15 +56,16 @@ const ApprovalModify = () => {
 
 
   useEffect(() => {
-    if (modfiyApproval && Object.keys(modfiyApproval).length !== 0) {
-      if (modfiyApproval.approvalType !== "기안") {
+    if (modfiyApproval?.approval && Object.keys(modfiyApproval?.approval).length !== 0) {
+      if (modfiyApproval?.approval?.approvalType !== "기안") {
         alert("해당 문서는 상신 취소 되었습니다");
         navigate('/approval/draft');
       }
-      setApprovalData(modfiyApproval);
-      setDocTitle(modfiyApproval?.subject);
+      setApprovalData(modfiyApproval?.approval);
+      setDocTitle(modfiyApproval?.approval?.subject);
+      setEmployee(modfiyApproval?.employee);
     }
-  }, [modfiyApproval,navigate]);
+  }, [modfiyApproval?.approval,navigate]);
 
   useEffect(() => {
     if(approvalData && approvalData.status !== 'T' && approvalData.approvalId){
@@ -79,7 +73,7 @@ const ApprovalModify = () => {
     }
 
     //ApprovalReApply.jsx 보고 수정하기
-    const [drafter, ...aprovers] = modfiyApproval?.participantList || [];
+    const [drafter, ...aprovers] = modfiyApproval?.approval?.participantList || [];
     setApprovalInfo(aprovers);
 
     // 입력 필드에 이벤트 리스너 추가
@@ -92,6 +86,19 @@ const ApprovalModify = () => {
     //현재 날짜
     const today = new Date();
     const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+    
+    //도장 직급
+    const draftLevel = contentRef.current.querySelector('#draftLevel');
+    if (draftLevel) {
+      draftLevel.textContent = employee.level || "";
+    }
+
+    //도장 이름
+    const draftName = contentRef.current.querySelector('#draftName');
+    if (draftName) {
+      draftName.textContent = employee.name || "";
+    }
 
     //기안일
     const draftDate = contentRef.current.querySelector('#draftDate');
@@ -107,13 +114,13 @@ const ApprovalModify = () => {
     //기안자
     const draftUser = contentRef.current.querySelector('#draftUser');
     if (draftUser) {
-      draftUser.textContent = participant.name || "";   //추후 데이터가 없을 때 다시 받아오는 로직 필요할듯
+      draftUser.textContent = employee.name || "";   //추후 데이터가 없을 때 다시 받아오는 로직 필요할듯
     }
 
     //소속
     const draftDept = contentRef.current.querySelector('#draftDept');
     if (draftDept) {
-      draftDept.textContent = participant.department || "";
+      draftDept.textContent = employee.department || "";
     }
 
     //도장
@@ -300,11 +307,11 @@ const ApprovalModify = () => {
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
         </Stack>
         <Stack direction="row" spacing={4}>
-          <Box sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
+          <Box sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
             <div ref={contentRef}>{parse(approvalData?.tempBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}
-          <ApprovalDraftList type="W" participant={participant} participants={approvalInfo}/>  
+          <ApprovalDraftList type="W" participant={employee} participants={approvalInfo}/>  
         </Stack>
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<SendIcon />} onClick={() => onSubmtEvent("C")}>결재요청</Button>

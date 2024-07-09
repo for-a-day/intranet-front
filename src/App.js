@@ -27,12 +27,13 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import instance from './axiosConfig';
-
+import MyAccount from './components/myaccount/MyAccount';
 
 
 function App() {
   const theme = baseTheme;
   const [count, setCount] = useState(0);
+  const [notice, setNotice] = useState({});
   const token = localStorage.getItem("token");
 
   // SSE
@@ -100,6 +101,15 @@ function App() {
     const res = await instance.post("/app/auth/notice");
     if(res !== undefined){
       setCount(res.data.data.unreadCount);
+      const _notice = res?.data?.data?.notificationResponses;
+      if (_notice && _notice.length > 0) {
+        const viewNotice = _notice[_notice.length-1];
+        console.log(viewNotice);
+        if(viewNotice.view === false){
+          setNotice(viewNotice);
+          await instance.patch(`/app/auth/notice/${viewNotice.id}`);
+        }
+      }
     }
   }
 
@@ -108,14 +118,14 @@ function App() {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            <Route path='/' element={<FullLayout count={count}/>} >
+            <Route path='/' element={<FullLayout count={count} notice={notice}/>} >
               <Route path='/' element={<Main />} />
               <Route path='/app/home' element={<Main />} />
               <Route path='/app' element={<Main />} />
               <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
               <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
               <Route path='/app/schedule/create' element={<CalendarDetail isCreate={true}/>} />
-              <Route path='/' element={<Main />} />
+              <Route path="/app/my-account" element={<MyAccount />} />
               {/* <Route path='/app/employees' element={<EmployeeList />} />
               <Route path='/app/employees/register' element={<EmployeeRegister />} /> */}
 
@@ -134,16 +144,13 @@ function App() {
                     <EmployeeRegister />
                   </PrivateRoute>
                 }
-
-              /> 
-              <Route path='/approval/draft/form' element={<ApprovalWrite />} />
-              <Route path='/franchisee' element={<Franchisee />} />
-              <Route path='/warn' element={<Warning />} />
-              <Route path='/close' element={<Closing />} />
-              <Route path='/menu' element={<Menu />} />
-
-              <Route path='/sales' element={<Sales />} />
-              <Route path='/order' element={<Order />} />
+              />
+              <Route path='/app/franchisee' element={<Franchisee />} />
+              <Route path='/app/warn' element={<Warning />} />
+              <Route path='/app/close' element={<Closing />} />
+              <Route path='/app/menu' element={<Menu />} />
+              <Route path='/app/sales' element={<Sales />} />
+              <Route path='/app/order' element={<Order />} />
 
               {/* 전자결재 */}     
               <Route path='/approval/draft' element={<ApprovalMain />} />                   

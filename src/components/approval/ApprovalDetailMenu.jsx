@@ -126,7 +126,9 @@ const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants,
 
   //재기안 페이지로 이동
   const moveReApprove = () => {
-    navigate(`/approval/draft/reapply/${approval.approvalId}`);
+    if(window.confirm("해당 결재 문서를 재기안 하시겠습니까?")){
+      navigate(`/approval/draft/reapply/${approval.approvalId}`);
+    }
   };
 
   return (

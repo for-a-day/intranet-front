@@ -22,13 +22,6 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import RejectionModal from '../../components/approval/RejectionModal';
 
 
-//JWT토큰 이후에 삭제 예정
-const employee = {
-  department: '영업부',
-  level: '사원',
-  name: '김다우',
-};
-sessionStorage.setItem('employee', JSON.stringify(employee));
 
 const ApprovalReApply = () => {
   const dispatch = useDispatch();
@@ -41,7 +34,7 @@ const ApprovalReApply = () => {
   const [rejectModal, setRejectModal] = useState(false);
   const {isLoading, error, modfiyApproval = {}} = useSelector((state) => state.approval);
   const [approvalData, setApprovalData] = useState(null);
-  const participant = JSON.parse(sessionStorage.getItem('employee')); //사원 정보
+  const [employee, setEmployee] = useState({});
   const data = {_id : id, type: "R"}
 
   useEffect(() => {
@@ -60,11 +53,12 @@ const ApprovalReApply = () => {
 
 
   useEffect(() => {
-    setApprovalData(modfiyApproval);
+    setApprovalData(modfiyApproval?.approval);
+    setEmployee(modfiyApproval?.employee);
   }, [modfiyApproval]);
 
   useEffect(() => {
-    const approvers = modfiyApproval?.participantList?.slice(1) || [];
+    const approvers = modfiyApproval?.approval?.participantList?.slice(1) || [];
     setApprovalInfo(approvers);
     // 입력 필드에 이벤트 리스너 추가
     const inputs = contentRef.current.querySelectorAll('input,textarea, select');
@@ -76,6 +70,18 @@ const ApprovalReApply = () => {
     //현재 날짜
     const today = new Date();
     const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+    //도장 직급
+    const draftLevel = contentRef.current.querySelector('#draftLevel');
+    if (draftLevel) {
+      draftLevel.textContent = employee.level || "";
+    }
+
+    //도장 이름
+    const draftName = contentRef.current.querySelector('#draftName');
+    if (draftName) {
+      draftName.textContent = employee.name || "";
+    }
 
     //기안일
     const draftDate = contentRef.current.querySelector('#draftDate');
@@ -91,13 +97,13 @@ const ApprovalReApply = () => {
     //기안자
     const draftUser = contentRef.current.querySelector('#draftUser');
     if (draftUser) {
-      draftUser.textContent = participant.name || "";   //추후 데이터가 없을 때 다시 받아오는 로직 필요할듯
+      draftUser.textContent = employee.name || "";   //추후 데이터가 없을 때 다시 받아오는 로직 필요할듯
     }
 
     //소속
     const draftDept = contentRef.current.querySelector('#draftDept');
     if (draftDept) {
-      draftDept.textContent = participant.department || "";
+      draftDept.textContent = employee.department || "";
     }
 
     //도장
@@ -275,11 +281,11 @@ const ApprovalReApply = () => {
           <Button variant='h5' startIcon={<FeedbackIcon />} onClick={onRejectModal}>반려사유</Button>
         </Stack>
         <Stack direction="row" spacing={4}>
-          <Box sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
+          <Box sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
             <div ref={contentRef}>{parse(approvalData?.tempBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}
-          <ApprovalDraftList type="W" participant={participant} participants={approvalInfo}/>  
+          <ApprovalDraftList type="W" participant={employee} participants={approvalInfo}/>  
         </Stack>
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<SendIcon />} onClick={() => onSubmtEvent("C")}>결재요청</Button>
