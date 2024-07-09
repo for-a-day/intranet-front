@@ -33,6 +33,7 @@ import MyAccount from './components/myaccount/MyAccount';
 function App() {
   const theme = baseTheme;
   const [count, setCount] = useState(0);
+  const [notice, setNotice] = useState({});
   const token = localStorage.getItem("token");
 
   // SSE
@@ -100,6 +101,15 @@ function App() {
     const res = await instance.post("/app/auth/notice");
     if(res !== undefined){
       setCount(res.data.data.unreadCount);
+      const _notice = res?.data?.data?.notificationResponses;
+      if (_notice && _notice.length > 0) {
+        const viewNotice = _notice[_notice.length-1];
+        console.log(viewNotice);
+        if(viewNotice.view === false){
+          setNotice(viewNotice);
+          await instance.patch(`/app/auth/notice/${viewNotice.id}`);
+        }
+      }
     }
   }
 
@@ -108,7 +118,7 @@ function App() {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            <Route path='/' element={<FullLayout count={count}/>} >
+            <Route path='/' element={<FullLayout count={count} notice={notice}/>} >
               <Route path='/' element={<Main />} />
               <Route path='/app/home' element={<Main />} />
               <Route path='/app' element={<Main />} />
@@ -134,9 +144,6 @@ function App() {
                     <EmployeeRegister />
                   </PrivateRoute>
                 }
-
-              /> 
-              <Route path='/approval/draft/form' element={<ApprovalWrite />} />
 
               <Route path='/app/franchisee' element={<Franchisee />} />
               <Route path='/app/warn' element={<Warning />} />

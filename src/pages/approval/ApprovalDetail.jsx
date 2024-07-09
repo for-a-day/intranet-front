@@ -19,10 +19,10 @@ const ApprovalDetail = () => {
   const contentRef = useRef();
   const location = useLocation();
   const queryString = location.search;
-  const [backHistory, setBackHistory] = useState(location.state?.history || null);
-  const category = location.state.category || "";
+  const [backHistory, setBackHistory] = useState(location.state?.history || "");
+  const category = location?.state?.category || null;
   const {id} = useParams();
-  const {isLoading, error, approval = {}} = useSelector((state) => state.approval);
+  const {isLoading, error, approval = {}} = useSelector((state) => state?.approval?.approval);
   const [participant, setParticipant] = useState({});
   const [participantList, setParticipantList] = useState([]);
 
@@ -126,7 +126,7 @@ const ApprovalDetail = () => {
         </Box>
         <ApprovalDetailMenu contentRef={contentRef} type={approval.approvalType} backHistory={backHistory} approval={approval} participants={approval.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
         <Stack direction="row" spacing={4}>
-          <Box className='print-container' sx={{border: "3px solid gray", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
+          <Box className='print-container' sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
             <div ref={contentRef} className='print-container'>{parse(approval.docBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}

@@ -21,6 +21,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import instance from "../../axiosConfig";
+import ModalPortal from "../../config/ModalPortal";
+import SseModal from "../../components/approval/SseModal";
 
 const Header = (props) => {
   const navigate = useNavigate();
@@ -32,20 +34,48 @@ const Header = (props) => {
   //SSE
   const [data, setData] = useState([]);
   const [count, setCount] = useState(props.count || 0);
+  const [notice, setNotice] = useState({});
+  const [modal, setModal] = useState(false);
+  const isEmpty = (obj) => {
+    if (obj == null) return true;
+  
+    return Object.values(obj).length === 0;
+  };
 
   useEffect(() => {
     setCount(props.count);
   }, [props.count]);
 
-  const notReadData = data.filter((data) => !data.read).reverse();
+  useEffect(() => {
+    if(!isEmpty(props.notice)){
+      setNotice(props.notice);
+    }
+  },[props.notice]);
+
+  useEffect(() => {
+    if (!isEmpty(notice)) {
+      setModal(true);
+      const timer = setTimeout(() => {
+        setModal(false);
+        setNotice({});
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+  },[notice])
+  console.log(notice);
+
+  const notReadData = data && data.filter((data) => data.read === false).reverse();
 
   const getNotice = async () => {
-    const res = await instance.post("/api/auth/notice");
+    const res = await instance.post("/app/auth/notice");
     setData(res.data.data.notificationResponses);
   };
 
   const readHandler = async (id) => {
-    await instance.put(`/api/auth/notice/${id}`);
+    const token = localStorage.getItem("token");
+    await instance.put(`/app/auth/notice/${id}`);
   };
 
   const handleClick = (event) => {
@@ -90,6 +120,11 @@ const Header = (props) => {
     navigate("/app/my-account");
     handleClose4();
   };
+
+
+  const closeModal = () => {
+    setModal(false);
+  }
 
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
@@ -152,6 +187,9 @@ const Header = (props) => {
               </MenuItem>
             ))
           )}
+          <ModalPortal>
+            {modal && <SseModal modal={modal} notice={notice} readClick={readClick}/>}
+          </ModalPortal>
         </Menu>
         <Box
           sx={{
