@@ -26,25 +26,17 @@ const PhoneBook = () => {
   }, []);
   return (
     <Box sx={{ width: "300px", overflowY: "auto", height: "355px" }}>
-      <Box display="flex" alignItems="center" mb={2} pt={1} pl={1}>
-        <Box sx={{ pb: 0.8, pl: 1 }}>
-          <PhoneIcon />
-        </Box>
-        <Box>
-          <Typography
-            sx={{ fontWeight: "bold", fontSize: "h3.fontSize", marginBottom: "0" }}
-            gutterBottom
-          >
-            전화번호부
-          </Typography>
-        </Box>
+      <Box>
+        <Typography variant="h4" component="div" sx={{ mb: 3, mt: 3.5, ml: 3, fontWeight: "600" }}>
+          전화번호부
+        </Typography>
       </Box>
       <Grid>
         {employees.map((employee, index) => (
           <Grid item key={index} xs={10} md={12}>
             <Box sx={{ height: "100%" }}>
               <Box sx={{ display: "flex" }}>
-                <Box sx={{ minWidth: "130px", pl: 2 }}>
+                <Box sx={{ minWidth: "130px", pl: 3 }}>
                   <Typography variant="h6" gutterBottom sx={{ pr: 3, pb: 1 }}>
                     {employee.name} {employee.level}
                   </Typography>
