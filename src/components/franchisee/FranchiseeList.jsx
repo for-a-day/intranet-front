@@ -434,42 +434,95 @@ const FranchiseeList = () => {
         <>
           <div style={styles.overlay} onClick={closeModal}></div>
           <div style={styles.modal}>
-            <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={closeModal}>
+            <IconButton sx={{ position: "absolute", top: 20, right: 20 }} onClick={closeModal}>
               <CloseIcon />
             </IconButton>
-            <Typography variant="h2" mb={3} mt={2}>
+            <Typography
+              variant="h2"
+              sx={{ pt: 2, pl: 1, paddingBottom: "20px", fontWeight: "bold" }}
+            >
               가맹점 상세 정보
             </Typography>
-            <p style={styles.paragraph}>
-              <strong>가맹점 아이디 : </strong> {selectedFranchisee.franchiseeId}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>담당자 : </strong> {selectedFranchisee.employeeId.name}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>가맹점명 : </strong> {selectedFranchisee.franchiseeName}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>대표자명 : </strong> {selectedFranchisee.owner}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>지점주소 : </strong> {selectedFranchisee.address}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>연락처 : </strong> {selectedFranchisee.phoneNumber}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>계약일 : </strong> {selectedFranchisee.contractDate}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>계약만료일 : </strong> {selectedFranchisee.expirationDate}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>경고횟수 : </strong> {selectedFranchisee.warningCount}
-            </p>
-            <button style={styles.editButton} onClick={handleEditModalOpen}>
-              수정하기
-            </button>
+            <hr style={{ marginBottom: "5px" }}></hr>
+            <Grid container spacing={3} sx={{ mt: 1, pl: 2 }}>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  가맹점 아이디
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.franchiseeId}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  담당자
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.employeeId.name}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  가맹점명
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.franchiseeName}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  대표자명
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.owner}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  지점주소
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.address}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  연락처
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.phoneNumber}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  계약일
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.contractDate}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  계약만료일
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.expirationDate}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  경고횟수
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedFranchisee.warningCount}</Typography>
+              </Grid>
+            </Grid>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3, mr: 2 }}>
+              <Button variant="contained" onClick={handleEditModalOpen}>
+                수정하기
+              </Button>
+            </Box>
           </div>
         </>
       )}
@@ -481,7 +534,7 @@ const FranchiseeList = () => {
               <CloseIcon />
             </IconButton>
             <Typography variant="h2" mb={3} mt={2}>
-              가맹점 등록
+              가맹점 수정
             </Typography>
             <hr style={{ marginBottom: "25px" }}></hr>
             <form onSubmit={editSubmit}>
@@ -586,14 +639,13 @@ const FranchiseeList = () => {
                         value={formData.warningReason}
                         label="경고사유"
                         onChange={handleInputChange}
-                        rows="1"
                       />
                     </Grid>
                     <Grid item xs={2}>
-                      <button style={styles.warnRegister} type="submit" onClick={warnSubmit}>
+                      <Button style={styles.warnRegister} type="submit" onClick={warnSubmit}>
                         저장
-                      </button>
-                    </Grid>{" "}
+                      </Button>
+                    </Grid>
                   </>
                 )}
                 <Grid item xs={12}>

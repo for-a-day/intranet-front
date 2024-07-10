@@ -110,7 +110,7 @@ const EmployeeList = () => {
   return (
     <Box
       sx={{
-        width: "95%",
+        width: "100%",
       }}
     >
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
@@ -137,7 +137,7 @@ const EmployeeList = () => {
       </Box>
       <Box>
         <Button
-          sx={{ mt: 3, ml: 2, mb: 1 }}
+          sx={{ mt: 3, ml: 5, mb: 1 }}
           component={Link}
           to="/app/employees/register"
           variant="contained"
@@ -150,6 +150,8 @@ const EmployeeList = () => {
         aria-label="simple table"
         sx={{
           whiteSpace: "nowrap",
+          width: "95%",
+          mx: "auto",
         }}
       >
         <TableHead sx={{ borderBottom: "2px solid #d1cfcf" }}>

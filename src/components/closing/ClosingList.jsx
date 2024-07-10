@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Box,
+  Grid,
   TextField,
   Table,
   TableHead,
@@ -10,30 +11,30 @@ import {
   Typography,
   TableBody,
   IconButton,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import styles from "./ClosingListStyle";
 import { Close as CloseIcon } from "@mui/icons-material";
 import instance from "../../axiosConfig";
 
 const ClosingList = () => {
-    const token = localStorage.getItem('token');
-    const [close, setClose] = useState([]);
-    const [selectedClose, setSelectedClose] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const token = localStorage.getItem("token");
+  const [close, setClose] = useState([]);
+  const [selectedClose, setSelectedClose] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // 페이지네이션 상태
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(5);
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
 
-    const handlePageChange = (event, page) => {
-        setCurrentPage(page);
-    };
-    
-    // Calculate the data for the current page
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = close.slice(indexOfFirstItem, indexOfLastItem); 
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+  };
+
+  // Calculate the data for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = close.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     const fetchClose = async () => {
@@ -171,48 +172,101 @@ const ClosingList = () => {
         <>
           <div style={styles.overlay} onClick={closeModal}></div>
           <div style={styles.modal}>
-            <IconButton sx={{ position: "absolute", top: 10, right: 10 }} onClick={closeModal}>
+            <IconButton sx={{ position: "absolute", top: 20, right: 20 }} onClick={closeModal}>
               <CloseIcon />
             </IconButton>
 
-            <h2>가맹점 상세 정보</h2>
-            <p style={styles.paragraph}>
-              <strong>가맹점 아이디 : </strong> {selectedClose.closingId}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>담당자 : </strong> {selectedClose.employeeId}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>가맹점명 : </strong> {selectedClose.closingName}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>대표자명 : </strong> {selectedClose.owner}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>지점주소 : </strong> {selectedClose.address}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>연락처 : </strong> {selectedClose.phoneNumber}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>계약일 : </strong> {selectedClose.contractDate}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>계약만료일 : </strong> {selectedClose.expirationDate}
-            </p>
-            <p style={styles.paragraph}>
-              <strong>폐점사유 : </strong> {selectedClose.closingReason}
-            </p>
+            <Typography
+              variant="h2"
+              sx={{ pt: 2, pl: 1, paddingBottom: "20px", fontWeight: "bold" }}
+            >
+              폐점 상세 정보
+            </Typography>
+            <hr style={{ marginBottom: "10px" }}></hr>
+            <Grid container spacing={3} sx={{ mt: 1, pl: 2 }}>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  가맹점 아이디
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.closingId}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  담당자
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.employeeId}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  가맹점명
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.closingName}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  대표자명
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.owner}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  지점주소
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.address}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  연락처
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.phoneNumber}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  계약일
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.contractDate}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  계약만료일
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.expirationDate}</Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography variant="body1" fontWeight="bold">
+                  폐점사유
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="body1">{selectedClose.closingReason}</Typography>
+              </Grid>
+            </Grid>
           </div>
         </>
       )}
       <Box display="flex" justifyContent="center" mt={2}>
-           <Pagination
-              count={Math.ceil(close.length / itemsPerPage)}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-           />
+        <Pagination
+          count={Math.ceil(close.length / itemsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
       </Box>
     </Box>
   );

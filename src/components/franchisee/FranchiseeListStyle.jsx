@@ -99,8 +99,8 @@ const styles = {
     zIndex: 10000,
     width: "40%",
     maxWidth: "600px", // 최대 너비 설정
-    height: "520px",
-    maxHeight: "80vh", // 최대 높이 설정
+    height: "590px",
+    minHeight: "590px", // 최대 높이 설정
     overflow: "auto",
     borderRadius: "7px",
   },
@@ -115,7 +115,7 @@ const styles = {
     zIndex: 10000,
     width: "40%",
     maxWidth: "600px", // 최대 너비 설정
-    height: "660px",
+    height: "650px",
     maxHeight: "80vh", // 최대 높이 설정
     overflow: "auto",
     borderRadius: "7px",
@@ -180,7 +180,7 @@ const styles = {
   warnRegister: {
     backgroundColor: "#0080FF",
     color: "white",
-    padding: "20px 27px",
+    padding: "16px 21px",
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",

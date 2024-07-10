@@ -8,9 +8,9 @@ const UserCard = () => {
   const [departmentName, setDepartmentName] = useState("");
   const [levelName, setLevelName] = useState("");
   const [userInfo, setUserInfo] = useState(null);
-  const token = localStorage.getItem("token");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const userData = async () => {
@@ -23,7 +23,7 @@ const UserCard = () => {
             },
           });
 
-          console.log("유저 불러오기 성공");
+          console.log("user", response.data);
           setUserInfo(response?.data);
         } catch (error) {
           setError(error.message);
@@ -50,7 +50,7 @@ const UserCard = () => {
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Avatar
             alt={employeeName}
-            sx={{ width: 120, height: 120, marginBottom: "20px", backgroundColor: "#ddd" }}
+            sx={{ width: 100, height: 100, marginBottom: "20px", backgroundColor: "#ddd" }}
           />
           <Typography variant="h5" component="div">
             <span style={{ fontSize: "19px" }}>

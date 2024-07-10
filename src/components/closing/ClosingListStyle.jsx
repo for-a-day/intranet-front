@@ -56,9 +56,10 @@ const styles = {
     zIndex: 10000,
     width: "40%",
     maxWidth: "600px", // 최대 너비 설정
-    height: "50%",
+    height: "560px",
     maxHeight: "80vh", // 최대 높이 설정
     overflow: "auto",
+    borderRadius: "7px",
   },
   overlay: {
     position: "fixed",

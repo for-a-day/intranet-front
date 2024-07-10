@@ -13,9 +13,11 @@ import {
   Button,
   Chip,
   Paper,
+  IconButton,
 } from "@mui/material";
 import styles from "./MenuListStyles";
 import instance from "../../axiosConfig";
+import { Close as CloseIcon } from "@mui/icons-material";
 
 const MenuList = () => {
   const token = localStorage.getItem("token");
@@ -247,44 +249,70 @@ const MenuList = () => {
           <div style={styles.overlay} onClick={handleCloseModal}></div>
           <div style={styles.modal}>
             <div style={styles.modalContent}>
-              <h4 style={styles.modalTitle}>메뉴 상세 정보</h4>
+              <IconButton
+                sx={{ position: "absolute", top: 20, right: 20 }}
+                onClick={handleCloseModal}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h2" sx={{ pt: 2, paddingBottom: "20px", fontWeight: "bold" }}>
+                판매 중인 메뉴
+              </Typography>
               <hr style={{ marginBottom: "2px" }}></hr>
               <Grid container spacing={3} sx={{ mt: 1, pl: 2 }}>
                 <Grid item xs={3}>
-                  <strong>메뉴ID</strong>{" "}
+                  <Typography variant="body1" fontWeight="bold">
+                    메뉴ID
+                  </Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  {selectedMenu.menu_id}
+                  <Typography variant="body1">{selectedMenu.menu_id}</Typography>
                 </Grid>
                 <Grid item xs={3}>
-                  <strong>메뉴명</strong>
+                  <Typography variant="body1" fontWeight="bold">
+                    메뉴명
+                  </Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  {selectedMenu.menu_name}
+                  <Typography variant="body1">{selectedMenu.menu_name}</Typography>
                 </Grid>
                 <Grid item xs={3}>
-                  <strong>판매가격</strong>
+                  <Typography variant="body1" fontWeight="bold">
+                    판매가격
+                  </Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  {selectedMenu.menu_price.toLocaleString()}원
+                  <Typography variant="body1">
+                    {selectedMenu.menu_price.toLocaleString()}원
+                  </Typography>
                 </Grid>
                 <Grid item xs={3}>
-                  <strong>레시피</strong>
+                  <Typography variant="body1" fontWeight="bold">
+                    레시피
+                  </Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  {selectedMenu.menu_recipe}
+                  <Typography variant="body1">{selectedMenu.menu_recipe}</Typography>
                 </Grid>
                 <Grid item xs={3}>
-                  <strong>총 원가</strong>
+                  <Typography variant="body1" fontWeight="bold">
+                    총 원가
+                  </Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  {selectedMenu.menu_origin_price.toLocaleString()}원
+                  <Typography variant="body1">
+                    {selectedMenu.menu_origin_price.toLocaleString()}원
+                  </Typography>
                 </Grid>
                 <Grid item xs={3}>
-                  <strong>판매여부</strong>
+                  <Typography variant="body1" fontWeight="bold">
+                    판매여부
+                  </Typography>
                 </Grid>
                 <Grid item xs={9}>
-                  {selectedMenu.menu_end === 1 ? "판매" : "미판매"}
+                  <Typography variant="body1">
+                    {selectedMenu.menu_end === 1 ? "판매" : "미판매"}
+                  </Typography>
                 </Grid>
               </Grid>
             </div>
@@ -312,8 +340,16 @@ const MenuList = () => {
         <>
           <div style={styles.overlay} onClick={handleCloseEditModal}></div>
           <div style={styles.modal}>
+            <IconButton
+              sx={{ position: "absolute", top: 20, right: 20 }}
+              onClick={handleCloseEditModal}
+            >
+              <CloseIcon />
+            </IconButton>
             <div style={styles.modalContent}>
-              <h4 style={styles.modalTitle}>메뉴 수정</h4>
+              <Typography variant="h2" sx={{ pt: 2, paddingBottom: "20px", fontWeight: "bold" }}>
+                메뉴 수정
+              </Typography>
               <hr style={{ marginBottom: "20px" }}></hr>
               <div>
                 <TextField
