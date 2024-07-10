@@ -35,6 +35,9 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
   const token = localStorage.getItem("token");
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
+  const [writer, setWriter] = useState(""); // 작성자 추가
+  const [modifier, setModifier] = useState(""); // 최종 수정자 추가
+
   const [calendarloading, setCalendarLoading] = useState(true);
 
   useEffect(() => {
@@ -133,6 +136,7 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
             setStartTime(event.startTime.slice(0, 5));
             setEndTime(event.endTime.slice(0, 5));
             setLocation(event.location);
+            setWriter(event.writer);
             console.log("불러온 일정", event);
           } else {
             console.error("불러오기 실패", response.data);
@@ -211,6 +215,8 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
       return;
     }
 
+    const writer = `${userInfo.name} ${userInfo.level}`;
+
     e.preventDefault();
     const schedule = {
       calendarId,
@@ -221,6 +227,7 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
       startTime: `${startTime}:00`,
       endTime: `${endTime}:00`,
       location,
+      writer,
     };
 
     try {
@@ -291,13 +298,24 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
       </Typography>
       <form onSubmit={scheduleSubmit}>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid item xs={9}>
             <TextField
               label="일정 제목"
               variant="outlined"
               fullWidth
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              label="최종 수정자"
+              variant="outlined"
+              fullWidth
+              value={writer}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>
           <Grid item xs={3}>
@@ -390,6 +408,7 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
                 InputProps={{
                   readOnly: true,
                 }}
+                disabled
               />
             )}
           </Grid>

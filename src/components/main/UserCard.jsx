@@ -67,12 +67,12 @@ const UserCard = ({ scheduleCount }) => {
               {userInfo?.department}
             </Typography>
           </Box>
-          <Box sx={{ marginTop: "5px", textAlign: "center" }}>
+          <Box sx={{ minWidth:'200px', marginTop: "5px", textAlign: "center" }}>
             <Grid container spacing={2}>
               <Grid item xs={3} lg={8}>
                 <Typography variant="h5">기안 문서</Typography>
               </Grid>
-              <Grid item xs={9} lg={3}>
+              <Grid item xs={3} lg={3}>
                 <Typography variant="h5">{mydraft.length}</Typography>
               </Grid>
               <Grid item xs={3} lg={8}>
