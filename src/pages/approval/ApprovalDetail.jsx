@@ -22,9 +22,14 @@ const ApprovalDetail = () => {
   const [backHistory, setBackHistory] = useState(location.state?.history || "");
   const category = location?.state?.category || null;
   const {id} = useParams();
-  const {isLoading, error, approval = {}} = useSelector((state) => state?.approval?.approval);
+  const {isLoading, error, approval = {}} = useSelector((state) => state?.approval);
   const [participant, setParticipant] = useState({});
   const [participantList, setParticipantList] = useState([]);
+
+  if(approval?.approval && approval?.approval?.status === 'H' && approval?.approval?.approvalId){
+    alert("해당 문서는 삭제되었습니다.");
+    navigate('/approval/draft/list/mydraft');
+  }
 
   useEffect(() => {
     dispatch(_getApprovalDetail(id));
@@ -42,20 +47,20 @@ const ApprovalDetail = () => {
   },[dispatch, id ,queryString]);
 
   useEffect(() => {
-    if(approval && approval.status === 'T' && approval.approvalId){
-      navigate(`/approval/draft/revise/${approval?.approvalId}`);
+    if(approval?.approval && approval?.approval?.status === 'T' && approval?.approval?.approvalId){
+      navigate(`/approval/draft/revise/${approval?.approval?.approvalId}`);
     }
 
-    if(approval?.participantList){
-      const [_participant, ..._participantList] = approval?.participantList;
+    if(approval?.approval?.participantList){
+      const [_participant, ..._participantList] = approval?.approval?.participantList;
       setParticipant(_participant);
       setParticipantList(_participantList);
     }
 
     //기안일
     const docNo = contentRef.current.querySelector('#docNo');
-    if (docNo && approval.docNo !== null && approval.docNo !== undefined) {
-      docNo.textContent = `NG-결재-2024-${String(approval?.docNo).padStart(4, '0')}`; 
+    if (docNo && approval?.approval?.docNo !== null && approval?.approval?.docNo !== undefined) {
+      docNo.textContent = `NG-결재-2024-${String(approval?.approval?.docNo).padStart(4, '0')}`; 
     }
   },[approval, navigate]);
 
@@ -118,21 +123,21 @@ const ApprovalDetail = () => {
 
 
   return (
-    <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
+    <Stack direction="row" spacing={4} sx={{marginLeft: "0", overflowX: "auto"}}>
       <ApprovalSideBar _category={category}/>
       <Stack>
         <Box sx={{marginBottom:"15px"}}>
-          <Typography variant='h2'>{approval.subject} {approval?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}</Typography>
+          <Typography variant='h2'>{approval?.approval?.subject} {approval?.approval?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}</Typography>
         </Box>
-        <ApprovalDetailMenu contentRef={contentRef} type={approval.approvalType} backHistory={backHistory} approval={approval} participants={approval.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
+        <ApprovalDetailMenu contentRef={contentRef} employee={approval?.employee} backHistory={backHistory} approval={approval?.approval} participants={approval?.approval?.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
         <Stack direction="row" spacing={4}>
           <Box className='print-container' sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
-            <div ref={contentRef} className='print-container'>{parse(approval.docBody || "")}</div>
+            <div ref={contentRef} className='print-container'>{parse(approval?.approval?.docBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}
           <ApprovalDraftList type="D" participant={participant} participants={participantList}/>  
         </Stack>
-        <ApprovalDetailMenu contentRef={contentRef} type={approval.approvalType} backHistory={backHistory} approval={approval} participants={approval.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
+        <ApprovalDetailMenu contentRef={contentRef} backHistory={backHistory} approval={approval?.approval} participants={approval?.approval?.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
       </Stack>
     </Stack>
   )

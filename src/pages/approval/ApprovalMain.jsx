@@ -46,12 +46,12 @@ const ApprovalMain = () => {
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
       <ApprovalSideBar />
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", overflowX: "auto" }}>
         <Box sx={{marginBottom:"15px"}}>
           <Typography variant='h2'>전자결재 홈</Typography>
         </Box>
 
-        <Box sx={{ width: '100%', overflow: 'visible', paddingTop: 1 }}>
+        <Box sx={{ width: '100%', overflow: 'hidden', paddingTop: 1 }}>
           <Typography variant="h4" sx={{marginBottom: 1}}> 결재 대기 문서 </Typography>
           {main?.main1?.length !== 0 ? (
             <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} style={{ width: '100%' }}
@@ -61,7 +61,7 @@ const ApprovalMain = () => {
                   spaceBetween: 10,
                 },
                 1460: {
-                  slidesPerView: 4,
+                  slidesPerView: 3,
                   spaceBetween: 10,
                 }
               }}
@@ -86,7 +86,7 @@ const ApprovalMain = () => {
                   > 
                     <Chip
                       label= {item?.list?.urgency === '1' ? "긴급" : "진행중"}
-                      color= {item?.list?.urgency === '1' ? "error" :"success"}
+                      color= {item?.list?.urgency === '1' ? "error" :"primary"}
                       sx= {{ position: 'absolute', top: 16, left: 16 }}
                     />
                     <Typography variant="h5" fontWeight="bold" sx={{ marginBottom: 1 }}>
@@ -101,7 +101,7 @@ const ApprovalMain = () => {
                     <Typography variant="body2" color="text.secondary">
                       기안일: {item?.list?.modificationDate?.split("T")[0]}
                     </Typography>
-                    <Button variant="contained" color="primary" onClick={() => navigate(`/approval/draft/detail/${item?.list?.approvalId}`)} sx={{ marginTop: 2, padding: '8px 40px' }}>
+                    <Button variant="contained" color="success" onClick={() => navigate(`/approval/draft/detail/${item?.list?.approvalId}`)} sx={{ marginTop: 2, padding: '8px 65px' }}>
                       결재하기
                     </Button>
                   </Paper>
@@ -113,9 +113,9 @@ const ApprovalMain = () => {
           )}
         </Box>
 
-        <Box sx={{ marginTop: 4 }}>
+        <Box sx={{ marginTop: 4}}>
           <Typography variant="h4" sx={{marginTop: 5 ,marginBottom: 2}}> 진행 중인 기안 문서 </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{minWidth: "1000px", overflowX: "auto"}}>
             <Table sx={{borderTop: "1px solid rgba(224, 224, 224, 1)"}}>
               <TableHead>
                 <TableRow>
@@ -131,13 +131,13 @@ const ApprovalMain = () => {
                 <TableBody>
                   {main?.main2?.map((row, index) => (
                     <StyledTableRow key={index}>
-                      <TableCell>{row.modificationDate?.split("T")[0]}</TableCell>
+                      <TableCell>{row?.creationDate !== null ? row?.creationDate?.split("T")[0] : row?.modificationDate?.split("T")[0]}</TableCell>
                       <TableCell>{row?.formId?.subject}</TableCell>
                       <TableCell>{row.urgency === '1' ? <Chip label="긴급" color="error" /> : null}</TableCell>
                       <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${row?.approvalId}`)}>{row.subject}</SubjectTableCell>
                       <TableCell>{row.docNo}</TableCell>
                       <TableCell>
-                        <Chip label='진행중' color='primary' />
+                        <Chip label='진행중' color='primary' sx={{width:"70%", minWidth: "70px"}}/>
                       </TableCell>
                     </StyledTableRow>
                   ))}
@@ -156,7 +156,7 @@ const ApprovalMain = () => {
 
         <Box sx={{ marginTop: 4 }}>
           <Typography variant="h4" sx={{marginTop: 5 , marginBottom: 2}}> 완료된 기안 문서 </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{minWidth: "1000px", overflowX: "auto"}}>
             <Table sx={{borderTop: "1px solid rgba(224, 224, 224, 1)"}}> 
               <TableHead>
                 <TableRow>
@@ -172,7 +172,7 @@ const ApprovalMain = () => {
                 <TableBody>
                   {main?.main3?.map((row, index) => (
                     <StyledTableRow key={index}>
-                      <TableCell>{row.modificationDate?.split("T")[0]}</TableCell>
+                      <TableCell>{row?.creationDate !== null ? row?.creationDate?.split("T")[0] : row?.modificationDate?.split("T")[0]}</TableCell>
                       <TableCell>{row?.formId?.subject}</TableCell>
                       <TableCell>{row.urgency === '1' ? <Chip label="긴급" color="error" /> : null}</TableCell>
                       <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${row?.approvalId}`)}>{row.subject}</SubjectTableCell>
@@ -182,7 +182,7 @@ const ApprovalMain = () => {
                         <TableCell></TableCell>
                       )}
                       <TableCell>
-                        <Chip label='진행중' color='primary' />
+                        <Chip label='완료' sx={{width:"70%", minWidth: "70px"}}/>
                       </TableCell>
                     </StyledTableRow>
                   ))}

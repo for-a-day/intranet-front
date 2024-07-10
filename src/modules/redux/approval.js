@@ -121,6 +121,12 @@ export const _getApprovalModifyDetail = createAsyncThunk(
   async (payload, thunkAPI) => {
     try{
       const data = await instance.get(`/app/approval/draft/doc/${payload._id}?type=${payload.type}`);
+      if(data?.data?.data?.approval?.participantList[0].employeeId != data?.data?.data?.employee?.id){
+        alert("잘못된 접근입니다.");
+        payload._navigate("/approval/draft/list/mydraft");
+        return;
+      }
+
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
@@ -134,9 +140,14 @@ export const _updateApprovalCancel = createAsyncThunk(
   async (payload, thunkAPI) => {
     try{
       const data = await instance.put(`/app/approval/draft/doc`,payload.formData);
-      if(payload.formData.saveType === 'T'){
-        payload._navigate(`/approval/draft/revise/${data.data.data}`, { state: {history: "/approval/draft", category: "temp"}});
-      } 
+      if(data.data.code === "FAIL"){
+        alert(data.data.msg);
+        payload._navigate(`/approval/draft/detail/${payload.formData.approvalId}?p=p`, { state: {history: "/approval/draft/list/mydraft", category: "mydraft"}});
+      } else {
+        if(payload.formData.saveType === 'T'){
+          payload._navigate(`/approval/draft/revise/${data.data.data}`, { state: {history: "/approval/draft", category: "temp"}});
+        } 
+      }
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
@@ -151,6 +162,20 @@ export const _updateApprovalOrRejection = createAsyncThunk(
     try{
       const data = await instance.put(`/app/approval/draft`,payload.formData);
       payload._navigate(`/approval/draft/detail/${data.data.data}?c=c`, { state: {history: "/approval/draft"}});
+      return thunkAPI.fulfillWithValue(data.data.data);
+    } catch(e){
+      return thunkAPI.rejectWithValue(e);
+    }
+  }
+)
+
+//기안문 삭제
+export const _deleteApproval = createAsyncThunk(
+  "approval/deleteApproval",
+  async (payload, thunkAPI) => {
+    try{
+      const data = await instance.delete(`/app/approval/draft/doc/${payload.id}`);
+      payload._navigate(`/approval/draft/list/mydraft`);
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
@@ -284,6 +309,17 @@ export const approvalSlice = createSlice({
                 state.isLoading = false;
             })
             .addCase(_updateApprovalOrRejection.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+        builder
+            .addCase(_deleteApproval.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(_deleteApproval.fulfilled, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(_deleteApproval.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             })

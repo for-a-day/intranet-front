@@ -28,6 +28,7 @@ import { useEffect, useState } from 'react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import instance from './axiosConfig';
 import MyAccount from './components/myaccount/MyAccount';
+import NotFoundPage from './pages/error/NotFoundPage';
 
 
 function App() {
@@ -162,6 +163,7 @@ function App() {
 
             </Route>
             <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
           <Chat />
         </ThemeProvider>
