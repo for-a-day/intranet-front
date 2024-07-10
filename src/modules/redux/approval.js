@@ -10,6 +10,7 @@ const initialState = {
     modfiyApproval: {},
     approvalList: [],
     formList: [],
+    mydraft:[],
     isLoading: false,
     error: null
 }
@@ -183,6 +184,20 @@ export const _deleteApproval = createAsyncThunk(
   }
 )
 
+//메인 내가 올린 기안문 조회
+export const _getMyDraft = createAsyncThunk(
+  "approval/getMyDraft",
+  async (payload, thunkAPI) => {
+    try{
+      const data = await instance.get(`/app/approval/my-draft`);
+      console.log(data.data.data);
+      return thunkAPI.fulfillWithValue(data.data.data.list);
+    } catch(e){
+      return thunkAPI.rejectWithValue(e);
+    }
+  }
+)
+
 export const approvalSlice = createSlice({
     name: "approval",
     initialState,
@@ -320,6 +335,18 @@ export const approvalSlice = createSlice({
                 state.isLoading = false;
             })
             .addCase(_deleteApproval.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+        builder
+            .addCase(_getMyDraft.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(_getMyDraft.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.mydraft = action.payload;
+            })
+            .addCase(_getMyDraft.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             })
