@@ -216,11 +216,12 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
           variant="contained"
           onClick={scheduleCreate}
           sx={{
-            pr: 10,
-            pl: 10,
+            pr: 9,
+            pl: 9,
             pt: 1.5,
             pb: 1.5,
             mr: 2,
+            minWidth: "210px",
           }}
         >
           일정 등록

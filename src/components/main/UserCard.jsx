@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent, Typography, Avatar, Box } from "@mui/material";
+import { Card, CardContent, Typography, Avatar, Box, Grid } from "@mui/material";
 import instance from "../../axiosConfig";
+import { useSelector } from "react-redux";
 
-const UserCard = () => {
+const UserCard = ({ scheduleCount }) => {
   const [employeeName, setEmployeeName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [levelName, setLevelName] = useState("");
@@ -11,6 +12,7 @@ const UserCard = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
+  const { mydraft = [] } = useSelector((state) => state?.approval);
 
   useEffect(() => {
     const userData = async () => {
@@ -23,7 +25,6 @@ const UserCard = () => {
             },
           });
 
-          console.log("user", response.data);
           setUserInfo(response?.data);
         } catch (error) {
           setError(error.message);
@@ -32,7 +33,7 @@ const UserCard = () => {
         }
       }
     };
-
+    console.log(scheduleCount);
     userData();
   }, []);
 
@@ -50,10 +51,10 @@ const UserCard = () => {
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Avatar
             alt={employeeName}
-            sx={{ width: 100, height: 100, marginBottom: "20px", backgroundColor: "#ddd" }}
+            sx={{ width: 140, height: 140, marginBottom: "20px", backgroundColor: "#ddd" }}
           />
           <Typography variant="h5" component="div">
-            <span style={{ fontSize: "19px" }}>
+            <span style={{ fontSize: "20px" }}>
               {" "}
               <strong>
                 {" "}
@@ -62,20 +63,25 @@ const UserCard = () => {
             </span>
           </Typography>
           <Box>
-            <Typography variant="h5" sx={{ mt: 1, fontWeight: "bold" }}>
+            <Typography variant="h5" sx={{ mt: 1, mb: 2, fontWeight: "bold" }}>
               {userInfo?.department}
             </Typography>
           </Box>
-          <Box sx={{ marginTop: "20px", textAlign: "center" }}>
-            <Typography variant="body2" sx={{ margin: "10px 0" }}>
-              결재할 문서 0
-            </Typography>
-            <Typography variant="body2" sx={{ margin: "10px 0" }}>
-              내 예약/대여 현황 0
-            </Typography>
-            <Typography variant="body2" sx={{ margin: "10px 0" }}>
-              참여할 설문 0
-            </Typography>
+          <Box sx={{ marginTop: "5px", textAlign: "center" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={3} lg={8}>
+                <Typography variant="h5">기안 문서</Typography>
+              </Grid>
+              <Grid item xs={9} lg={3}>
+                <Typography variant="h5">{mydraft.length}</Typography>
+              </Grid>
+              <Grid item xs={3} lg={8}>
+                <Typography variant="h5">오늘의 일정</Typography>
+              </Grid>
+              <Grid item xs={3} lg={3}>
+                <Typography variant="h5">{scheduleCount}</Typography>
+              </Grid>
+            </Grid>
           </Box>
         </Box>
       </CardContent>

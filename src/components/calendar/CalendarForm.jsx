@@ -61,33 +61,6 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
   }, [token]);
 
   useEffect(() => {
-    const userDataAndListCalendar = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const response = await instance.get("/app/employees/token", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const employee = response.data.employee;
-          const deptCode = employee.department?.departmentCode;
-          const deptName = employee.department?.departmentName;
-          setDepartmentCode(deptCode);
-          setDepartmentName(deptName);
-
-          // 부서 코드로 캘린더 조회
-          await listCalendar(deptCode);
-        } catch (error) {
-          console.error("유저 정보 못 불러옴", error);
-        }
-      }
-    };
-
-    userDataAndListCalendar();
-  }, []);
-
-  useEffect(() => {
     if (userInfo) {
       setDepartmentCode(userInfo.departmentCode);
     }
@@ -440,7 +413,7 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               >
-                <MenuItem value="본사 1층 공용 회의실">본사 1층 공용 회의실</MenuItem>
+                <MenuItem value="본사 1층 공용 회의실">본사 1층 회의실</MenuItem>
                 <MenuItem value="4층 회의실">4층 회의실</MenuItem>
                 <MenuItem value="5층 스튜디오">5층 스튜디오</MenuItem>
                 <MenuItem value="3층 회의실">3층 회의실</MenuItem>

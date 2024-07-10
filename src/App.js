@@ -159,7 +159,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <Routes>
             <Route path='/login' element={<Login />} />
-            <Route path='/' element={isAuth ? <FullLayout count={count} /> : <Navigate to="/login" />} >
+            <Route path='/' element={<FullLayout />}>
 
               <Route
                 path='/'
@@ -202,27 +202,27 @@ function App() {
                 element={<ApprovalWrite />}
               />
               <Route
-                path='/franchisee'
+                path='/app/franchisee'
                 element={<Franchisee />}
               />
               <Route
-                path='/warn'
+                path='/app/warn'
                 element={<Warning />}
               />
               <Route
-                path='/close'
+                path='/app/close'
                 element={<Closing />}
               />
               <Route
-                path='/menu'
+                path='/app/menu'
                 element={<Menu />}
               />
               <Route
-                path='/sales'
+                path='/app/sales'
                 element={<Sales />}
               />
               <Route
-                path='/order'
+                path='/app/order'
                 element={<Order />}
               />
               <Route
