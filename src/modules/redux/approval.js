@@ -174,7 +174,7 @@ export const _deleteApproval = createAsyncThunk(
   "approval/deleteApproval",
   async (payload, thunkAPI) => {
     try{
-      const data = await instance.patch(`/app/approval/draft/doc/${payload.id}`);
+      const data = await instance.delete(`/app/approval/draft/doc/${payload.id}`);
       payload._navigate(`/approval/draft/list/mydraft`);
       return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
