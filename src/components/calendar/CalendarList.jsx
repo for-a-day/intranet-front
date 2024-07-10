@@ -55,7 +55,33 @@ const CalendarList = ({ calendarId }) => {
   const locations = useLocation();
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
   var calendarIds = locations?.state?.calendarId || null;
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const userData = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await instance.get("/app/employees/current", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserInfo(response?.data);
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    userData();
+  }, [token]);
 
   useEffect(() => {
     if (calendarId || calendarIds) {
@@ -155,6 +181,13 @@ const CalendarList = ({ calendarId }) => {
       return;
     }
 
+    if (!userInfo) {
+      alert("사용자 정보를 가져오는 중 오류가 발생했습니다.");
+      return;
+    }
+
+    const writer = `${userInfo.name} ${userInfo.level}`;
+
     // 새로운 일정 생성
 
     const newSchedule = {
@@ -166,6 +199,7 @@ const CalendarList = ({ calendarId }) => {
       startTime: `${startTime}:00`,
       endTime: `${endTime}:00`,
       location: location,
+      writer:writer,
     };
 
     try {
