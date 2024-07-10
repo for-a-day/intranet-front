@@ -79,9 +79,7 @@ const ScheduleDetail = ({ scheduleId }) => {
     <Card elevation={0} sx={{ height: "310px" }}>
       <CardHeader
         title={schedule.subject}
-        subheader={`종료일: ${new Date(
-          schedule.endDate,
-        ).toLocaleDateString()} / ${schedule.endTime.slice(0, 5)}`}
+        subheader={`시작 시간: ${schedule.startTime.slice(0, 5)}`}
         sx={{
           backgroundColor: grey[100],
           color: grey[900],
@@ -99,13 +97,16 @@ const ScheduleDetail = ({ scheduleId }) => {
         </Box>
         <Divider sx={{ my: 2 }} />
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={7}>
             <Box display="flex" alignItems="center">
               <AccessTime sx={{ marginRight: 1, color: grey[700] }} />
-              <Typography variant="body1">시작 시간: {schedule.startTime.slice(0, 5)}</Typography>
+              <Typography variant="body1">
+                종료일: {new Date(schedule.endDate).toLocaleDateString()} /{" "}
+                {schedule.endTime.slice(0, 5)}
+              </Typography>
             </Box>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <Box display="flex" alignItems="center">
               <LocationOn sx={{ marginRight: 1, color: grey[700] }} />
               <Typography variant="body1">장소: {schedule.location}</Typography>
