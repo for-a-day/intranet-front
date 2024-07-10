@@ -21,7 +21,6 @@ const Chat = () => {
 
     const handleClick = () => {
         // 메신저 링크나 기능 추가
-        alert('여따가 메신저 연동할듯?');
         const chatUrl = `http://localhost:3005?employeeId=${employeeId}`;
         window.open(chatUrl, "_blank", "width=800,height=800,top=500,left=0,toolbar=no,location=no");
     };
