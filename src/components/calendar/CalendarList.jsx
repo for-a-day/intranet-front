@@ -58,12 +58,10 @@ const CalendarList = ({ calendarId }) => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (calendarId) {
-      scheduleList(calendarId);
-    } else {
-      scheduleList(calendarIds);
+    if (calendarId || calendarIds) {
+      scheduleList(calendarId || calendarIds);
     }
-  }, [calendarId]);
+  }, [calendarId, calendarIds]);
 
   const scheduleList = async (calendarId) => {
     try {
@@ -169,7 +167,7 @@ const CalendarList = ({ calendarId }) => {
       endTime: `${endTime}:00`,
       location: location,
     };
-    console.log(calendarIds);
+
     try {
       await instance.post("/app/schedule", newSchedule, {
         headers: {
@@ -283,7 +281,7 @@ const CalendarList = ({ calendarId }) => {
           meridiem: false,
         }}
         headerToolbar={{
-          left: "dayGridMonth dayGridWeek",
+          left: "dayGridMonth dayGridWeek dayGridDay",
           center: "prev title next today",
           right: "",
         }}
@@ -291,6 +289,7 @@ const CalendarList = ({ calendarId }) => {
           today: "오늘",
           dayGridMonth: "월간",
           dayGridWeek: "주간",
+          dayGridDay: "일간",
         }}
         dayCellContent={(args) => {
           return { html: args.date.getDate().toString() }; // 숫자만 출력
@@ -299,7 +298,6 @@ const CalendarList = ({ calendarId }) => {
         eventClick={eventClick}
         eventDidMount={eventDidMount}
         eventContent={eventContent}
-        className="height-calendar"
         eventOrder="startTime"
       />
 
@@ -400,7 +398,7 @@ const CalendarList = ({ calendarId }) => {
               },
             }}
           >
-            <MenuItem value="본사 1층 공용 회의실">본사 1층 공용 회의실</MenuItem>
+            <MenuItem value="본사 1층 공용 회의실">본사 1층 회의실</MenuItem>
             <MenuItem value="4층 회의실">4층 회의실</MenuItem>
             <MenuItem value="5층 스튜디오">5층 스튜디오</MenuItem>
             <MenuItem value="3층 회의실">3층 회의실</MenuItem>

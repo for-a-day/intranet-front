@@ -27,17 +27,22 @@ import MainApproval from "./MainApproval";
 const MainContent = () => {
   const [selectedScheduleId, setSelectedScheduleId] = useState(null);
   const [selectedCalendarId, setSelectedCalendarId] = useState(null);
+  const [scheduleCount, setScheduleCount] = useState(0);
 
   const handleScheduleClick = (scheduleId, calendarId) => {
     setSelectedScheduleId(scheduleId);
     setSelectedCalendarId(calendarId);
   };
 
+  const handleScheduleCountChange = (count) => {
+    setScheduleCount(count);
+  };
+
   return (
     <Grid container spacing={2} sx={{ minWidth: "1500px" }}>
       <Grid item xs={2.5}>
         <Box className="box" sx={{ backgroundColor: "#56cddd", minWidth: "300px" }}>
-          <UserCard />
+          <UserCard scheduleCount={scheduleCount} />
         </Box>
       </Grid>
       <Grid item xs={6}>
@@ -65,6 +70,7 @@ const MainContent = () => {
           <TodaySchedule
             onScheduleClick={handleScheduleClick}
             selectedScheduleId={selectedScheduleId}
+            onScheduleCountChange={handleScheduleCountChange}
           />
         </Box>
       </Grid>
