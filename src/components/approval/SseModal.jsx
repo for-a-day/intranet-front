@@ -14,6 +14,7 @@ const slideUp = keyframes`
 
 
 const AnimatedBox = styled(Box)(({ theme }) => ({
+  cursor: "pointer",
   padding: theme.spacing(2),
   border: "2px solid #e0e0e0",
   borderRadius: '10px',
@@ -32,7 +33,7 @@ const SseModal = ({modal, readClick, notice}) => {
   return (
      <>
       {modal && (
-        <AnimatedBox onClick={() => readClick(notice?.id, notice?.url)}>
+        <AnimatedBox onClick={() => readClick(notice?.id, notice?.url) }>
           <Typography variant='h5' sx={{ fontWeight: "700", lineHeight: 3 }}>{notice?.content}</Typography>
         </AnimatedBox>
       )}

@@ -63,8 +63,7 @@ const Header = (props) => {
       return () => clearTimeout(timer);
     }
 
-  },[notice])
-  console.log(notice);
+  },[notice]);
 
   const notReadData = data && data.filter((data) => data.read === false).reverse();
 
@@ -74,9 +73,12 @@ const Header = (props) => {
   };
 
   const readHandler = async (id) => {
-    const token = localStorage.getItem("token");
     await instance.put(`/app/auth/notice/${id}`);
   };
+
+  const readAllHandler = async (id) => {
+    await instance.post(`/app/auth/notice/${id}`);
+  }
 
   const handleClick = (event) => {
     getNotice();
@@ -87,6 +89,7 @@ const Header = (props) => {
     setAnchorEl(null);
   };
 
+  //알림을 클릭 시 동작하는 함수
   const readClick = (id, url) => {
     const _data = notReadData.filter((data) => data.id !== id);
     const _count = count - 1;
@@ -97,6 +100,15 @@ const Header = (props) => {
     setTimeout(() => {
       navigate(url);
     }, 500);
+  };
+
+  //모두 읽음
+  const readAllClick = (id) => {
+    const _count = 0;
+    readAllHandler(id);
+    setData([]);
+    setCount(_count);
+    setAnchorEl(null);
   };
 
   const [anchorEl4, setAnchorEl4] = useState(null);
@@ -120,11 +132,6 @@ const Header = (props) => {
     navigate("/app/my-account");
     handleClose4();
   };
-
-
-  const closeModal = () => {
-    setModal(false);
-  }
 
   return (
     <AppBar sx={props.sx} elevation={0} className={props.customClass}>
@@ -174,18 +181,23 @@ const Header = (props) => {
             },
           }}
         >
-          {notReadData.length === 0 ? (
+          {notReadData?.length === 0 ? (
             <MenuItem onClick={handleClose}>
               <Typography>조회할 알림이 없습니다.</Typography>
             </MenuItem>
           ) : (
-            notReadData.map((list) => (
-              <MenuItem key={list.id} onClick={() => readClick(list.id, list.url)}>
-                <Stack>
-                  <Typography>{list.content}</Typography>
-                </Stack>
-              </MenuItem>
-            ))
+            <Box>
+              {notReadData?.length >= 2 ? (
+                <Button sx={{marginLeft: "65%", padding: "12px 30px"}} onClick={() => readAllClick(notReadData[0]?.id)}><Typography variant="h4">모두 읽음</Typography></Button>
+              ) : null}
+              {notReadData?.map((list) => (
+                <MenuItem key={list.id} onClick={() => readClick(list.id, list.url)}>
+                  <Stack>
+                    <Typography>{list.content}</Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
+            </Box>
           )}
           <ModalPortal>
             {modal && <SseModal modal={modal} notice={notice} readClick={readClick}/>}
@@ -220,7 +232,7 @@ const Header = (props) => {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           sx={{
             "& .MuiMenu-paper": {
-              width: "250px",
+              width: "200px",
               right: 0,
               top: "70px !important",
             },
@@ -231,18 +243,6 @@ const Header = (props) => {
             <Box sx={{ ml: 2 }}>My account</Box>
           </MenuItem>
           <Divider />
-          <MenuItem onClick={handleClose4}>
-            <ListItemIcon>
-              <PersonAddOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            Add another account
-          </MenuItem>
-          <MenuItem onClick={handleClose4}>
-            <ListItemIcon>
-              <SettingsOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            Settings
-          </MenuItem>
           <MenuItem onClick={handleLogout}>
             <ListItemIcon>
               <LogoutOutlinedIcon fontSize="small" />

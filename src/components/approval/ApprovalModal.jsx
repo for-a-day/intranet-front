@@ -81,14 +81,19 @@ const ApprovalModal = ({onModal, setApprovalInfo, approvalInfo, htmlApproveSetti
   };
 
   const changeData = (form) => {
-    if (!datas.some((data) => data.employeeId === form.employeeId)) {
-      setDatas([...datas, {...form, selectStatus: true}]);
+    if(datas.length > 4){
+      alert("결재자는 최대 5명까지 지정할 수 있습니다.");
+      return;
+    } else {
+      if (!datas.some((data) => data.employeeId === form.employeeId)) {
+        setDatas([...datas, {...form, selectStatus: true}]);
+      }
+  
+      const updatedFilteredData = filteredData.map((item) =>
+        item.employeeId === form.employeeId ? { ...item, selectStatus: true } : item
+      );
+      setEmployeeData(updatedFilteredData);
     }
-
-    const updatedFilteredData = filteredData.map((item) =>
-      item.employeeId === form.employeeId ? { ...item, selectStatus: true } : item
-    );
-    setEmployeeData(updatedFilteredData);
   };
 
   const moveFormItem = (sourceIndex, destinationIndex) => {

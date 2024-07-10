@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ModalPortal from '../../config/ModalPortal';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useDispatch } from 'react-redux';
-import { _getApprovalModifyDetail, _updateApproval } from '../../modules/redux/approval';
+import { _deleteApproval, _getApprovalModifyDetail, _updateApproval } from '../../modules/redux/approval';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ApprovalSideBar from '../../components/approval/ApprovalSideBar';
 import ApprovalModal from '../../components/approval/ApprovalModal';
@@ -17,6 +17,7 @@ import SendIcon from '@mui/icons-material/Send';
 import SaveIcon from '@mui/icons-material/Save';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ApprovalDraftList from '../../components/approval/ApprovalDraftList';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 const ApprovalModify = () => {
@@ -37,7 +38,8 @@ const ApprovalModify = () => {
   const category = location?.state?.category || "";
 
   const data = {
-    _id : id
+    _id : id,
+    _navigate: navigate
   }
 
   useEffect(() => {
@@ -57,7 +59,7 @@ const ApprovalModify = () => {
 
   useEffect(() => {
     if (modfiyApproval?.approval && Object.keys(modfiyApproval?.approval).length !== 0) {
-      if (modfiyApproval?.approval?.approvalType !== "기안") {
+      if (modfiyApproval?.approval?.participantList[0]?.employeeId != modfiyApproval?.employee?.id && modfiyApproval?.approval?.approvalType !== "기안") {
         alert("해당 문서는 상신 취소 되었습니다");
         navigate('/approval/draft');
       }
@@ -281,13 +283,24 @@ const ApprovalModify = () => {
     }
   }
 
-    //긴급 기능
-    const onUrgency = (event) => {
-      setUrgency(event.target.checked ? 1 : 0);
-    };
+  //긴급 기능
+  const onUrgency = (event) => {
+    setUrgency(event.target.checked ? 1 : 0);
+  };
+
+  //임시 저장 시 삭제 가능
+  const  onDeleteApproval = () => {
+    if(window.confirm("해당 문서를 삭제하시겠습니까?")){
+      const data = {
+        id: id,
+        _navigate: navigate
+      }
+      dispatch(_deleteApproval(data));
+    }
+  }
 
   return (
-    <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
+    <Stack direction="row" spacing={4} sx={{marginLeft: "0", overflowX: "auto"}}>
       <ApprovalSideBar setApprovalData={setApprovalData} _category={category}/>
       <Stack>
         <Box sx={{ marginBottom: "15px", display: "flex", alignItems: "flex-start" }}>
@@ -303,6 +316,7 @@ const ApprovalModify = () => {
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<SendIcon />} onClick={() => onSubmtEvent("C")}>결재요청</Button>
           <Button variant='h5' startIcon={<SaveIcon />} onClick={() => onSubmtEvent("T")}>임시저장</Button>
+          <Button variant='h5' startIcon={<DeleteIcon />} onClick={onDeleteApproval}>삭제</Button>
           <Button variant='h5' startIcon={<ArrowBackIcon />} onClick={cancel}>취소</Button>
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
         </Stack>

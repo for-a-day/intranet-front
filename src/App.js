@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Main from './pages/main/Main';
 import Calendar from './pages/calendar/Calendar';
 import { ThemeProvider } from '@emotion/react';
@@ -9,7 +9,6 @@ import CalendarDetail from './pages/calendar/CalendarDetail';
 import EmployeeList from './components/resource/EmployeeList';
 import EmployeeRegister from './components/resource/EmployeeRegister';
 import Login from './components/login/Login';
-import PrivateRoute from './components/PrivateRoute'; // PrivateRoute import
 import ApprovalWrite from './pages/approval/ApprovalWrite';
 import Franchisee from './pages/franchisee/Franchisee';
 import Warning from './pages/warning/Warning';
@@ -28,11 +27,15 @@ import { useEffect, useState } from 'react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import instance from './axiosConfig';
 import MyAccount from './components/myaccount/MyAccount';
+import { isTokenExpired } from './utils'; // 유틸리티 함수 import
+
+import NotFoundPage from './pages/error/NotFoundPage';
 
 
 function App() {
   const theme = baseTheme;
   const [count, setCount] = useState(0);
+  const [isAuth, setIsAuth] = useState(null); // 인증 상태를 저장하기 위한 상태
   const [notice, setNotice] = useState({});
   const token = localStorage.getItem("token");
 
@@ -40,11 +43,44 @@ function App() {
   let eventSource = undefined;
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token'); // 로컬 스토리지에서 액세스 토큰 가져오기
+      const refreshToken = localStorage.getItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 가져오기
+
+      if (!token || isTokenExpired(token)) {
+        // 액세스 토큰이 없거나 만료된 경우
+        if (!refreshToken || isTokenExpired(refreshToken)) {
+          // 리프레시 토큰도 없거나 만료된 경우
+          localStorage.removeItem('token'); // 로컬 스토리지에서 액세스 토큰 삭제
+          localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 삭제
+          setIsAuth(false); // 인증 상태를 false로 설정
+        } else {
+          // 리프레시 토큰이 유효한 경우
+          try {
+            const response = await axios.post('/auth/refresh', { refreshToken }); // 리프레시 토큰으로 새로운 액세스 토큰 요청
+            const { accessToken } = response.data;
+            localStorage.setItem('token', accessToken); // 로컬 스토리지에 새로운 액세스 토큰 저장
+            setIsAuth(true); // 인증 상태를 true로 설정
+          } catch (error) {
+            console.error('Failed to refresh access token', error);
+            localStorage.removeItem('token'); // 로컬 스토리지에서 액세스 토큰 삭제
+            localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 삭제
+            setIsAuth(false); // 인증 상태를 false로 설정
+          }
+        }
+      } else {
+        setIsAuth(true); // 액세스 토큰이 유효한 경우 인증 상태를 true로 설정
+      }
+    };
+
+    checkAuth(); // 인증 상태 확인 함수 호출
+  }, []);
+
+  useEffect(() => {
     if(token){
       isSSE();
     }
-
-  }, []);
+  }, [token]);
 
   const isSSE = () => {
     eventSource = new EventSourcePolyfill(
@@ -113,55 +149,104 @@ function App() {
     }
   }
 
+  if (isAuth === null) {
+    return <div>Loading...</div>; // 로딩 상태 표시
+  }
+
   return (
     <>
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <Routes>
-            <Route path='/' element={<FullLayout count={count} notice={notice}/>} >
-              <Route path='/' element={<Main />} />
-              <Route path='/app/home' element={<Main />} />
-              <Route path='/app' element={<Main />} />
-              <Route path='/app/calendar' element={ <PrivateRoute><Calendar /> </PrivateRoute>} />
-              <Route path='/app/schedule/detail/:scheduleId' element={<CalendarDetail isCreate={false} />} />
-              <Route path='/app/schedule/create' element={<CalendarDetail isCreate={true}/>} />
-              <Route path="/app/my-account" element={<MyAccount />} />
-              {/* <Route path='/app/employees' element={<EmployeeList />} />
-              <Route path='/app/employees/register' element={<EmployeeRegister />} /> */}
+            <Route path='/login' element={<Login />} />
+            <Route path='/' element={isAuth ? <FullLayout count={count} /> : <Navigate to="/login" />} >
 
               <Route
-                path="/app/employees"
-                element={
-                  <PrivateRoute>
-                    <EmployeeList />
-                  </PrivateRoute>
-                }
+                path='/'
+                element={<Main />}
               />
               <Route
-                path="/app/employees/register"
-                element={
-                  <PrivateRoute>
-                    <EmployeeRegister />
-                  </PrivateRoute>
-                }
+                path='/app/home'
+                element={<Main />}
               />
-              <Route path='/app/franchisee' element={<Franchisee />} />
-              <Route path='/app/warn' element={<Warning />} />
-              <Route path='/app/close' element={<Closing />} />
-              <Route path='/app/menu' element={<Menu />} />
-              <Route path='/app/sales' element={<Sales />} />
-              <Route path='/app/order' element={<Order />} />
-
-              {/* 전자결재 */}     
-              <Route path='/approval/draft' element={<ApprovalMain />} />                   
-              <Route path='/approval/draft/form' element={<ApprovalWrite />} />
-              <Route path='/approval/draft/detail/:id' element={<ApprovalDetail />} />
-              <Route path='/approval/draft/list/:category' element={<ApprovalList />} />
-              <Route path='/approval/draft/revise/:id' element={<ApprovalModify />} />
-              <Route path='/approval/draft/reapply/:id' element={<ApprovalReApply />} />
-
+              <Route
+                path='/app'
+                element={<Main />}
+              />
+              <Route
+                path='/app/calendar'
+                element={<Calendar />}
+              />
+              <Route
+                path='/app/schedule/detail/:scheduleId'
+                element={<CalendarDetail isCreate={false} />}
+              />
+              <Route
+                path='/app/schedule/create'
+                element={<CalendarDetail isCreate={true} />}
+              />
+              <Route
+                path="/app/my-account"
+                element={<MyAccount />}
+              />
+              <Route
+                path='/app/employees'
+                element={<EmployeeList />}
+              />
+              <Route
+                path='/app/employees/register'
+                element={<EmployeeRegister />}
+              />
+              <Route
+                path='/approval/draft/form'
+                element={<ApprovalWrite />}
+              />
+              <Route
+                path='/franchisee'
+                element={<Franchisee />}
+              />
+              <Route
+                path='/warn'
+                element={<Warning />}
+              />
+              <Route
+                path='/close'
+                element={<Closing />}
+              />
+              <Route
+                path='/menu'
+                element={<Menu />}
+              />
+              <Route
+                path='/sales'
+                element={<Sales />}
+              />
+              <Route
+                path='/order'
+                element={<Order />}
+              />
+              <Route
+                path='/approval/draft'
+                element={<ApprovalMain />}
+              />
+              <Route
+                path='/approval/draft/detail/:id'
+                element={<ApprovalDetail />}
+              />
+              <Route
+                path='/approval/draft/list/:category'
+                element={<ApprovalList />}
+              />
+              <Route
+                path='/approval/draft/revise/:id'
+                element={<ApprovalModify />}
+              />
+              <Route
+                path='/approval/draft/reapply/:id'
+                element={<ApprovalReApply />}
+              />
             </Route>
-            <Route path="/login" element={<Login />} />
+
           </Routes>
           <Chat />
         </ThemeProvider>
