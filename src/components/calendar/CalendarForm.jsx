@@ -33,6 +33,32 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
   const [events, setEvents] = useState([]);
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState("");
   const token = localStorage.getItem("token");
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(null);
+  const [calendarloading, setCalendarLoading] = useState(true);
+
+  useEffect(() => {
+    const userData = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await instance.get("/app/employees/current", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserInfo(response?.data);
+        } catch (error) {
+          setError(error.message);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    userData();
+  }, [token]);
 
   useEffect(() => {
     const userDataAndListCalendar = async () => {
@@ -60,6 +86,36 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
 
     userDataAndListCalendar();
   }, []);
+
+  useEffect(() => {
+    if (userInfo) {
+      setDepartmentCode(userInfo.departmentCode);
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (departmentCode) {
+      const listCalendar = async (departmentCode) => {
+        try {
+          const response = await instance.get(`app/calendar/department/${departmentCode}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.data.status === "success" && Array.isArray(response.data.data)) {
+            setCalendars(response.data.data);
+          } else {
+            console.error("Expected an array but got:", response.data);
+            setCalendars([]);
+          }
+        } catch (error) {
+          console.error("목록 불러오기 실패:", error);
+        }
+      };
+
+      listCalendar(departmentCode);
+    }
+  }, [departmentCode, token]);
 
   const listCalendar = async (departmentCode) => {
     try {
@@ -257,7 +313,7 @@ const CalendarForm = ({ isCreate, scheduleId, selectedCalendarId, onComplete }) 
 
   return (
     <Box p={3}>
-      <Typography variant="h4" mb={3}>
+      <Typography variant="h3" mb={3}>
         {isCreate ? "일정 등록" : "일정 상세보기"}
       </Typography>
       <form onSubmit={scheduleSubmit}>

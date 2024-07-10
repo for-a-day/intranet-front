@@ -25,8 +25,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 
 
 
-const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants, cancelApprove, onChangeHtml, approveDicision, backHistory = null}) => {
-  console.log(approval);
+const ApprovalDetailMenu = React.memo(({contentRef, approval, participants, cancelApprove, onChangeHtml, approveDicision, employee ,backHistory = null}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
@@ -35,7 +34,7 @@ const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants,
   const [modalType, setModalType] = useState(null);
 
   const backHistoryClick = () => {
-    if(backHistory === null){
+    if(backHistory === null || backHistory === ""){
       navigate(-1);
     } else {
       navigate(backHistory);
@@ -47,7 +46,7 @@ const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants,
       if(window.confirm("상신 취소 하시겠습니까?")){
         cancelApprove();
         const updatedHtml = await onChangeHtml();
-        const data = {
+        const data = {  
           formData: {
             approvalId: approval.approvalId,
             docBody: updatedHtml,
@@ -126,12 +125,14 @@ const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants,
 
   //재기안 페이지로 이동
   const moveReApprove = () => {
-    navigate(`/approval/draft/reapply/${approval.approvalId}`);
+    if(window.confirm("해당 결재 문서를 재기안 하시겠습니까?")){
+      navigate(`/approval/draft/reapply/${approval.approvalId}`);
+    }
   };
 
   return (
     <>
-      {(approval.status === "R" && approval.approvalType === "기안")  ?(
+      {(approval?.status === "R" && approval?.approvalType === "기안")  ?(
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<AssignmentIcon /> }onClick={onModal}>결재정보</Button>
           <Button variant='h5' startIcon={<EditIcon />} onClick={moveReApprove}>재기안</Button>
@@ -139,29 +140,30 @@ const ApprovalDetailMenu = React.memo(({contentRef,type, approval, participants,
           <Button variant='h5' startIcon={<PrintIcon />} onClick={handlePrint}>인쇄</Button>
           <Button variant='h5' startIcon={<FeedbackIcon />} onClick={onRejectModal}>반려사유</Button>
         </Stack>
-      ) : approval.status === "C" ?(
+      ) : approval?.status === "C" ?(
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
           <Button variant='h5' startIcon={<ListIcon />} onClick={backHistoryClick}>목록</Button>
           <Button variant='h5' startIcon={<DownloadIcon />} onClick={handleGeneratePdf}>다운로드</Button>
           <Button variant='h5' startIcon={<PrintIcon />} onClick={handlePrint}>인쇄</Button>
         </Stack>
-      ) : type === "기안" ? (
+      ) : approval?.approvalType === "기안" ? (
         <Stack direction="row" spacing={1}>
           {approval?.status === '1' ? <Button variant='h5' startIcon={<UndoIcon />} onClick={() => approvalCancel("T")}>상신취소</Button> : null } 
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
           <Button variant='h5' startIcon={<ListIcon />} onClick={backHistoryClick}>목록</Button>
           <Button variant='h5' startIcon={<PrintIcon />} onClick={handlePrint}>인쇄</Button>
         </Stack>
-      ) : type === "대기" ? (
+      ) : approval?.approvalType === "대기" ? (
         <Stack direction="row" spacing={1}>
+          {employee?.id == participants[0]?.employeeId && approval.status === '1' ? <Button variant='h5' startIcon={<UndoIcon />} onClick={() => approvalCancel("T")}>상신취소</Button> : null}
           <Button variant='h5' startIcon={<CheckCircleIcon />} onClick={() => onReasonModal("A")}>결재</Button>
           <Button variant='h5' startIcon={<CancelIcon />} onClick={() => onReasonModal("R")}>반려</Button>
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
           <Button variant='h5' startIcon={<ListIcon />} onClick={backHistoryClick}>목록</Button>
           <Button variant='h5' startIcon={<PrintIcon />} onClick={handlePrint}>인쇄</Button>
         </Stack>
-      ) : type === "반려" ? (
+      ) : approval?.approvalType === "반려" ? (
         <Stack direction="row" spacing={1}>
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
           <Button variant='h5' startIcon={<ListIcon />} onClick={backHistoryClick}>목록</Button>

@@ -46,72 +46,76 @@ const ApprovalMain = () => {
   return (
     <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
       <ApprovalSideBar />
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", overflowX: "auto" }}>
         <Box sx={{marginBottom:"15px"}}>
           <Typography variant='h2'>전자결재 홈</Typography>
         </Box>
 
-        <Box sx={{ width: '100%', overflow: 'visible', paddingTop: 1 }}>
+        <Box sx={{ width: '100%', overflow: 'hidden', paddingTop: 1 }}>
           <Typography variant="h4" sx={{marginBottom: 1}}> 결재 대기 문서 </Typography>
-          <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} style={{ width: '100%' }}
-            breakpoints={{
-              640: {
-                slidesPerView: 2,
-                spaceBetween: 10,
-              },
-              1460: {
-                slidesPerView: 4,
-                spaceBetween: 10,
-              }
-            }}
-          >
-            {main?.main1?.map((item, index) => (
-              <SwiperSlide key={index}>
-                <Paper
-                  sx={{
-                    marginTop: 1,
-                    padding: 8,
-                    textAlign: 'center',
-                    position: 'relative',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-                    },
-                  }}
-                > 
-                  <Chip
-                    label= {item?.list?.urgency === '1' ? "긴급" : "진행중"}
-                    color= {item?.list?.urgency === '1' ? "error" :"success"}
-                    sx= {{ position: 'absolute', top: 16, left: 16 }}
-                  />
-                  <Typography variant="h5" fontWeight="bold" sx={{ marginBottom: 1 }}>
-                  {item?.list?.subject}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    기안자: {item?.employee?.name} {item?.employee?.level}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    기안부서: {item?.employee?.department}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    기안일: {item?.list?.modificationDate?.split("T")[0]}
-                  </Typography>
-                  <Button variant="contained" color="primary" onClick={() => navigate(`/approval/draft/detail/${item?.list?.approvalId}`)} sx={{ marginTop: 2, padding: '8px 40px' }}>
-                    결재하기
-                  </Button>
-                </Paper>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          {main?.main1?.length !== 0 ? (
+            <Swiper modules={[Navigation, Pagination]} spaceBetween={10} slidesPerView={1} style={{ width: '100%' }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                  spaceBetween: 10,
+                },
+                1460: {
+                  slidesPerView: 3,
+                  spaceBetween: 10,
+                }
+              }}
+            >
+              {main?.main1?.map((item, index) => (
+                <SwiperSlide key={index}>
+                  <Paper
+                    sx={{
+                      marginTop: 1,
+                      padding: 8,
+                      textAlign: 'center',
+                      position: 'relative',
+                      border: '1px solid #e0e0e0',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-5px)',
+                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+                      },
+                    }}
+                  > 
+                    <Chip
+                      label= {item?.list?.urgency === '1' ? "긴급" : "진행중"}
+                      color= {item?.list?.urgency === '1' ? "error" :"primary"}
+                      sx= {{ position: 'absolute', top: 16, left: 16 }}
+                    />
+                    <Typography variant="h5" fontWeight="bold" sx={{ marginBottom: 1 }}>
+                    {item?.list?.subject}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      기안자: {item?.employee?.name} {item?.employee?.level}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      기안부서: {item?.employee?.department}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      기안일: {item?.list?.modificationDate?.split("T")[0]}
+                    </Typography>
+                    <Button variant="contained" color="success" onClick={() => navigate(`/approval/draft/detail/${item?.list?.approvalId}`)} sx={{ marginTop: 2, padding: '8px 65px' }}>
+                      결재하기
+                    </Button>
+                  </Paper>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <Typography sx={{textAlign: 'center', padding:'20px', borderBottom: 'none', fontSize: '16px'}}>결재 문서가 없습니다</Typography>
+          )}
         </Box>
 
-        <Box sx={{ marginTop: 4 }}>
+        <Box sx={{ marginTop: 4}}>
           <Typography variant="h4" sx={{marginTop: 5 ,marginBottom: 2}}> 진행 중인 기안 문서 </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{minWidth: "1000px", overflowX: "auto"}}>
             <Table sx={{borderTop: "1px solid rgba(224, 224, 224, 1)"}}>
               <TableHead>
                 <TableRow>
@@ -123,27 +127,36 @@ const ApprovalMain = () => {
                   <TableCell sx={{width: "10%"}}>결재상태</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {main?.main2?.map((row, index) => (
-                  <StyledTableRow key={index}>
-                    <TableCell>{row.modificationDate?.split("T")[0]}</TableCell>
-                    <TableCell>{row?.formId?.subject}</TableCell>
-                    <TableCell>{row.urgency === '1' ? <Chip label="긴급" color="error" /> : null}</TableCell>
-                    <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${row?.approvalId}`)}>{row.subject}</SubjectTableCell>
-                    <TableCell>{row.docNo}</TableCell>
-                    <TableCell>
-                      <Chip label='진행중' color='primary' />
-                    </TableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
+              {main?.main2?.length !== 0 ? (
+                <TableBody>
+                  {main?.main2?.map((row, index) => (
+                    <StyledTableRow key={index}>
+                      <TableCell>{row?.creationDate !== null ? row?.creationDate?.split("T")[0] : row?.modificationDate?.split("T")[0]}</TableCell>
+                      <TableCell>{row?.formId?.subject}</TableCell>
+                      <TableCell>{row.urgency === '1' ? <Chip label="긴급" color="error" /> : null}</TableCell>
+                      <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${row?.approvalId}`)}>{row.subject}</SubjectTableCell>
+                      <TableCell>{row.docNo}</TableCell>
+                      <TableCell>
+                        <Chip label='진행중' color='primary' sx={{width:"70%", minWidth: "70px"}}/>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              ) : (
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={6} sx={{textAlign: 'center', padding:'20px', borderBottom: 'none', fontSize: '16px'}}>결재 문서가 없습니다</TableCell>
+                  </TableRow>
+                </TableBody>
+              )}
+              
             </Table>
           </TableContainer>
         </Box>
 
         <Box sx={{ marginTop: 4 }}>
           <Typography variant="h4" sx={{marginTop: 5 , marginBottom: 2}}> 완료된 기안 문서 </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{minWidth: "1000px", overflowX: "auto"}}>
             <Table sx={{borderTop: "1px solid rgba(224, 224, 224, 1)"}}> 
               <TableHead>
                 <TableRow>
@@ -155,24 +168,33 @@ const ApprovalMain = () => {
                   <TableCell sx={{width: "10%"}}>결재상태</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {main?.main3?.map((row, index) => (
-                  <StyledTableRow key={index}>
-                    <TableCell>{row.modificationDate?.split("T")[0]}</TableCell>
-                    <TableCell>{row?.formId?.subject}</TableCell>
-                    <TableCell>{row.urgency === '1' ? <Chip label="긴급" color="error" /> : null}</TableCell>
-                    <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${row?.approvalId}`)}>{row.subject}</SubjectTableCell>
-                    {row?.docNo !== null && row.docNo !== undefined? (
-                      <TableCell>NG-결재-2024-{String(row?.docNo).padStart(4, '0')}</TableCell>
-                    ) : (
-                      <TableCell></TableCell>
-                    )}
-                    <TableCell>
-                      <Chip label='진행중' color='primary' />
-                    </TableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
+              {main?.main3?.length !== 0 ? (
+                <TableBody>
+                  {main?.main3?.map((row, index) => (
+                    <StyledTableRow key={index}>
+                      <TableCell>{row?.creationDate !== null ? row?.creationDate?.split("T")[0] : row?.modificationDate?.split("T")[0]}</TableCell>
+                      <TableCell>{row?.formId?.subject}</TableCell>
+                      <TableCell>{row.urgency === '1' ? <Chip label="긴급" color="error" /> : null}</TableCell>
+                      <SubjectTableCell onClick={() => navigate(`/approval/draft/detail/${row?.approvalId}`)}>{row.subject}</SubjectTableCell>
+                      {row?.docNo !== null && row.docNo !== undefined? (
+                        <TableCell>NG-결재-2024-{String(row?.docNo).padStart(4, '0')}</TableCell>
+                      ) : (
+                        <TableCell></TableCell>
+                      )}
+                      <TableCell>
+                        <Chip label='완료' sx={{width:"70%", minWidth: "70px"}}/>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              ) : (
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={6} sx={{textAlign: 'center', padding:'20px', borderBottom: 'none', fontSize: '16px'}}>결재 문서가 없습니다</TableCell>
+                  </TableRow>
+                </TableBody>
+              )}
+              
             </Table>
           </TableContainer>
         </Box>

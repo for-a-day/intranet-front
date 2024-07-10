@@ -23,7 +23,7 @@ import {
 import instance from "../../axiosConfig";
 
 const Franchisee = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   const [franchisee, setFranchisee] = useState([]);
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -70,16 +70,15 @@ const Franchisee = () => {
     e.stopPropagation();
   };
 
-
   //등록
   const handleRegister = async () => {
     console.log("등록버튼이 눌렸습니다");
     try {
       const url = `/app/store`;
-      const response = await instance.post(url, formData,{
+      const response = await instance.post(url, formData, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       alert("새로운 가맹점 등록을 축하드립니다!");
       console.log("api 담기 성공", response.data);
@@ -117,7 +116,6 @@ const Franchisee = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("정상 등록 완료", formData);
-    // Close modal
     setOpen(false);
   };
 
@@ -133,7 +131,7 @@ const Franchisee = () => {
                   <Typography
                     variant="h3"
                     component="div"
-                    sx={{ color: "black", fontWeight: "bold", marginRight: "10px" }}
+                    sx={{ color: "black", marginRight: "10px" }}
                   >
                     가맹점 관리
                   </Typography>
@@ -143,7 +141,7 @@ const Franchisee = () => {
                 </Box>
                 <Button
                   color="inherit"
-                  href="/franchisee"
+                  href="/app/franchisee"
                   sx={{
                     color: "black",
                     fontWeight: "bold",
@@ -156,12 +154,16 @@ const Franchisee = () => {
                 </Button>
                 <Button
                   color="inherit"
-                  href="/close"
+                  href="/app/close"
                   sx={{ color: "black", fontWeight: "bold", margin: "0 5px", borderRadius: "8px" }}
                 >
                   <CloseIcon /> 폐점
                 </Button>
-                <Button color="inherit" href="/warn" sx={{ color: "black", fontWeight: "bold" }}>
+                <Button
+                  color="inherit"
+                  href="/app/warn"
+                  sx={{ color: "black", fontWeight: "bold" }}
+                >
                   <WarningIcon /> 경고 가맹점
                 </Button>
               </Toolbar>
@@ -175,7 +177,9 @@ const Franchisee = () => {
           <DialogContent onClick={handleDialogClick}>
             {open && (
               <div style={styles.modal}>
-                <h2>가맹점 등록</h2>
+                <Typography variant="h2" mb={3} mt={2}>
+                  가맹점 등록
+                </Typography>
                 <hr style={{ marginBottom: "25px" }}></hr>
                 <form onSubmit={handleSubmit}>
                   <Grid container spacing={3}>

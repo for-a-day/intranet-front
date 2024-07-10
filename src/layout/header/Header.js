@@ -21,6 +21,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import instance from "../../axiosConfig";
+import ModalPortal from "../../config/ModalPortal";
+import SseModal from "../../components/approval/SseModal";
 
 const Header = (props) => {
   const navigate = useNavigate();
@@ -32,21 +34,51 @@ const Header = (props) => {
   //SSE
   const [data, setData] = useState([]);
   const [count, setCount] = useState(props.count || 0);
+  const [notice, setNotice] = useState({});
+  const [modal, setModal] = useState(false);
+  const isEmpty = (obj) => {
+    if (obj == null) return true;
+  
+    return Object.values(obj).length === 0;
+  };
 
   useEffect(() => {
     setCount(props.count);
   }, [props.count]);
 
-  const notReadData = data.filter((data) => !data.read).reverse();
+  useEffect(() => {
+    if(!isEmpty(props.notice)){
+      setNotice(props.notice);
+    }
+  },[props.notice]);
+
+  useEffect(() => {
+    if (!isEmpty(notice)) {
+      setModal(true);
+      const timer = setTimeout(() => {
+        setModal(false);
+        setNotice({});
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+  },[notice]);
+
+  const notReadData = data && data.filter((data) => data.read === false).reverse();
 
   const getNotice = async () => {
-    const res = await instance.post("/api/auth/notice");
+    const res = await instance.post("/app/auth/notice");
     setData(res.data.data.notificationResponses);
   };
 
   const readHandler = async (id) => {
-    await instance.put(`/api/auth/notice/${id}`);
+    await instance.put(`/app/auth/notice/${id}`);
   };
+
+  const readAllHandler = async (id) => {
+    await instance.post(`/app/auth/notice/${id}`);
+  }
 
   const handleClick = (event) => {
     getNotice();
@@ -57,6 +89,7 @@ const Header = (props) => {
     setAnchorEl(null);
   };
 
+  //알림을 클릭 시 동작하는 함수
   const readClick = (id, url) => {
     const _data = notReadData.filter((data) => data.id !== id);
     const _count = count - 1;
@@ -67,6 +100,15 @@ const Header = (props) => {
     setTimeout(() => {
       navigate(url);
     }, 500);
+  };
+
+  //모두 읽음
+  const readAllClick = (id) => {
+    const _count = 0;
+    readAllHandler(id);
+    setData([]);
+    setCount(_count);
+    setAnchorEl(null);
   };
 
   const [anchorEl4, setAnchorEl4] = useState(null);
@@ -139,19 +181,27 @@ const Header = (props) => {
             },
           }}
         >
-          {notReadData.length === 0 ? (
+          {notReadData?.length === 0 ? (
             <MenuItem onClick={handleClose}>
               <Typography>조회할 알림이 없습니다.</Typography>
             </MenuItem>
           ) : (
-            notReadData.map((list) => (
-              <MenuItem key={list.id} onClick={() => readClick(list.id, list.url)}>
-                <Stack>
-                  <Typography>{list.content}</Typography>
-                </Stack>
-              </MenuItem>
-            ))
+            <Box>
+              {notReadData?.length >= 2 ? (
+                <Button sx={{marginLeft: "65%", padding: "12px 30px"}} onClick={() => readAllClick(notReadData[0]?.id)}><Typography variant="h4">모두 읽음</Typography></Button>
+              ) : null}
+              {notReadData?.map((list) => (
+                <MenuItem key={list.id} onClick={() => readClick(list.id, list.url)}>
+                  <Stack>
+                    <Typography>{list.content}</Typography>
+                  </Stack>
+                </MenuItem>
+              ))}
+            </Box>
           )}
+          <ModalPortal>
+            {modal && <SseModal modal={modal} notice={notice} readClick={readClick}/>}
+          </ModalPortal>
         </Menu>
         <Box
           sx={{

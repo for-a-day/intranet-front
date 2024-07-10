@@ -14,6 +14,7 @@ const FormModal = ({onModal, changeForm}) => {
   const [storageData, setStorageData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [datas, setDatas] = useState({});
+  const [employee, setEmployee] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
 
   const {isLoading, error, data = {}} = useSelector((state) => state.approval);
@@ -21,6 +22,10 @@ const FormModal = ({onModal, changeForm}) => {
   useEffect(() => {
       dispatch(_getFormList());
   },[dispatch]);
+
+  useEffect(() => {
+    setEmployee(data?.employee);
+  },[data])
 
   useEffect(() => {
     if (!isLoading && !error && data.storageList) {
@@ -144,7 +149,7 @@ const FormModal = ({onModal, changeForm}) => {
           </Box>
         </Stack>
         <Box my={2} display="flex" justifyContent="end" width="100%">
-          <Button variant='contained' color='success' sx={{marginRight: "10px", width:"15%"}} onClick={() => changeForm(datas)}>확인</Button>
+          <Button variant='contained' color='success' sx={{marginRight: "10px", width:"15%"}} onClick={() => changeForm(datas, employee)}>확인</Button>
           <Button variant='outlined' color='success' sx={{width: "15%"}} onClick={onModal}>취소</Button>
         </Box>
       </Box>

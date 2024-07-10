@@ -109,7 +109,7 @@ const Menu = () => {
           <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" sx={{ bgcolor: 'rgb(186, 232, 250)' }}>
               <Toolbar>
-                <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black', fontWeight: 'bold' }}>
+                <Typography variant="h3" component="div" sx={{ flexGrow: 1, color: 'black'}}>
                   메뉴 관리 
                 </Typography>
                 <button style={styles.register} onClick={handleOpen}>등록</button>

@@ -175,7 +175,9 @@ const EmployeeRegister = () => {
 
   return (
     <Paper sx={{ padding: 4, maxWidth: 600, mx: 'auto' }}>
-      <h2>사원 등록</h2>
+       <Typography variant="h2" mb={3}>
+          사원 등록
+        </Typography>
       <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off">
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -320,7 +322,7 @@ const EmployeeRegister = () => {
             variant="contained"
             color="primary"
             onClick={handleSubmit}
-            sx={{ marginTop: 2 }}
+            sx={{ marginTop: 3 }}
           >
             사원 등록
           </Button>

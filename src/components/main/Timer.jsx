@@ -149,9 +149,9 @@ const Timer = () => {
   });
 
   return (
-    <Card sx={{ maxWidth: 300, margin: "auto", padding: 2 }}>
+    <Card elevation={0} sx={{ maxWidth: 300, margin: "auto", padding: 1.5 }}>
       <CardContent>
-        <Typography variant="h5" component="div" sx={{ mb: 2 }}>
+        <Typography variant="h4" component="div" sx={{ mb: 2, fontWeight: "600" }}>
           근태관리
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

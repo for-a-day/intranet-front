@@ -90,9 +90,9 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
   return (
     <Modal open onClose={onClose}>
       <Paper sx={{ padding: 4, margin: 'auto', maxWidth: 600, mt: 4 }}>
-        <h2 sx={{ fontSize: '1.5rem', color: '#333' }}>
+      <Typography variant="h2" mb={2} sx={{fontSize:'25px'}}>
           {isEditMode ? '사원 수정' : isDeleteMode ? '사원 삭제' : '상세 정보'}
-        </h2>
+        </Typography>
         <hr style={{ marginBottom: '25px' }}></hr>
         {isEditMode ? (
           <Box component="form" noValidate autoComplete="off">
@@ -234,6 +234,7 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
                 </FormControl>
               </Grid>
             </Grid>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
             <Button
               variant="contained"
               color="primary"
@@ -242,6 +243,7 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
             >
               저장
             </Button>
+            </Box>
           </Box>
         ) : isDeleteMode ? (
           <Box component="form" noValidate autoComplete="off">
@@ -369,7 +371,8 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
                 />
               </Grid>
             </Grid>
-            <Typography variant="body1" sx={{ marginTop: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Typography variant="body1" sx={{ marginTop: 3, mr:2 }}>
               정말로 이 직원을 삭제하시겠습니까?
             </Typography>
             <Button
@@ -379,6 +382,7 @@ const EmployeeModal = ({ employee, isEditMode, isDeleteMode, onClose, onEdit, on
             >
               삭제
             </Button>
+            </Box>
           </Box>
         ) : (
           <Paper sx={{ padding: 3, backgroundColor: '#fffcfc', borderRadius: 2, boxShadow: 3 }}>

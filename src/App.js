@@ -29,10 +29,14 @@ import instance from './axiosConfig';
 import MyAccount from './components/myaccount/MyAccount';
 import { isTokenExpired } from './utils'; // 유틸리티 함수 import
 
+import NotFoundPage from './pages/error/NotFoundPage';
+
+
 function App() {
   const theme = baseTheme;
   const [count, setCount] = useState(0);
   const [isAuth, setIsAuth] = useState(null); // 인증 상태를 저장하기 위한 상태
+  const [notice, setNotice] = useState({});
   const token = localStorage.getItem("token");
 
   // SSE
@@ -133,6 +137,15 @@ function App() {
     const res = await instance.post("/app/auth/notice");
     if(res !== undefined){
       setCount(res.data.data.unreadCount);
+      const _notice = res?.data?.data?.notificationResponses;
+      if (_notice && _notice.length > 0) {
+        const viewNotice = _notice[_notice.length-1];
+        console.log(viewNotice);
+        if(viewNotice.view === false){
+          setNotice(viewNotice);
+          await instance.patch(`/app/auth/notice/${viewNotice.id}`);
+        }
+      }
     }
   }
 
@@ -147,6 +160,7 @@ function App() {
           <Routes>
             <Route path='/login' element={<Login />} />
             <Route path='/' element={isAuth ? <FullLayout count={count} /> : <Navigate to="/login" />} >
+
               <Route
                 path='/'
                 element={<Main />}
@@ -232,6 +246,7 @@ function App() {
                 element={<ApprovalReApply />}
               />
             </Route>
+
           </Routes>
           <Chat />
         </ThemeProvider>

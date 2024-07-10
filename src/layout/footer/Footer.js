@@ -2,8 +2,8 @@ import React from 'react'
 import { Box, Typography } from "@mui/material";
 const Footer = () => {
     return ( 
-        <Box sx={{p:3, textAlign:'center'}}>
-            <Typography>© 2023 All rights reserved by 박민 </Typography>
+        <Box sx={{p:3, mt:2, textAlign:'center'}}>
+            <Typography>© 2024 All rights reserved by Intranet </Typography>
         </Box>
      );
 }

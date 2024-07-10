@@ -30,6 +30,7 @@ const Chat = () => {
             <ChatIcon fontSize='large'/>
         </div>
     );
+
 };
 
 export default Chat;

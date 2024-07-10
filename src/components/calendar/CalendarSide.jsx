@@ -39,7 +39,7 @@ Modal.setAppElement("#root");
 const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const [calendarName, setCalendarName] = useState("");
   const [departmentCode, setDepartmentCode] = useState("");
-  const [departmentName, setDepartmentName] = useState("");
+  const [department, setDepartment] = useState("");
   const [message, setMessage] = useState("");
   const [calendars, setCalendars] = useState([]);
   const [selectCalendar, setSelectCalendar] = useState(null);
@@ -49,29 +49,64 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   const [calendarId, setCalendarId] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userDataAndListCalendar = async () => {
+    const userData = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await instance.post("app/employees/token");
-          const employee = response.data.employee;
-          const deptCode = employee.department?.departmentCode;
-          const deptName = employee.department?.departmentName;
-          setDepartmentCode(deptCode);
-          setDepartmentName(deptName);
+          const response = await instance.get("/app/employees/current", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-          // 부서 코드로 캘린더 조회
-          await listCalendar(deptCode);
+          setUserInfo(response?.data);
         } catch (error) {
-          console.error("유저 정보 못 불러옴", error);
+          setError(error.message);
+        } finally {
+          setLoading(false);
         }
       }
     };
 
-    userDataAndListCalendar();
-  }, []);
+    userData();
+  }, [token]);
+
+  useEffect(() => {
+    if (userInfo) {
+      setDepartmentCode(userInfo.departmentCode);
+      setDepartment(userInfo.department);
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (departmentCode) {
+      const listCalendar = async (departmentCode) => {
+        try {
+          const response = await instance.get(`app/calendar/department/${departmentCode}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.data.status === "success" && Array.isArray(response.data.data)) {
+            setCalendars(response.data.data);
+          } else {
+            console.error("Expected an array but got:", response.data);
+            setCalendars([]);
+          }
+        } catch (error) {
+          console.error("목록 불러오기 실패:", error);
+          setMessage(`목록 불러오기 실패: ${error.message}`);
+        }
+      };
+
+      listCalendar(departmentCode);
+    }
+  }, [departmentCode, token]);
 
   const listCalendar = async (departmentCode) => {
     try {
@@ -101,7 +136,7 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
         });
       } else {
         // 등록 모드
-        await instance.post("/app/cdalendar", calendarData, {
+        await instance.post("/app/calendar", calendarData, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -172,21 +207,23 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
   return (
     <Box>
       <Link to="/app/calendar" style={{ textDecoration: "none", color: "black" }}>
-        <h2>캘린더</h2>
+        <Typography variant="h2" sx={{ pb: 3 }}>
+          캘린더
+        </Typography>
       </Link>
       <Box sx={{ textAlign: "center" }}>
         <Button
           variant="contained"
           onClick={scheduleCreate}
           sx={{
-            pr: 8,
-            pl: 8,
+            pr: 10,
+            pl: 10,
             pt: 1.5,
             pb: 1.5,
             mr: 2,
           }}
         >
-          일정등록
+          일정 등록
         </Button>
       </Box>
       <Modal
@@ -219,8 +256,9 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
           </Box>
         </form>
       </Modal>
-
-      <h3 style={{ paddingTop: 6 }}>{departmentName} 캘린더</h3>
+      <Typography variant="h3" sx={{ paddingTop: 3.5, paddingBottom: 1 }}>
+        {userInfo?.department} 캘린더
+      </Typography>
       <List>
         {calendars.map((calendar) => (
           <ListItem key={calendar.calendarId} disablePadding>
@@ -249,9 +287,9 @@ const CalendarSide = ({ onSelectCalendar, onViewClick, onCreateClick }) => {
         ))}
       </List>
       <Box sx={{ textAlign: "center", paddingRight: 3 }}>
-        <span onClick={() => openModal(false)} className="createCalendar">
+        <Typography variant="h5" onClick={() => openModal(false)} className="createCalendar">
           <AddIcon style={{ marginRight: "8px" }} /> 캘린더 등록
-        </span>
+        </Typography>
       </Box>
     </Box>
   );

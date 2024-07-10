@@ -10,11 +10,11 @@ const ApprovalSideBar = ({setApprovalData = null, _category = ""}) => {
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const changeForm = (data) => {
+  const changeForm = (data, employee) => {
     if(setApprovalData !== null){
       setApprovalData(data);
     }
-    navigate("/approval/draft/form", {state: { approvalData: data } });
+    navigate("/approval/draft/form", {state: { approvalData: data, employee: employee } });
     setModal(false);
   }
 
@@ -37,7 +37,7 @@ const ApprovalSideBar = ({setApprovalData = null, _category = ""}) => {
   };
 
   const menuItems = [
-    { type: "todo", label: "결대 대기 문서", category: "todo" },
+    { type: "todo", label: "결재 대기 문서", category: "todo" },
     { type: "schedule", label: "결재 예정 문서", category: "schedule" },
     { type: "approval", label: "결재 진행 문서", category: "approval" },
     { type: "mydraft", label: "기안 문서", category: "mydraft" },

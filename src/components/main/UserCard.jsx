@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent, Typography, Avatar, Box } from "@mui/material";
+import instance from "../../axiosConfig";
 
 const UserCard = () => {
   const [employeeName, setEmployeeName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [levelName, setLevelName] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
+  const token = localStorage.getItem("token");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userData = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:9000/app/employees/token", {
+          const response = await instance.get("/app/employees/current", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          const employee = response.data.employee;
-          setEmployeeName(employee.name);
-          setDepartmentName(employee.department.departmentName);
-          setLevelName(employee.level.levelName);
+
+          console.log("유저 불러오기 성공");
+          setUserInfo(response?.data);
         } catch (error) {
-          console.error("유저 정보 못불러옴", error);
+          setError(error.message);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -44,20 +50,20 @@ const UserCard = () => {
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Avatar
             alt={employeeName}
-            sx={{ width: 100, height: 100, marginBottom: "20px", backgroundColor: "#ddd" }}
+            sx={{ width: 120, height: 120, marginBottom: "20px", backgroundColor: "#ddd" }}
           />
           <Typography variant="h5" component="div">
             <span style={{ fontSize: "19px" }}>
               {" "}
               <strong>
                 {" "}
-                {employeeName} {levelName}{" "}
+                {userInfo?.name} {userInfo?.level}
               </strong>
             </span>
           </Typography>
           <Box>
             <Typography variant="h5" sx={{ mt: 1, fontWeight: "bold" }}>
-              {departmentName}
+              {userInfo?.department}
             </Typography>
           </Box>
           <Box sx={{ marginTop: "20px", textAlign: "center" }}>
