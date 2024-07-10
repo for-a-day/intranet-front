@@ -267,7 +267,7 @@ const ApprovalReApply = () => {
 
 
   return (
-    <Stack direction="row" spacing={4} sx={{marginLeft: "0"}}>
+    <Stack direction="row" spacing={4} sx={{marginLeft: "0", overflowX: "auto"}}>
       <ApprovalSideBar setApprovalData={setApprovalData}/>
       <Stack>
         <Box sx={{marginBottom:"15px"}}>
