@@ -121,7 +121,7 @@ const ApprovalMain = () => {
                 <TableRow>
                   <TableCell sx={{width: "15%"}}>기안일</TableCell>
                   <TableCell sx={{width: "17%"}}>결재양식</TableCell>
-                  <TableCell sx={{width: "5%", textAlign:'center'}}>긴급</TableCell>
+                  <TableCell sx={{width: "5%", textAlign:'center', minWidth:"37px"}}>긴급</TableCell>
                   <TableCell sx={{width: "34%"}}>제목</TableCell>
                   <TableCell sx={{width: "17%"}}>문서번호</TableCell>
                   <TableCell sx={{width: "10%"}}>결재상태</TableCell>
@@ -162,7 +162,7 @@ const ApprovalMain = () => {
                 <TableRow>
                   <TableCell sx={{width: "15%"}}>기안일</TableCell>
                   <TableCell sx={{width: "17%"}}>결재양식</TableCell>
-                  <TableCell sx={{width: "5%", textAlign:"center"}}>긴급</TableCell>
+                  <TableCell sx={{width: "5%", textAlign:"center", minWidth:"37px"}}>긴급</TableCell>
                   <TableCell sx={{width: "34%"}}>제목</TableCell>
                   <TableCell sx={{width: "17%"}}>문서번호</TableCell>
                   <TableCell sx={{width: "10%"}}>결재상태</TableCell>
