@@ -65,8 +65,14 @@ const FranchiseeList = () => {
       });
       const franchiseeMap = response.data.data;
 
-      // Convert the Map object to an array
       const franchiseeArray = Object.values(franchiseeMap);
+
+      franchiseeArray.sort((a, b) => {
+        const idA = a.franchiseeId.slice(2); 
+        const idB = b.franchiseeId.slice(2); 
+        return parseInt(idA) - parseInt(idB); 
+      });
+
       setFranchisee(franchiseeArray);
     } catch (error) {
       console.error("에러났슴둥", error);
