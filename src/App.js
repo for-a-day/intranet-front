@@ -46,7 +46,7 @@ function App() {
     const checkAuth = async () => {
       const token = localStorage.getItem('token'); // 로컬 스토리지에서 액세스 토큰 가져오기
       const refreshToken = localStorage.getItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 가져오기
-
+      
       if (!token || isTokenExpired(token)) {
         // 액세스 토큰이 없거나 만료된 경우
         if (!refreshToken || isTokenExpired(refreshToken)) {
@@ -54,19 +54,6 @@ function App() {
           localStorage.removeItem('token'); // 로컬 스토리지에서 액세스 토큰 삭제
           localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 삭제
           setIsAuth(false); // 인증 상태를 false로 설정
-        } else {
-          // 리프레시 토큰이 유효한 경우
-          try {
-            const response = await axios.post('/auth/refresh', { refreshToken }); // 리프레시 토큰으로 새로운 액세스 토큰 요청
-            const { accessToken } = response.data;
-            localStorage.setItem('token', accessToken); // 로컬 스토리지에 새로운 액세스 토큰 저장
-            setIsAuth(true); // 인증 상태를 true로 설정
-          } catch (error) {
-            console.error('Failed to refresh access token', error);
-            localStorage.removeItem('token'); // 로컬 스토리지에서 액세스 토큰 삭제
-            localStorage.removeItem('refreshToken'); // 로컬 스토리지에서 리프레시 토큰 삭제
-            setIsAuth(false); // 인증 상태를 false로 설정
-          }
         }
       } else {
         setIsAuth(true); // 액세스 토큰이 유효한 경우 인증 상태를 true로 설정
@@ -89,7 +76,7 @@ function App() {
         headers: {
           Authorization: `Bearer ${token}`
         },
-        heartbeatTimeout: 1000 * 60 * 20,
+        heartbeatTimeout: 1000 * 60 * 30,
       }
     );
     // console.log("구독성공");
@@ -159,7 +146,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <Routes>
             <Route path='/login' element={<Login />} />
-            <Route path='/' element={<FullLayout />}>
+            <Route path='/' element={isAuth ? <FullLayout count={count} notice={notice} /> : <Navigate to="/login"/>}>
 
               <Route
                 path='/'

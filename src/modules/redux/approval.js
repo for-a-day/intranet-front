@@ -190,8 +190,8 @@ export const _getMyDraft = createAsyncThunk(
   async (payload, thunkAPI) => {
     try{
       const data = await instance.get(`/app/approval/my-draft`);
-      console.log(data.data.data);
-      return thunkAPI.fulfillWithValue(data.data.data.list);
+
+      return thunkAPI.fulfillWithValue(data.data.data);
     } catch(e){
       return thunkAPI.rejectWithValue(e);
     }

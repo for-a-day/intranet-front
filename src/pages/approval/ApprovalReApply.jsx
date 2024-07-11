@@ -295,7 +295,7 @@ const ApprovalReApply = () => {
           <Button variant='h5' startIcon={<FeedbackIcon />} onClick={onRejectModal}>반려사유</Button>
         </Stack>
         <Stack direction="row" spacing={4}>
-          <Box sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
+          <Box sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px", minWidth:"800px", minHeight: "600px"}}>
             <div ref={contentRef}>{parse(approvalData?.tempBody || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}
