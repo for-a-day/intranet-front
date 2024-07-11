@@ -40,7 +40,7 @@ const SubjectTableCell = styled(TableCell)({
 const MainApproval = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, error, mydraft = [] } = useSelector((state) => state?.approval);
+  const { isLoading, error, mydraft = {} } = useSelector((state) => state?.approval);
 
   useEffect(() => {
     dispatch(_getMyDraft());
@@ -93,9 +93,9 @@ const MainApproval = () => {
                 <TableCell sx={{ width: "10%" }}>결재상태</TableCell>
               </StyledTableRow>
             </TableHead>
-            {mydraft?.length !== 0 ? (
+            {mydraft?.list?.length !== 0 ? (
               <TableBody>
-                {mydraft?.map((doc, index) => (
+                {mydraft?.list?.map((doc, index) => (
                   <StyledTableRow key={index}>
                     <TableCell>{doc?.creationDate !== null ? doc?.creationDate?.split("T")[0] : doc?.modificationDate?.split("T")[0]}</TableCell>
                     <TableCell sx={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px'}}>{doc?.formId?.subject}</TableCell>

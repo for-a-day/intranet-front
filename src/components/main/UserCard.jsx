@@ -3,8 +3,10 @@ import axios from "axios";
 import { Card, CardContent, Typography, Avatar, Box, Grid } from "@mui/material";
 import instance from "../../axiosConfig";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const UserCard = ({ scheduleCount }) => {
+  const navigate = useNavigate();
   const [employeeName, setEmployeeName] = useState("");
   const [departmentName, setDepartmentName] = useState("");
   const [levelName, setLevelName] = useState("");
@@ -33,9 +35,13 @@ const UserCard = ({ scheduleCount }) => {
         }
       }
     };
-    console.log(scheduleCount);
+    
     userData();
   }, []);
+
+  const moveMyDraftHandler = () => {
+    navigate("/approval/draft/list/mydraft", {state: {selected: "진행중"}});
+  }
 
   return (
     <Box
@@ -70,10 +76,10 @@ const UserCard = ({ scheduleCount }) => {
           <Box sx={{ minWidth:'200px', marginTop: "5px", textAlign: "center" }}>
             <Grid container spacing={2}>
               <Grid item xs={3} lg={8}>
-                <Typography variant="h5">기안 문서</Typography>
+                <Typography variant="h5">진행중인 기안문</Typography>
               </Grid>
               <Grid item xs={3} lg={3}>
-                <Typography variant="h5">{mydraft.length}</Typography>
+                <Typography variant="h5" onClick={moveMyDraftHandler} sx={{cursor: "pointer", ":hover":{color: "#1a97f5", fontWeight: "700"}}}>{mydraft?.count}</Typography>
               </Grid>
               <Grid item xs={3} lg={8}>
                 <Typography variant="h5">오늘의 일정</Typography>

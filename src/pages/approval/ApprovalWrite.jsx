@@ -249,7 +249,7 @@ const ApprovalWrite = () => {
           <Button variant='h5' startIcon={<AssignmentIcon />} onClick={onModal}>결재정보</Button>
         </Stack>
         <Stack direction="row" spacing={4}>
-          <Box sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px"}}>
+          <Box sx={{border: "3px solid #e0e0e0", padding: "50px", marginTop:"10px", marginBottom:"10px", minWidth:"800px", minHeight: "600px"}}>
             <div ref={contentRef}>{parse(approvalData?.content || "")}</div>
           </Box>
           {/* 사이드 기안자 시작 */}

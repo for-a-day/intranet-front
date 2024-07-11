@@ -39,9 +39,11 @@ const ApprovalList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchSelect, setSearchSelect] = useState("전체");
   const {isLoading, error, approvalList = []} = useSelector((state) => state.approval);
-
+  
   useEffect(() => {
     dispatch(_getApprovalList(category));
+
+
 
     if (isLoading) {
       return <div>로딩중....</div>;
@@ -59,7 +61,11 @@ const ApprovalList = () => {
     setTitle(titleList[category]);
     setSearchText("");
     setSearchTerm("");
-    setSearchSelect("전체");
+    if(location?.state?.selected){
+      setSearchSelect(location?.state?.selected);
+    } else {
+      setSearchSelect("전체");
+    }
     setCurrentPage(1);
   }, [location]);
 
@@ -93,7 +99,7 @@ const ApprovalList = () => {
       return item?.subject.toLowerCase().includes(searchTerm?.toLowerCase()) && item?.approvalType.includes(searchSelect);
     }
   }); 
-  console.log(filteredData);
+
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(15);
