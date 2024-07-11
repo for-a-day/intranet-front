@@ -127,7 +127,7 @@ const ApprovalDetail = () => {
       <ApprovalSideBar _category={category}/>
       <Stack>
         <Box sx={{marginBottom:"15px"}}>
-          <Typography variant='h2'>{approval?.approval?.subject} {approval?.approval?.urgency === '1' && <Chip label="긴급" color="error" size="small" />}</Typography>
+          <Typography variant='h2'>{approval?.approval?.subject} {approval?.approval?.urgency === '1' && <Chip label="긴급" color="error" size="small"  sx={{marginBottom:"12px", marginLeft:"5px"}}/>}</Typography>
         </Box>
         <ApprovalDetailMenu contentRef={contentRef} employee={approval?.employee} backHistory={backHistory} approval={approval?.approval} participants={approval?.approval?.participantList} cancelApprove={cancelApprove} onChangeHtml={onChangeHtml} approveDicision={approveDicision}/>
         <Stack direction="row" spacing={4}>

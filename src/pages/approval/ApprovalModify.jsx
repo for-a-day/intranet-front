@@ -66,6 +66,7 @@ const ApprovalModify = () => {
       setApprovalData(modfiyApproval?.approval);
       setDocTitle(modfiyApproval?.approval?.subject);
       setEmployee(modfiyApproval?.employee);
+      setUrgency(modfiyApproval?.approval?.urgency);
     }
   }, [modfiyApproval?.approval,navigate]);
 
@@ -308,7 +309,7 @@ const ApprovalModify = () => {
             <FormGroup sx={{ display: "flex", alignItems: "flex-start", marginLeft: 2 }}>
               <FormControlLabel sx={{ '& .MuiSvgIcon-root': { fontSize: 32 }, alignItems: "flex-start", marginTop: "-0.5em"}} 
                     onChange={onUrgency} 
-                    control={<Checkbox checked={urgency === 1}  sx={{ alignSelf: 'flex-start' }} />} 
+                    control={<Checkbox checked={urgency == 1} color='error'  sx={{ alignSelf: 'flex-start' }} />} 
                     label={<Typography variant='h4' sx={{marginTop: '13px', marginLeft:"-8px"}}>긴급</Typography>} 
                 />
             </FormGroup>
