@@ -11,3 +11,36 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* FullCalendar 관련 스타일 */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css');
+
+.fullcalendar {
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+.fc-header-toolbar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.fc-daygrid-day {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.fc-daygrid-event {
+    background-color: #3788d8;
+    color: #fff;
+    border: 1px solid #3788d8;
+    border-radius: 3px;
+    padding: 2px;
+    font-size: 0.85em;
+}
+

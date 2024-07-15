@@ -2,57 +2,62 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import AddToPhotosOutlinedIcon from '@mui/icons-material/AddToPhotosOutlined';
 import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
-import AlbumOutlinedIcon from '@mui/icons-material/AlbumOutlined';
 import SwitchCameraOutlinedIcon from '@mui/icons-material/SwitchCameraOutlined';
 import SwitchLeftOutlinedIcon from '@mui/icons-material/SwitchLeftOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AutoAwesomeMosaicOutlinedIcon from '@mui/icons-material/AutoAwesomeMosaicOutlined';
+import LocalDiningOutlinedIcon from '@mui/icons-material/LocalDiningOutlined';
+import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';
+import { Home } from '@mui/icons-material';
+import { Approval } from '@mui/icons-material';
+import { Chat } from '@mui/icons-material';
+import { CalendarMonth } from '@mui/icons-material';
+import { Storefront } from '@mui/icons-material';
+import { PersonSearch } from '@mui/icons-material';
+import { BarChart } from '@mui/icons-material';
 
 const Menuitems = [
   {
     title: "홈",
-    icon: DashboardOutlinedIcon,
-    href: "/dashboards/dashboard1",
+    icon: Home,
+    href:"/",
   },
   {
     title: "전자결재",
-    icon: AddToPhotosOutlinedIcon,
-    href: "/form-elements/autocomplete",
-  },
-  {
-    title: "메신저",
-    icon: AspectRatioOutlinedIcon,
-    href: "/form-elements/button",
+    icon: Approval,
+    href: "/approval/draft",
   },
   {
     title: "일정 관리",
-    icon: AssignmentTurnedInOutlinedIcon,
-    href: "/form-elements/checkbox",
+    icon: CalendarMonth,
+    href: "/app/calendar",
   },
   {
     title: "가맹점 관리",
-    icon: AlbumOutlinedIcon,
-    href: "/form-elements/radio",
+    icon: Storefront,
+    href: "/app/franchisee",
   },
   {
     title: "인사 관리",
-    icon: SwitchCameraOutlinedIcon,
-    href: "/form-elements/slider",
+    icon: PersonSearch,
+    href: "/app/employees",
   },
   {
-    title: "결재 관리",
-    icon: SwitchLeftOutlinedIcon,
-    href: "/form-elements/switch",
+    title: "매출 관리",
+    icon: BarChart,
+    href: "/app/sales",
   },
   {
-    title: "Form",
+    title: "메뉴 관리",
+    icon: LocalDiningOutlinedIcon,
+
+    href: "/app/menu",
+  },
+  {
+    title: "주문 관리",
     icon: DescriptionOutlinedIcon,
-    href: "/form-layouts/form-layouts",
-  },
-  {
-    title: "Table",
-    icon: AutoAwesomeMosaicOutlinedIcon,
-    href: "/tables/basic-table",
+
+    href: "/app/order",
   },
 ];
 
