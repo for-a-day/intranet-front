@@ -127,11 +127,10 @@ const styles = {
     transform: "translate(-50%, -50%)",
     backgroundColor: "white",
     padding: "20px",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
     zIndex: 10000,
     width: "55%",
     maxWidth: "600px", // 최대 너비 설정
-    height: "55%",
+    borderRadius: "7px",
     maxHeight: "80vh", // 최대 높이 설정
     overflow: "auto",
   },
@@ -192,7 +191,7 @@ const styles = {
     right: 0,
     bottom: "-600px",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 999,
+    zIndex: 99,
   },
 };
 
