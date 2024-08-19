@@ -19,6 +19,7 @@ const Menu = () => {
   const token = localStorage.getItem("token");
   const [menu, setMenu] = useState([]);
   const [open, setOpen] = useState(false);
+  const [file, setFile] = useState(null);
   const [formData, setFormData] = useState({
     menu_id: "",
     menu_name: "",
@@ -87,6 +88,11 @@ const Menu = () => {
   const handleDialogClick = (e) => {
     e.stopPropagation();
   };
+  
+  // 파일 변화 감지
+  const handleFileChange  = (e) => {
+    setFile(e.target.files[0]);
+  };
 
   // 등록 버튼
   const handleSubmit = (e) => {
@@ -100,18 +106,33 @@ const Menu = () => {
   const handleRegister = async () => {
     console.log("등록버튼이 눌렸습니다");
     try {
-      const url = `/app/menu`;
-      const response = await instance.post(url, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert("신메뉴가 정상적으로 등록되었습니다");
-      console.log("api 담기 성공", response.data);
-      handleClose();
-      fetchMenu();
+        const data = new FormData();
+
+        data.append('menu_id', formData.menu_id);
+        data.append('menu_name', formData.menu_name);
+        data.append('menu_price', formData.menu_price);
+        data.append('menu_recipe', formData.menu_recipe);
+        data.append('menu_origin_price', formData.menu_origin_price);
+        data.append('menu_end', formData.menu_end);
+        if (file) {
+            data.append('menu_image', file);
+        }
+
+        // 'FormData'의 내용을 확인할 수는 없지만, 파일이 포함되었는지 확인
+        console.log('FormData에 파일이 포함되었는지 확인:', data.has('menu_image'));
+
+        const url = `http://localhost:9000/app/menu`;
+        const response = await instance.post(url, data, {
+            headers: {
+               'Content-Type': 'multipart/form-data',
+            }
+        });
+        alert('신메뉴가 정상적으로 등록되었습니다');
+        console.log('api 담기 성공', response.data);
+        handleClose();
+        fetchMenu();
     } catch (error) {
-      console.log("등록 중 에러 발생", error);
+        console.log('등록 중 에러 발생', error);
     }
   };
 
@@ -206,6 +227,14 @@ const Menu = () => {
                     required
                     fullWidth
                   />
+                </p>
+                <p>
+                <TextField
+                    sx={{width: '100%'}}
+                    type="file"
+                    name="menu_image"
+                    onChange={handleFileChange}
+                />
                 </p>
               </form>
             </div>

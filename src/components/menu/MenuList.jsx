@@ -1,23 +1,18 @@
 import React, { useEffect, useState } from "react";
 import {
-  MenuItem,
-  TextField,
   Typography,
-  Grid,
   Box,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Button,
   Chip,
-  Paper,
-  IconButton,
+  Pagination,
 } from "@mui/material";
-import styles from "./MenuListStyles";
 import instance from "../../axiosConfig";
-import { Close as CloseIcon } from "@mui/icons-material";
+import EditModal from "./EditModal";
+import DetailModal from "./DetailModal";
 
 const MenuList = () => {
   const token = localStorage.getItem("token");
@@ -33,6 +28,20 @@ const MenuList = () => {
     menu_origin_price: 0,
     menu_end: 0,
   });
+
+  // 페이징
+  const [currentPageSelling, setCurrentPageSelling] = useState(1);
+  const [currentPageNotSelling, setCurrentPageNotSelling] = useState(1); // 수정: 0에서 1로 변경
+  const itemsPerPage = 5;
+
+  // 페이징 핸들러
+  const handlePageChangeSelling = (event, value) => {
+    setCurrentPageSelling(value);
+  };
+
+  const handlePageChangeNotSelling = (event, value) => {
+    setCurrentPageNotSelling(value);
+  };
 
   // 목록
   const fetchMenu = async () => {
@@ -131,9 +140,13 @@ const MenuList = () => {
   };
 
   // 메뉴 상태에 따라 필터링하여 테이블 렌더링
-  const renderMenuTable = (isEnd) => {
+  const renderMenuTable = (isEnd, currentPage, handlePageChange) => {
     const filteredMenu = menu.filter((item) => item.menu_end === isEnd);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const selectedMenuItems = filteredMenu.slice(startIndex, startIndex + itemsPerPage);
+    
     return (
+    <>
       <Table
         aria-label="simple table"
         sx={{
@@ -175,7 +188,7 @@ const MenuList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredMenu.map((menu) => (
+          {selectedMenuItems.map((menu) => (
             <TableRow
               key={menu.menu_id}
               onClick={() => handleOpenModal(menu)}
@@ -225,6 +238,17 @@ const MenuList = () => {
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination */}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+        <Pagination
+          count={Math.ceil(filteredMenu.length / itemsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
+    </>
     );
   };
 
@@ -235,203 +259,34 @@ const MenuList = () => {
         <Typography variant="h2" sx={{ pt: 5, paddingBottom: "30px", fontWeight: "bold" }}>
           판매 중인 메뉴
         </Typography>
-        {renderMenuTable(1)}
+        {renderMenuTable(1, currentPageSelling, handlePageChangeSelling)}
 
         {/* 미판매 메뉴 */}
         <Typography variant="h2" sx={{ pt: 10, paddingBottom: "30px", fontWeight: "bold" }}>
           미판매 메뉴
         </Typography>
-        {renderMenuTable(0)}
+        {renderMenuTable(0, currentPageNotSelling, handlePageChangeNotSelling)}
       </Box>
-      {/* 상세 모달 */}
-      {selectedMenu && showModal && (
-        <Paper sx={{ padding: 3, backgroundColor: "#fffcfc", borderRadius: 2, boxShadow: 3 }}>
-          <div style={styles.overlay} onClick={handleCloseModal}></div>
-          <div style={styles.modal}>
-            <div style={styles.modalContent}>
-              <IconButton
-                sx={{ position: "absolute", top: 20, right: 20 }}
-                onClick={handleCloseModal}
-              >
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h2" sx={{ pt: 2, paddingBottom: "20px", fontWeight: "bold" }}>
-                판매 중인 메뉴
-              </Typography>
-              <hr style={{ marginBottom: "2px" }}></hr>
-              <Grid container spacing={3} sx={{ mt: 1, pl: 2 }}>
-                <Grid item xs={3}>
-                  <Typography variant="body1" fontWeight="bold">
-                    메뉴ID
-                  </Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body1">{selectedMenu.menu_id}</Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body1" fontWeight="bold">
-                    메뉴명
-                  </Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body1">{selectedMenu.menu_name}</Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body1" fontWeight="bold">
-                    판매가격
-                  </Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body1">
-                    {selectedMenu.menu_price.toLocaleString()}원
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body1" fontWeight="bold">
-                    레시피
-                  </Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body1">{selectedMenu.menu_recipe}</Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body1" fontWeight="bold">
-                    총 원가
-                  </Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body1">
-                    {selectedMenu.menu_origin_price.toLocaleString()}원
-                  </Typography>
-                </Grid>
-                <Grid item xs={3}>
-                  <Typography variant="body1" fontWeight="bold">
-                    판매여부
-                  </Typography>
-                </Grid>
-                <Grid item xs={9}>
-                  <Typography variant="body1">
-                    {selectedMenu.menu_end === 1 ? "판매" : "미판매"}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </div>
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 5 }}>
-              <Button variant="contained" color="error" onClick={handleDeleteMenu}>
-                미판매
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => handleOpenEditModal(selectedMenu)}
-                sx={{ ml: 1 }}
-              >
-                수정
-              </Button>
-              <Button variant="contained" onClick={handleCloseModal} sx={{ ml: 1 }}>
-                닫기
-              </Button>
-            </Box>
-          </div>
-        </Paper>
-      )}
-
-      {/* 수정 모달 */}
-      {selectedMenu && showEditModal && (
-        <>
-          <div style={styles.overlay} onClick={handleCloseEditModal}></div>
-          <div style={styles.modal}>
-            <IconButton
-              sx={{ position: "absolute", top: 20, right: 20 }}
-              onClick={handleCloseEditModal}
-            >
-              <CloseIcon />
-            </IconButton>
-            <div style={styles.modalContent}>
-              <Typography variant="h2" sx={{ pt: 2, paddingBottom: "20px", fontWeight: "bold" }}>
-                메뉴 수정
-              </Typography>
-              <hr style={{ marginBottom: "20px" }}></hr>
-              <div>
-                <TextField
-                  sx={styles.editInput}
-                  type="text"
-                  name="menu_id"
-                  label="메뉴ID"
-                  value={formData.menu_id}
-                  onChange={handleChange}
-                  disabled
-                />
-              </div>
-              <div>
-                <TextField
-                  sx={styles.editInput}
-                  type="text"
-                  name="menu_name"
-                  label="메뉴명"
-                  value={formData.menu_name}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <TextField
-                  sx={styles.editInput}
-                  type="number"
-                  name="menu_price"
-                  label="판매가격"
-                  value={formData.menu_price}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <TextField
-                  sx={styles.editInput}
-                  type="text"
-                  name="menu_recipe"
-                  label="레시피"
-                  value={formData.menu_recipe}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <TextField
-                  sx={styles.editInput}
-                  type="number"
-                  name="menu_origin_price"
-                  label="총 원가"
-                  value={formData.menu_origin_price}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <TextField
-                  sx={styles.editInput}
-                  select
-                  name="menu_end"
-                  label="판매여부"
-                  value={formData.menu_end}
-                  onChange={handleChange}
-                >
-                  <MenuItem value={1}>판매</MenuItem>
-                  <MenuItem value={0}>미판매</MenuItem>
-                </TextField>
-              </div>
-            </div>
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
-              <Button variant="contained" color="primary" onClick={handleModMenu}>
-                저장
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleCloseEditModal}
-                sx={{ marginLeft: 2, backgroundColor: "#dc3545" }}
-              >
-                취소
-              </Button>
-            </Box>
-          </div>
-        </>
+        {/* 상세 모달 */}
+        {selectedMenu && showModal && (
+          <DetailModal
+            selectedMenu={selectedMenu}
+            handleCloseModal={handleCloseModal}
+            handleDeleteMenu={handleDeleteMenu}
+            handleOpenEditModal={handleOpenEditModal}
+          />
+        )}
+        {/* 수정 모달 */}
+        {selectedMenu && showEditModal && (
+          <EditModal
+          formData={formData}
+          handleCloseEditModal={handleCloseEditModal}
+          handleChange={handleChange}
+          handleModMenu={handleModMenu}
+        />
       )}
     </>
   );
 };
+
 export default MenuList;
