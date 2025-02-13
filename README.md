@@ -1,70 +1,89 @@
-# Getting Started with Create React App
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/a55ea178-b842-4e38-8e87-2dc637784dcd">
+</p>
+ <h3> 테이블 오더 & 가맹점 & 본사(인트라넷) 연계 프로젝트 </h3></div>
+<div align="center"></div>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 인트라넷 기반 그룹웨어 개발 프로젝트
 
-## Available Scripts
+---
+### 📌 프로젝트 소개
+- 테이블 오더 & 가맹점 & 본사(인트라넷) 연계 프로젝트
+<img src="https://github.com/user-attachments/assets/1b67fd3e-e3c3-44f9-898b-647b1deed0cb" >
 
-In the project directory, you can run:
 
-### `yarn start`
+### 🎞 시연영상 👇
+- 
+ 
+<br>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 📰 제작기간 & 팀원 소개
+- 2024-06-19. ~ 2024-07-12.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+|이름| 담당 기능 구현                                                                         |
+|------|----------------------------------------------------------------------------------|
+|김예린| 인트라넷 - 가맹점관리(CRUD), 메뉴관리(CRUD), 매출관리(CRUD), 재고관리(CRUD)                |
+|나소림| 가맹점 - 재고관리(CRUD), 매출관리(CRUD), 메뉴관리(CRUD), 지점장POS(CRUD), 관리자용POS(CRUD)        |
+|문승환| 인트라넷 - 인사관리(CRUD), 로그인(JWT), 메신저(CRUD) |
+|박민규| 인트라넷 - 캘린더관리(CRUD), 일정관리(CRUD), 대시보드(CRUD), 디자인 |
+|이윤재| 인트라넷 - 전자결재(CRUD), 대시보드(CRUD), 알림(CRUD) |
+|임주연| 가맹점 - 관리자관리(CRUD), 가맹점관리(CRUD), 테이블관리(CRUD), 주문(CRUD), 테이블오더 |
 
-### `yarn test`
+<br>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## ⛏ FE 기술 Stack
 
-### `yarn build`
+###### Dev-Tools
+- Notion
+- Git
+- GitHub
+- Slack
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<br>
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+###### Back-end Stack
+- React
+- Redux Toolkit
+- Router
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<br>
 
-### `yarn eject`
+## 🌸 아키텍쳐
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+<img alt="erd" src="https://github.com/user-attachments/assets/1e4359ca-7a5e-49bf-80da-5d4995a1affb">
+<br>
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## ⚙️ ERD
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+<img alt="erd" src="https://github.com/user-attachments/assets/16572375-ebf6-45c8-910f-6a9b87de3af1">
+<img alt="erd" src="https://github.com/user-attachments/assets/189eea46-a248-4e98-9ad1-837971d770ab">
+<br>
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## ✔ 주요 기능
 
-## Learn More
+- 🏬 가맹점관리
+  - 가맹점 등록
+  - 가맹점 경고 기능
+  - 폐점한 매장 업데이트 및 조회
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- 🍽 메뉴관리
+  - 메뉴 등록
+  - 메뉴 판매 상태 변경 및 조회(판매/미판매)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- 💻 주문관리
+  - 가맹점 POS서버 발주 정보 API통신
 
-### Code Splitting
+- 📈 매출관리
+  - 가맹점주 POS 내 매출 정보를 연월별로 API통신
+  - 최저/최고 매출액 구분 및 미제공 가맹점 목록 조회
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- 🗓 캘린더관리
+  - 부서별 캘린더 조회 및 등록
+  - 캘린더별 일정 관리
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- 📋 전자결재
+  - 결재 양식을 선택하여 기안문 상신
+  - 결재자 수에 따른 결재라인 생성
+  - 기안문 승인 및 반려
+  - 결재 순서에 따른 메뉴 구분
+  - 전자결재 문서 PDF 및 인쇄 기능
