@@ -41,7 +41,7 @@
 
 <br>
 
-###### Back-end Stack
+###### Front-end Stack
 - React
 - Redux Toolkit
 - Router
