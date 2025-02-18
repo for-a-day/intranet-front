@@ -11,6 +11,8 @@
 - 테이블 오더 & 가맹점 & 본사(인트라넷) 연계 프로젝트
 <img src="https://github.com/user-attachments/assets/1b67fd3e-e3c3-44f9-898b-647b1deed0cb" >
 
+<br>
+
 ### PDF
 [프렌차이즈(TO & POS)와 인트라넷기반의 그룹웨어 프로젝트.pdf](https://github.com/user-attachments/files/16531140/default.pdf)
  
